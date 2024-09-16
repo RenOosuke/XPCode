@@ -7,6 +7,4 @@ const app = new App({
 	}
 });
 
-console.log('Gosho');
-
 export default app;

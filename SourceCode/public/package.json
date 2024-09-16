@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "main": "/public/index.html",
     "dependencies": {
+      "monaco-editor": "^0.51.0"
     }
   }
   

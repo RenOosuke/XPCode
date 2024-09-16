@@ -36,7 +36,8 @@ const createIfNotExists = (folderPath) => {
 let pathsToMove = [
     'fonts',
     'images',
-    'public'
+    'public',
+    'src-noconflict'
 ].map(a => path.join(__dirname, a));
 
 let publicPath = path.join(__dirname, 'public');

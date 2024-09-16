@@ -4,13 +4,18 @@
 	<meta charset='utf-8'>
 	<meta name='viewport' content='width=device-width,initial-scale=1'>
 
-	<title>Svelte app</title>
-
+	<title>XPCode</title>
 	<link rel='icon' type='image/png' href='./favicon.png'>
 	<link rel='stylesheet' href='./global.css'>
 	<link rel='stylesheet' href='./build/bundle.css'>
-	<script src="../node_modules/nw-dev/lib/dev.js" data-ignore="data.json|*.md"></script>
+	<script src="devTools.js"></script>
 	<script defer src='./build/bundle.js'></script>
+	
+    <link rel="import" href="importer.html">
+	
+	<script>
+		console.log('Reloaded');
+	</script>
 </head>
 
 <body>
