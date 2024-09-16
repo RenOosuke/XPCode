@@ -1,0 +1,8 @@
+/SourceCode/node_modules
+/SourceCode/public/node_modules
+/SourceCode/package-lock.json
+/SourceCode/public/build/
+/BuiltApp
+/SourceCode/NW_Cache/NWTemp
+
+.DS_Store
