@@ -4,5 +4,6 @@
 /SourceCode/public/build/
 /BuiltApp
 /SourceCode/NW_Cache/NWTemp
+/SourceCode/NW_Cache/
 
 .DS_Store
