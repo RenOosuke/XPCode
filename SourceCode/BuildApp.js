@@ -1,5 +1,5 @@
 // #DOCUMENT_THIS_FILE
-const SDK = false;
+const SDK = true;
 // TO OPTIMIZE DOWNLOAD URLS 
 // #NWBUILD_DOWNLOAD_OPTIMIZE
 const projectName = 'XPCode';

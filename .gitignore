@@ -2,8 +2,8 @@
 /SourceCode/public/node_modules
 /SourceCode/package-lock.json
 /SourceCode/public/build/
+/NW_Cache/NWTemp/
+/NW_Cache/nwjs-sdk-v0.15.4-win-ia32/
 /BuiltApp
-/SourceCode/NW_Cache/NWTemp
-/SourceCode/NW_Cache/
 
 .DS_Store

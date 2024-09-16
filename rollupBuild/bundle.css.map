@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "file": "bundle.css",
+  "sources": [
+    "..\\SourceCode\\App.svelte"
+  ],
+  "sourcesContent": [
+    "<script>\r\n\texport let name;\r\n\tconst nw = window.nw;\r\n\t\r\n\tconst { require } = window.nw;\r\n</script>\r\n\r\n<main>\r\n\t<h1>Sveltejs & NWJS & Rollup!</h1>\r\n\t<ul>\r\n\t{#each Object.keys(nw) as nw_module}\r\n\t\t<li>{nw_module} \r\n\t\t\t<ul>\r\n\t\t\t\t{#each Object.keys(nw[nw_module]) as module_key}\r\n\t\t\t\t\t<li> { module_key } </li>\r\n\t\t\t\t{/each}\r\n\t\t\t</ul>\r\n\t\t</li>\r\n\t{/each}\r\n\t</ul>\r\n</main>\r\n\r\n<style>\r\n\tmain {\r\n\t\tpadding: 1em;\r\n\t\tmax-width: 240px;\r\n\t\tmargin: 0 auto;\r\n\t}\r\n\r\n\th1 {\r\n\t\tcolor: #09ff00;\r\n\t\ttext-transform: uppercase;\r\n\t\tfont-size: 4em;\r\n\t\tfont-weight: 100;\r\n\t}\r\n\r\n\t@media (min-width: 640px) {\r\n\t\tmain {\r\n\t\t\tmax-width: none;\r\n\t\t}\r\n\t}\r\n</style>"
+  ],
+  "names": [],
+  "mappings": "AAuBC,IAAI,cAAC,CAAC,AACL,OAAO,CAAE,GAAG,CACZ,SAAS,CAAE,KAAK,CAChB,MAAM,CAAE,CAAC,CAAC,IAAI,AACf,CAAC,AAED,EAAE,cAAC,CAAC,AACH,KAAK,CAAE,OAAO,CACd,cAAc,CAAE,SAAS,CACzB,SAAS,CAAE,GAAG,CACd,WAAW,CAAE,GAAG,AACjB,CAAC,AAED,MAAM,AAAC,YAAY,KAAK,CAAC,AAAC,CAAC,AAC1B,IAAI,cAAC,CAAC,AACL,SAAS,CAAE,IAAI,AAChB,CAAC,AACF,CAAC"
+}

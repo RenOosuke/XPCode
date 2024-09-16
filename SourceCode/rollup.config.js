@@ -6,8 +6,8 @@ import { terser } from 'rollup-plugin-terser';
 import path from 'path';
 
 const production = !process.env.ROLLUP_WATCH;
-const bundleJSPath = path.resolve('../rollupBuild/bundle.js');
-const bundleCSSPath = path.resolve('../rollupBuild/bundle.css')
+const bundleJSPath = path.resolve('./public/build/bundle.js');
+const bundleCSSPath = path.resolve('./public/build/bundle.css')
 
 export default {
 	input: 'src/main.js',
