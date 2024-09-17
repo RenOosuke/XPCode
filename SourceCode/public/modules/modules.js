@@ -164,10 +164,29 @@ window.themeUtils = {
     }
 }
 
-window.windowUtils = {
-    
+const nwWindow = nw.Window.get();
+
+window.screenControls = {
+    nwWindow: nwWindow,
+    isFullScreen: () => {
+        return nwWindow.height >= window.screen.availHeight && nwWindow.width >= window.screen.availWidth;
+    },
 }
 
+let windowSizeEvents = [
+    'restore',
+    'maximize',
+    'resize'
+];
+
+windowSizeEvents.forEach((evName) => {
+    // IN ORDER FOR THIS TO BREAK, BECAUSE OF A NW BUG, YOU SHOULDN'T REFRESH USING F5, BUT RIGHT CLICK => `Reload App`
+    nwWindow.on(evName, () => {
+        let newEv = new Event('nw_custom_resize');
+
+        document.dispatchEvent(newEv);
+    })
+})
 // var readline = require('readline');
 // var spawn = child_process.spawn;
 

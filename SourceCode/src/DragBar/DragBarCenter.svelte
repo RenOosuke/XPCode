@@ -24,7 +24,6 @@
     
 </div>
 
-
 <style>
     .icon {
         width: .9rem;

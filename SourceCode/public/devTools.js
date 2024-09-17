@@ -24,6 +24,6 @@ window.addEventListener("keydown", function(e) {
       case "F12":
         return nwWin.showDevTools();
       case "F5":
-        return window.location.reload();
+        return nwWin.reload();
     }
   });
