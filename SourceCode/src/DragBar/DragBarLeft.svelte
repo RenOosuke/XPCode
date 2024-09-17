@@ -37,6 +37,9 @@
     const handleDragBarMenButtonClick = (buttonName) => {
         console.log(buttonName)
     }
+
+    let iconsPath = themeUtils.iconsPath();
+    let maskSize = `-webkit-mask-size: 1rem !important;`;
     
     let vscodeIconPath = path.join(paths.icons, 'default', 'vscode.png');
 </script>
@@ -52,6 +55,10 @@
             {contextMenuButton.label}
         </div>
     {/each}
+
+    <div class="context_menu_cake_menu" style="-webkit-mask: url('{`${iconsPath}/cake.svg`}') no-repeat center; {maskSize}">
+
+    </div>
 </div>
 
 
@@ -85,5 +92,15 @@
         color: #cccccc;
         cursor: default;
         border-radius: .3rem;
+    }
+
+    .context_menu_cake_menu {
+        background-color: var(--sidebar-active-icon);
+        width: 1rem;
+        height: 1rem;
+        margin-top: auto;
+        margin-bottom: auto;
+        margin-left: .5rem;
+        display: none;
     }
 </style>

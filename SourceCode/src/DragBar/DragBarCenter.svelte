@@ -59,7 +59,8 @@
         background-color: #242424;
         padding: .2rem;
         border: solid 1px #454545;
-        width: 35rem;
+        width: 45vw;
+        max-width: 40rem;
         display: flex;
         justify-content: center;
         margin-left: 1rem;

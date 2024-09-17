@@ -12,9 +12,9 @@ import DragBarLeft from "../DragBar/DragBarLeft.svelte";
 
 <div class="dragbar" style="background: {backgroundColor}; color: {color}; border-color: {borderColor};">
     <DragBarLeft></DragBarLeft>
-    <div class="draggable_area"></div>
+    <div class="draggable_area" id="drag-enable"></div>
     <DragBarCenter></DragBarCenter>
-    <div class="draggable_area"></div>
+    <div class="draggable_area" id="drag-enable"></div>
     <DragBarRight></DragBarRight>
 </div>
 
@@ -27,4 +27,18 @@ import DragBarLeft from "../DragBar/DragBarLeft.svelte";
         display: flex;
         justify-content: space-between;
     }
+
+    .draggable_area {
+      width: -webkit-fill-available;
+    }
+
+    @media (max-width: 74rem) {
+      :global(.context_menu_button_placeholder) {
+        display: none;
+      }
+
+      :global(.context_menu_cake_menu) {
+        display: initial !important;
+      }
+	  }
 </style>

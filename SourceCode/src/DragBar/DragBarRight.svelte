@@ -41,7 +41,7 @@
     .icon {
         width: 1.1rem;
         height: 1.1rem;
-        padding: .3rem .5rem;
+        padding: .3rem .75rem;
     }
 
     .icon:not(.innactive) {

@@ -20,5 +20,12 @@
     "gulp": "^4.0.2",
     "parallelshell": "^3.0.2",
     "sirv-cli": "^0.4.4"
+  },
+  "window": {
+    "toolbar": true,
+    "frame": false,
+    "show": true,
+    "width": 500,
+    "height": 500
   }
 }

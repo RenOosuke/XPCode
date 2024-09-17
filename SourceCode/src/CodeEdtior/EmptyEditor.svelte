@@ -108,6 +108,11 @@
         margin: 0rem 0.2rem;
     }
 
+    .instructions {
+        display: flex;
+        flex-direction: column;
+    }
+
     /* .logo {
         background-image: url('');
     } */

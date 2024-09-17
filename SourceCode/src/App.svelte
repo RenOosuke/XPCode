@@ -91,6 +91,10 @@
           -webkit-app-region: no-drag;
     }
 
+	:global(#drag-enable) {
+		-webkit-app-region: drag;
+	}
+
 	:global(body) {
 		padding: 0 !important;
 	}

@@ -164,6 +164,10 @@ window.themeUtils = {
     }
 }
 
+window.windowUtils = {
+    
+}
+
 // var readline = require('readline');
 // var spawn = child_process.spawn;
 
