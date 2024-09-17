@@ -2,6 +2,7 @@ window.fs = require("fs");
 window.path = require('path');
 
 window.launchArguments = nw.__dirname; // nw.App.fullArgv;
+window.directory = path.basename(launchArguments);
 console.log('Launch arguments - ', launchArguments);
 
 window._i = function (template, values) {
@@ -151,7 +152,16 @@ window.spreader = (...objs) =>  {
             } 
     };
 
-    return;
+    return mergedObj;
+}
+
+window.themeUtils = {
+    isDark: true,
+    iconsPath: () => {
+        let mode =  themeUtils.isDark ? 'dark' : 'light';
+        let iconsPath = path.join(paths.icons, mode);
+        return iconsPath.split('\\').join('/');
+    }
 }
 
 // var readline = require('readline');

@@ -3,6 +3,7 @@
   import DragBar from "./WindowEssentials/DragBar.svelte";
   import WindowBody from "./WindowEssentials/WindowBody.svelte";
   import InfoFooter from "./WindowEssentials/InfoFooter.svelte";
+	import Menu from "./WindowEssentials/Menu.svelte";
 
 	export let name;
 	const nw = window.nw;
@@ -35,10 +36,30 @@
 		// var modelist = ace.require("ace/ext/modelist");
 		// ace.require("./src-noconflict/ext-emmet-core.js");
 		// ace.require("ace/ext/emmet").setCore("ext-emmet/core");
+		window.menu = (menuProps) => {
+			let modalContainer = document.getElementsByClassName("menu_placeholder")[0];
+
+			const modal = new Menu({
+				target: modalContainer,
+				props: spreader(
+					menuProps,
+					{
+						hide: () => {
+							modal.$destroy();
+						},
+					}
+				)
+			});
+		};
+		
+		//menu({zIndex: 10, options: [{label: 'Da', click: () => console.log('YES')}], y: 30, x: 30})
 	})
 </script>
 
 <main>
+	<div class="menu_placeholder">
+
+	</div>
 	<div class="window">
 		<DragBar></DragBar>
 		<WindowBody></WindowBody>
