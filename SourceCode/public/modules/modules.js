@@ -161,6 +161,56 @@ window.themeUtils = {
         let mode =  themeUtils.isDark ? 'dark' : 'light';
         let iconsPath = path.join(paths.icons, mode);
         return iconsPath.split('\\').join('/');
+    },
+    changeTheme: () => {
+
+        let inactiveColor = themeUtils.isDark ? " rgb(133, 133, 133)" : "black";
+        let activeColor = themeUtils.isDark ? "white" : "black";
+
+        const root = document.documentElement;
+        root.style.setProperty("--sidebar-inactive-icon", inactiveColor);
+        root.style.setProperty("--sidebar-active-icon", activeColor);
+        
+        let iconsPath = themeUtils.iconsPath();
+
+        let iconNames = [
+            'files',
+            'search',
+            'debug',
+            'account',
+            'settings',
+            'left_arrow',
+            'right_arrow',
+            'more',
+            'git',
+            'chevron-right',
+            'chevron-left',
+            'chevron-down',
+            'chevron-up'
+        ];
+
+        iconNames.forEach((iconName) => {
+            root.style.setProperty(`--${iconName}-icon`, `url('${iconsPath}/${iconName}.svg') no-repeat center`)
+        });
+
+        let colorVariablesMapping = {
+            '--primary-dark-bg': '#181818',
+            '--primary-light-bg': '#1f1f1f',
+            '--primary-light2-bg': '#adaeae',
+            '--primary-light3-bg': '#444444',
+        };
+
+        let colorVariables = Object.keys(colorVariablesMapping);
+
+        colorVariables.forEach((varName) => {
+            root.style.setProperty(varName, colorVariablesMapping[varName]);
+        })
+    },
+
+    variables: {
+        bg: {
+            primaryDark: 'var(--primary-dark-bg)'
+        }
     }
 }
 
