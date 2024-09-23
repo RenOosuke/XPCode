@@ -12,6 +12,7 @@
     const icons = [
         'files',
         'search',
+        'git',
         'debug'
     ];
 
@@ -24,25 +25,27 @@
 
     }
 
-    const setIconsColor = () => {
-        /** @type {HTMLElement}*/
-        let inactiveColor = themeUtils.isDark ? ' rgb(133, 133, 133)' : 'black';
-        let activeColor = themeUtils.isDark ? 'white' : 'black';
-        let sidebarEl = jQuery('.icon_placeholder')[0];
-
-        const root = document.documentElement;
-
-        root.style.setProperty('--sidebar-inactive-icon', inactiveColor);
-        root.style.setProperty('--sidebar-active-icon', activeColor);
-    }
-
     let iconsPath = themeUtils.iconsPath();
     let urlPath = iconsPath;
+    
     // TEMP_HARDCODE
     let activeIcon = 0;
-
+    
+    const retriggerTabUpdate = () => {
+        const customEv = new Event('sidebar_tab_changed');
+        document.dispatchEvent(customEv);
+    }
+    
+    const updateSideBarTab = (i) => {
+        activeIcon = i;
+        
+        sidebarTabs.activeTab = icons[activeIcon];
+        retriggerTabUpdate();
+    }
+    
     onMount(() => {
-        setIconsColor();
+        sidebarTabs.activeTab = icons[activeIcon];
+        retriggerTabUpdate();
     })
 </script>
 
@@ -50,15 +53,12 @@
 <div class="sidebar" style="background: {backgroundColor}; color: {color}; border-color: {borderColor};">
     <div class="upper_icons">
         {#each icons as icon, i}
-            <div class="icon_placeholder{i === activeIcon ? ' pressed' : ''}" on:click={() => activeIcon = i}>
+            <div class="icon_placeholder{i === activeIcon ? ' pressed' : ''}" on:click={() => updateSideBarTab(i)}>
                 <div class="pressed_line">
     
                 </div>
     
-                <!-- <img src="{path.join(iconsPath, `${icon}.svg`)}" class="{icon} {mode} upper_icon" alt=""/> -->
-                <div style="-webkit-mask: url('{`${urlPath}/${icon}.svg`}') no-repeat center;" class="upper_icon">
-
-                </div>
+                <div style="-webkit-mask: var(--{icon}-icon);" class="upper_icon"></div>
             </div>
         {/each}
     </div>
@@ -66,7 +66,7 @@
     <div class="lower_icons">
         {#each bottom_icons as icon, i}
             <div class="icon_placeholder" on:click={() => bottomButtonMenu(icon)}>    
-                <div style="-webkit-mask: url('{`${urlPath}/${icon}.svg`}') no-repeat center; -webkit-mask-size: 1.5rem;" class="bottom_icon">
+                <div style="-webkit-mask: var(--{icon}-icon);  -webkit-mask-size: 1.5rem;" class="bottom_icon">
 
                 </div>
             </div>

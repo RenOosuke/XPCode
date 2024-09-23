@@ -6,16 +6,16 @@
 
 <div class="dragbar_center">
     <div class="arrows">
-        <div class="left_arrow icon" style="-webkit-mask: url('{`${iconsPath}/left_arrow.svg`}') no-repeat center; {maskSize}">
+        <div class="left_arrow icon" style="-webkit-mask: var(--left_arrow-icon); {maskSize}">
         </div>
 
-        <div class="right_arrow icon" style="-webkit-mask: url('{`${iconsPath}/right_arrow.svg`}') no-repeat center; {maskSize}">
+        <div class="right_arrow icon" style="-webkit-mask: var(--right_arrow-icon); {maskSize}">
         </div>
     </div>
 
     <div class="directory_searchbar">
         <div class="centered_search">
-            <div class="search_icon icon" style="-webkit-mask: url('{`${iconsPath}/search.svg`}') no-repeat center; {maskSize}">
+            <div class="search_icon icon" style="-webkit-mask: var(--search-icon); {maskSize}">
             </div>
             
             <p class="directory_name">{directory}</p>

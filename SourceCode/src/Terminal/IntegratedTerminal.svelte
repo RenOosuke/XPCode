@@ -1,6 +1,6 @@
 <script>
     // TEMP_HARDCODE
-    const backgroundColor = '#181818';
+    const backgroundColor = 'var(--primary-dark-bg)';
     const color = '#cccccc';
     const borderColor = '#2b2b2b';
 </script>

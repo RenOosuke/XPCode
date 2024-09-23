@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
 
     // TEMP_HARDCODE
-    const backgroundColor = '#1f1f1f';
+    const backgroundColor = 'var(--primary-light-bg)';
     const color = '#cccccc';
     const borderColor = '#2b2b2b';
     

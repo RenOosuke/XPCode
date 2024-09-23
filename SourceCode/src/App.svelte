@@ -5,7 +5,7 @@
   import InfoFooter from "./WindowEssentials/InfoFooter.svelte";
 	import Menu from "./WindowEssentials/Menu.svelte";
 
-	export let name;
+	// export let name;
 	const nw = window.nw;
 	
 	const { require } = window.nw;
@@ -52,7 +52,22 @@
 			});
 		};
 		
-		//menu({zIndex: 10, options: [{label: 'Da', click: () => console.log('YES')}], y: 30, x: 30})
+		themeUtils.changeTheme();
+		// menu({zIndex: 10, options: 
+		// 	[
+		// 		{label: 'Da', click: () => console.log('YES')},
+		// 		{separator: true},
+		// 		{label: 'Da', click: () => console.log('YES')},
+		// 		{label: 'Da', click: () => console.log('YES')},
+		// 		{label: 'Da', click: () => console.log('YES')},
+		// 		{separator: true},
+		// 		{label: 'Da', click: () => console.log('YES')},
+		// 		{label: 'Da', click: () => console.log('YES')},
+		// 		{label: 'Da', click: () => console.log('YES')},
+		// 		{separator: true},
+		// 		{label: 'Da', click: () => console.log('YES')},
+
+		// 	], y: 30, x: 30})
 	})
 </script>
 
@@ -78,6 +93,7 @@
 	main {
 		margin: 0;
 		height: 100%;
+		font-family: "Segoe WPC", "Segoe UI", sans-serif !important;
 	}
 
 	h1 {
@@ -97,5 +113,34 @@
 
 	:global(body) {
 		padding: 0 !important;
+	}
+
+	@font-face {
+		font-family: Segoe WP;
+		src: url(../../fonts/Segoe_WP.ttf)
+	}
+	
+	@font-face {
+		font-family: Segoe UI;
+		src: url(../../fonts/Segoe_UI.ttf)
+	}
+
+	/* :global(.codicon[class*=codicon-]) {
+		display: inline-block;
+		font: normal normal normal 16px / 1 codicon;
+		text-align: center;
+		text-decoration: none;
+		text-rendering: auto;
+		text-transform: none;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		user-select: none;
+		-webkit-user-select: none;
+	} */
+
+	:global(#unselectable) {
+		-webkit-user-select: none; /* Safari */
+		-ms-user-select: none; /* IE 10 and IE 11 */
+		user-select: none; /* Standard syntax */
 	}
 </style>
