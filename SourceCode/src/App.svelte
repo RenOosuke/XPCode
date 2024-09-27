@@ -125,6 +125,11 @@
 		src: url(../../fonts/Segoe_UI.ttf)
 	}
 
+	@font-face {
+		font-family: Seti_Icon;
+		src: url(../../fonts/Seti.woff);
+	}
+
 	/* :global(.codicon[class*=codicon-]) {
 		display: inline-block;
 		font: normal normal normal 16px / 1 codicon;

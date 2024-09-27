@@ -10,8 +10,8 @@
 </script>
 
 
-<div class="explorer-tab">
-    <div class="explorer-tab-header {!isExpanded ? 'expanded' : ''}" on:click={handleTabClick}>
+<div class="explorer-tab {isExpanded ? 'expanded' : ''}">
+    <div class="explorer-tab-header" on:click={handleTabClick}>
         <div class="left-side">
             <div class="arrow-placeholder">
                 <div style="-webkit-mask-size: 1rem;" class="arrow-icon">
@@ -77,12 +77,13 @@
     .arrow-icon {
         -webkit-mask: var(--chevron-right-icon);
     }
-
+    
     .expanded .arrow-icon {
         -webkit-mask: var(--chevron-down-icon);
     }
 
-    .explorer-tab-header.expanded {
+    .expanded .explorer-tab-header {
+        border-bottom-color: transparent;
         /* border-color: #2b2b2b; */
     }
 
@@ -91,5 +92,9 @@
         text-transform: uppercase;
         font-size: .7rem;
         font-weight: 700;
+    }
+
+    .expanded {
+        flex-grow: 1;
     }
 </style>

@@ -237,6 +237,15 @@ windowSizeEvents.forEach((evName) => {
         document.dispatchEvent(newEv);
     })
 })
+
+window.VSCode = {
+    original: {
+        
+    },
+    xpcode: {
+
+    }
+}
 // var readline = require('readline');
 // var spawn = child_process.spawn;
 
