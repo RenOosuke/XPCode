@@ -435,7 +435,7 @@
         "cson": "_json",
         "json":"_json_light",
         "css.map": "_css",
-        "sss": "_css",
+        "css": "_css",
         "csv": "_csv",
         "xls": "_xls",
         "xlsx": "_xls",
@@ -557,7 +557,7 @@
         "test.ts": "_typescript_1",
         "vala": "_vala",
         "vapi": "_vala",
-        "component": "_html_3",
+        "html": "_html_3",
         "vue": "_vue",
         "wasm": "_wasm",
         "wat": "_wat",
@@ -635,7 +635,10 @@
         "cer": "_lock",
         "crt": "_lock",
         "pem": "_lock",
-        "ds_store": "_ignored"
+        "ds_store": "_ignored",
+        "package-lock.json": "_json_light",
+        "d.ts": "_typescript",
+        "script.d.ts": "_typescript",
       };
       
       const fileNames = {
@@ -723,7 +726,7 @@
         "todo": "_todo",
         "todo.txt": "_todo",
         "todo.md": "_todo",
-        "npm-debug.log": "_npm_ignored"
+        "npm-debug.log": "_npm_ignored",
       };
 
       const defaultIcon = '_default'; // Define your default icon identifier
@@ -736,12 +739,11 @@
       
       // Icon Manager function
       function getIconForPath(filePath) {
-        const extension = file_explorer.getFileExtension(filePath);
         const fileName = getFileName(filePath);
         const baseName = path.basename(fileName);
+        const extension = file_explorer.getFileExtension(baseName);
         let iconKey = null;
       
-        console.log(extension, baseName)
         // Step 1: Check if the file name matches (e.g., "readme.md")
         if (fileNames[baseName]) {
           iconKey = fileNames[baseName];
@@ -765,8 +767,6 @@
       // Example usage
       const filePath = '/path/to/file/readme.md';
       const iconInfo = getIconForPath(filePath);
-      
-      console.log(iconInfo); // Output: { fontCharacter: "\\E04D", fontColor: "#519aba" }     
       
       window.iconManager = {
         getIconForPath

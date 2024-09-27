@@ -6,7 +6,9 @@
 
     let {} = properties;
     let iconProps = iconManager.getIconForPath(properties.full_path);
-    
+    let gotSorted = false;
+    let items = properties.isFolder ? file_explorer.sortDirectories(properties.children || []) : [];
+
     if(!properties.isFolder) {
 
     }
@@ -14,6 +16,11 @@
     const handleExpansionToggle = (ev) => {
         ev.stopPropagation();
         isExpanded = !isExpanded;
+
+        if(!gotSorted) {
+            items = file_explorer.sortDirectories(items);
+            gotSorted = true;
+        }
     }
 </script>
 
@@ -37,8 +44,8 @@
         </div>
     </div>
 
-    {#if isExpanded && properties.children}
-        {#each properties.children as singleItemProps}
+    {#if isExpanded && items}
+        {#each items as singleItemProps}
             <svelte:self properties={singleItemProps} level={level+1}/>
         {/each}
     {/if}
