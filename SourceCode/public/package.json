@@ -4,6 +4,13 @@
     "main": "/public/index.html",
     "dependencies": {
     },
-    "DEV": false
+    "DEV": false,
+    "window": {
+      "toolbar": true,
+      "frame": false,
+      "show": true,
+      "width": 500,
+      "height": 500
+    }
   }
   

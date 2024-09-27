@@ -1,6 +1,7 @@
 <script>
     import { onMount } from "svelte";
   import FileExplorerHeader from "../FileExplorer/FileExplorerHeader.svelte";
+  import FileExplorerBody from "../FileExplorer/FileExplorerBody.svelte";
 
     const backgroundColor = '#181818';
     const color = '#cccccc';
@@ -19,6 +20,7 @@
 
 <div class="file_explorer" style="background: {backgroundColor}; color: {color}; border-color: {borderColor};">
     <FileExplorerHeader {activeTab}></FileExplorerHeader>
+    <FileExplorerBody {activeTab}></FileExplorerBody>
 </div>
 
 
