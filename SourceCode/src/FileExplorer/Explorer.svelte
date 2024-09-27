@@ -34,6 +34,6 @@ import GenericExplorerTab from "./Explorer/GenericExplorerTab.svelte";
     .explorer-tabs {
         display: flex;
         flex-direction: column;
-        height: 100%;
+        flex-grow: 1;
     }
 </style>

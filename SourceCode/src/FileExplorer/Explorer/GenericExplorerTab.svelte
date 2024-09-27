@@ -36,6 +36,10 @@
 
 
 <style>
+    .explorer-tab-name {
+        min-height: 1rem;
+    }
+
     .arrow-icon {
         background-color: var(--sidebar-inactive-icon);
         height: 1rem;
@@ -56,6 +60,7 @@
         border-right-color: transparent !important;
         /* border-color: #2b2b2b; */
         border-bottom-color: #2b2b2b;
+        min-height: .8rem;
     }
 
     .explorer-tab-header:active {
@@ -96,5 +101,7 @@
 
     .expanded {
         flex-grow: 1;
+        display: flex;
+        flex-direction: column;
     }
 </style>

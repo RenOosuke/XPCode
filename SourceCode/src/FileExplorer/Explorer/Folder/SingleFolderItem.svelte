@@ -1,6 +1,8 @@
 <script>
     export let properties;
     export let level;
+    
+    let isExpanded = false;
 
     let {} = properties;
     let iconProps = iconManager.getIconForPath(properties.full_path);
@@ -8,11 +10,16 @@
     if(!properties.isFolder) {
 
     }
+
+    const handleExpansionToggle = (ev) => {
+        ev.stopPropagation();
+        isExpanded = !isExpanded;
+    }
 </script>
 
 
-<div class="single-folder-item">
-    <div class="header-part" style="padding-left: {1 + level*.1}rem;">
+<div class="single-folder-item {isExpanded ? 'expanded' : ''}">
+    <div class="header-part" style="padding-left: {1 + level*.7}rem;" on:click={handleExpansionToggle}>
         <div class="left-side">
             {#if properties.isFolder}
                 <div class="arrow-placeholder">
@@ -29,6 +36,12 @@
             </div>
         </div>
     </div>
+
+    {#if isExpanded && properties.children}
+        {#each properties.children as singleItemProps}
+            <svelte:self properties={singleItemProps} level={level+1}/>
+        {/each}
+    {/if}
 </div>
 
 
@@ -46,13 +59,14 @@
         -webkit-mask: var(--chevron-right-icon);
     }
     
-    .expanded .arrow-icon {
+    .expanded > .header-part > .left-side > .arrow-placeholder > .arrow-icon {
         -webkit-mask: var(--chevron-down-icon);
     }
 
     .header-part {
         display: flex;
         padding: .1rem 0;
+        min-height: 1rem;
         /* margin-bottom: .1rem; */
     }
 
@@ -84,4 +98,9 @@
     .directory-name {
         line-height: 1.3;
     }
+
+    /* .single-folder-item {
+        display: flex;
+        flex-direction: column;
+    } */
 </style>

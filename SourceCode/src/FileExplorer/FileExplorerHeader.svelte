@@ -467,6 +467,7 @@
         padding: .3rem .7rem .3rem 1rem;
         display: flex;
         justify-content: space-between;
+        min-height: 1.2rem;
     }
 
     .tab_title {

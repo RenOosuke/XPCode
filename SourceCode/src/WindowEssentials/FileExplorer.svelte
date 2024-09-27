@@ -29,5 +29,7 @@
         height: 100%;
         width: 30rem;
         border-right: solid 1px;
+        display: flex;
+        flex-direction: column;
     }
 </style>
