@@ -18,7 +18,7 @@
 </script>
 
 
-<div class="file_explorer" style="background: {backgroundColor}; color: {color}; border-color: {borderColor};">
+<div class="file_explorer" style="background: {backgroundColor}; color: {color}; border-color: {borderColor};" id="unselectable" on:selectstart={(e) => e.preventDefault()}>
     <FileExplorerHeader {activeTab}></FileExplorerHeader>
     <FileExplorerBody {activeTab}></FileExplorerBody>
 </div>

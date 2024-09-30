@@ -50,7 +50,7 @@
 </script>
 
 
-<div class="sidebar" style="background: {backgroundColor}; color: {color}; border-color: {borderColor};">
+<div class="sidebar" style="background: {backgroundColor}; color: {color}; border-color: {borderColor};" id="unselectable" on:selectstart={(e) => e.preventDefault()}>
     <div class="upper_icons">
         {#each icons as icon, i}
             <div class="icon_placeholder{i === activeIcon ? ' pressed' : ''}" on:click={() => updateSideBarTab(i)}>

@@ -11,7 +11,7 @@ import GenericExplorerTab from "./Explorer/GenericExplorerTab.svelte";
         'folder',
         'outline',
         'timeline',
-        'npm',
+        'npm scripts',
     ];
 
     let contentMapping = {
@@ -19,7 +19,7 @@ import GenericExplorerTab from "./Explorer/GenericExplorerTab.svelte";
         folder: ExplorerTabFolder,
         outline: ExplorerTabOutline,
         timeline: ExplorerTabTimeline,
-        npm: ExplorerTabNpmScripts
+        'npm scripts': ExplorerTabNpmScripts
     }
 </script>
 

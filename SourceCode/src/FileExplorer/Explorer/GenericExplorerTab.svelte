@@ -20,7 +20,7 @@
             </div>
     
             <div class="explorer-tab-name">
-                {tabName}
+                {tabName === 'folder' ? directory : tabName}
             </div>
         </div>
 
@@ -29,9 +29,7 @@
         </div>
     </div>
 
-    {#if isExpanded}
-        <svelte:component this={tabContent}/>
-    {/if}
+    <svelte:component this={tabContent} {isExpanded}/>
 </div>
 
 

@@ -446,7 +446,7 @@
 </script>
 
 
-<div class="explorer_header">
+<div class="explorer_header" id="unselectable" on:selectstart={(e) => e.preventDefault()}>
     <div class="tab_title codicon codicon-view-more" style="{headerColor}">
         {labelMapping[activeTab] || ''}
     </div>
