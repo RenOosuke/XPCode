@@ -15,7 +15,35 @@
     ]
     // console.log(XPCodeDir);
     let vscodeIconPath = path.join(paths.icons, 'default', 'vscode.png');
+
+    const resizeLogo = () => {
+        let editorWindowEl = jQuery('.empty_editor_window')[0];
+        let logoEl = jQuery('.empty_editor_window .logo')[0]
+        let logoParams = editorWindowEl.getBoundingClientRect();
+        let instructionsEl = jQuery('.instructions')[0];
+
+        if(logoParams.height < 450) {
+            if(logoParams.height < 320) {
+                logoEl.style.maxWidth = undefined;
+                logoEl.style.maxHeight = `${logoParams.height - 16}px`;
+            } else {
+                // logoEl.style.maxWidth = '18rem';
+                logoEl.style.maxHeight = undefined;
+            }
+
+            instructionsEl.style.display = 'none';
+        } else {
+            instructionsEl.style.display = 'initial';
+            logoEl.style.maxHeight = 'initial';
+        }
+    }
+
     onMount(() => {
+        document.addEventListener('nw_custom_resize', () => {
+            resizeLogo();
+        });
+        
+        resizeLogo();
     })
 </script>
 
@@ -113,6 +141,7 @@
         flex-direction: column;
     }
 
+    
     /* .logo {
         background-image: url('');
     } */

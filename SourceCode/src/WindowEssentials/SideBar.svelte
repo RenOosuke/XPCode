@@ -89,6 +89,7 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        min-width: 2.5rem;
     }
 
     .upper_icons {

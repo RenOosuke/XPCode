@@ -25,6 +25,11 @@
 </div>
 
 <style>
+    @media(max-width: 520px) {
+        .dragbar_center .arrows {
+            display: none;
+        }
+    }
     .icon {
         width: .9rem;
         height: .9rem;

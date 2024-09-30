@@ -148,4 +148,10 @@
 		-ms-user-select: none; /* IE 10 and IE 11 */
 		user-select: none; /* Standard syntax */
 	}
+
+	@media(max-height: 56.25rem) {
+		:global(.empty_editor_window .logo) {
+			max-width: 30vw;
+		}
+	}
 </style>

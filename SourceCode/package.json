@@ -26,6 +26,8 @@
     "frame": false,
     "show": true,
     "width": 500,
-    "height": 500
+    "height": 500,
+    "min_height": 300,
+    "min_width": 460
   }
 }
