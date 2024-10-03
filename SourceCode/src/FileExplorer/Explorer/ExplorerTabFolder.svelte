@@ -4,15 +4,58 @@
   export let isExpanded;
 
     let folderItems = [];
+    let lastRescanned;
 
+    const rerenderEvent = (directoryEl) => {
+        let directoriesInPath = directoryEl.full_path.split('\\').length;
+        let directoriesInLaunchPath = launchArguments.full_path.split('\\').length;
+        let level = directoriesInPath - directoriesInLaunchPath;
+        console.log(level);
+    };
+    
     const targetlessMenu = [
         {
             label: "New File...",
-            name: "new_file"
+            name: "new_file",
+            click: () => {
+                let firstFileIndex = folderItems.findIndex(a => a.isFolder === false);
+
+                folderItems = [
+                    ...folderItems.slice(0, firstFileIndex),
+                    {
+                        name: '',
+                        full_path: path.resolve(`${launchArguments}\\New File`),
+                        isFolder: false,
+                        isStaging: true,
+                        new: true
+                    },
+                    ...folderItems.slice(firstFileIndex)
+                ]
+
+                file_explorer.cancelStaging = () => {
+                    folderItems = [...folderItems.filter(a => !a.new)]
+                }
+            }
         },
         {
             label: "New Folder...",
-            name: "new_folder"
+            name: "new_folder",
+            click: () => {
+                folderItems = [
+                    {
+                        name: '',
+                        full_path: path.resolve(`${launchArguments}\\New Folder`),
+                        isFolder: true,
+                        isStaging: true,
+                        new: true
+                    },
+                    ...folderItems
+                ]
+
+                file_explorer.cancelStaging = () => {
+                    folderItems = [...folderItems.filter(a => !a.new)]
+                }
+            }
         },
         {
             label: "Reveal in File Explorer",
@@ -61,6 +104,12 @@
         }
     ];
 
+    const sortItems = (tempFolderItems) => {
+        console.log(tempFolderItems[tempFolderItems.length-1]);
+        let res = file_explorer.sortDirectories(tempFolderItems);
+        folderItems = [...res];
+    }
+
     const handleContextMenu = (ev) => {
         if(ev.altKey) {
         } else {
@@ -75,32 +124,70 @@
         }
     };
 
+    const scan = () => {
+        lastRescanned = new Date();
+
+        if(path.extname(launchArguments)) {
+
+        } else {
+            let sortedItems = file_explorer.sortDirectories(file_explorer.folders[launchArguments].children);
+            console.log(sortedItems);
+            folderItems = sortedItems;
+        }
+    }
+
+    
+    file_explorer.rescan = scan;
+    
     onMount(() => {
-        file_explorer.getFilesInDirectory(launchArguments).then(a => {
-            let currentDir = a[0];
-            let tempFolderItems;
+        window.SCANNER = scan;
+        console.log('MOUNTED');
 
-            console.log(currentDir)
-            if(currentDir.isFolder) {
-                tempFolderItems = currentDir.children;
-            } else {
-                tempFolderItems = a;
+        scan();
+
+        let treeChangeEvent = (ev) => {
+            let eventDetails = ev.detail;
+            // scan();
+            console.log(ev);
+            if(eventDetails.parentDir === launchArguments) {
+                if(eventDetails.create) {
+                    let elementToPush = eventDetails.element;
+
+                    folderItems = [
+                        ...folderItems.slice(0, eventDetails.index),
+                        elementToPush,
+                        ...folderItems.slice(eventDetails.index)
+                    ];
+                } else {
+                    folderItems = [
+                        ...folderItems.slice(0, eventDetails.index),
+                        ...folderItems.slice(eventDetails.index+1)
+                    ]
+
+                    console.log(folderItems);
+                }
             }
+        }
 
-            tempFolderItems = file_explorer.sortDirectories(tempFolderItems);
-
-            folderItems = tempFolderItems;
-
-            console.log(folderItems)
-        });
-
+        document.addEventListener('tree_changed', treeChangeEvent);
     }) 
 </script>
 
 
 <div class="current-directory {isExpanded ? 'expanded' : 'colapsed'}" on:contextmenu={handleContextMenu}>
-    {#each folderItems as singleItemProps}
-        <SingleFolderItem properties={singleItemProps} level={0} parentIsExpanded={isExpanded}></SingleFolderItem>
+    {#each folderItems as singleItemProps, index}
+    <SingleFolderItem
+    bind:isFolder={singleItemProps.isFolder}
+    bind:full_path={singleItemProps.full_path}
+    bind:isStaging={singleItemProps.isStaging}
+    bind:_new={singleItemProps.new}
+    bind:_name={singleItemProps.name}
+    bind:children={singleItemProps.children}
+    level={0} 
+    parentIsExpanded={isExpanded} 
+    {index} 
+    entityDirectory={singleItemProps.name} 
+  />
     {/each}
 </div>
 

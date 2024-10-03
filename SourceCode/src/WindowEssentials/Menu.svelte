@@ -11,6 +11,7 @@
   export let hideTopBorder;
 
   let handleMenuOptionClick = (/** @type {MouseEvent}*/ ev, option) => {
+    console.log(option.name);
     ev.stopPropagation();
 
     if (option.click) {
@@ -50,8 +51,6 @@
     //   let menuBody = jQuery(".menu_body")[0];
     //   menuBody.addEventListener("mouseleave", hide);
     // }
-
-    console.log(options);
   });
 </script>
 
@@ -84,7 +83,7 @@
             </div>
           {/if}
 
-          {option.label}
+          {option.label} {!option.options && !option.click ? '(TO DO)' : ''}
 
           {#if option.options && !isLeftSide}
             <div class="arrow-placeholder right-side">

@@ -5,6 +5,7 @@
   import ExplorerTabOutline from "./Explorer/ExplorerTabOutline.svelte";
   import ExplorerTabTimeline from "./Explorer/ExplorerTabTimeline.svelte";
 import GenericExplorerTab from "./Explorer/GenericExplorerTab.svelte";
+    export let activeTab;
 
     let tabsToShow = [
         'active',
@@ -24,7 +25,7 @@ import GenericExplorerTab from "./Explorer/GenericExplorerTab.svelte";
 </script>
 
 
-<div class="explorer-tabs">
+<div class="explorer-tabs {activeTab === 'files' ? '' : 'hide'}">
     {#each tabsToShow as singleTab}
         <GenericExplorerTab tabContent={contentMapping[singleTab]} tabName={singleTab}></GenericExplorerTab>
     {/each}
@@ -35,5 +36,9 @@ import GenericExplorerTab from "./Explorer/GenericExplorerTab.svelte";
         display: flex;
         flex-direction: column;
         flex-grow: 1;
+    }
+
+    .hide {
+        display: none;
     }
 </style>

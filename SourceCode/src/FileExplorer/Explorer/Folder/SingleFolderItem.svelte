@@ -1,26 +1,85 @@
 <script>
-    export let properties;
+  import { onMount } from "svelte";
+
+    // /** @type {{isFolder: boolean; full_path: string; isStaging: boolean; new: boolean; name: string;}}*/
+    // export let properties;
+    export let isFolder, full_path, isStaging, _new, _name, children;
     export let level;
     export let parentIsExpanded;
+    export let index;
+    export let entityDirectory;
+
     let isExpanded = false;
     let isEditable = false;
 
-    let {} = properties;
-    let iconProps = iconManager.getIconForPath(properties.full_path);
+    // let iconProps = iconManager.getIconForPath(full_path);
     let gotSorted = false;
-    let items = properties.isFolder ? file_explorer.sortDirectories(properties.children || []) : [];
+    let items = [];
+    
+    let cachedPath;
 
-    if(!properties.isFolder) {
+    let oldName;
+
+    if(isStaging) {
+        console.log(properties);
+    }
+    
+    if(!isFolder) {
+
+    }
+
+    $: {
+        if(isStaging  && !isFolder) {
+            // iconProps = iconManager.getIconForPath(full_path);
+            // console.log('SHOULD FOCUS FIELD')
+        }
+    }
+
+    const reloadChildren = () => {
+        console.log(parentIsExpanded);
+
+        if(parentIsExpanded) {
+                items = isFolder ? file_explorer.sortDirectories(children || []) : [];
+                console.log('Rerendered children');
+                isExpanded = file_explorer.tree[full_path] = isExpanded;
+        }
+    }
+
+    reloadChildren();
+
+    $: {
+        // if(full_path != cachedPath || parentIsExpanded) {
+        //     // console.log(full_path);
+        //     cachedPath = full_path;
+            
+        //     reloadChildren();
+        // }
+    }
+
+    const localRescan = () => {
 
     }
 
     const handleExpansionToggle = (ev) => {
         ev.stopPropagation();
         isExpanded = !isExpanded;
-
+        file_explorer.tree[full_path] = isExpanded;
+        
         if(!gotSorted) {
             items = file_explorer.sortDirectories(items);
             gotSorted = true;
+        }
+
+        if(!children) {
+            console.log(properties, iconProps,)
+        }
+    }
+
+    const mirrorNameToPath = (newName) => {
+        let parentDirectory = path.dirname(full_path);
+
+        if(newName.length > 0) {
+            full_path = path.join(parentDirectory, newName)
         }
     }
 
@@ -88,24 +147,45 @@
         },
         {
             label: "Copy Path",
-            name: "copy_path"
+            name: "copy_path",
+            click: () => {
+                fsUtils.copyToClipboard(full_path);
+            }
         },
         {
             label: "Copy Relative Path",
-            name: "copy_relative_path"
+            name: "copy_relative_path",
+            click: () => {
+                fsUtils.copyToClipboard(path.relative(launchArguments, full_path));
+            }
         },
         {
             separator: true
         },
         {
             label: "Rename...",
-            name: "rename"
+            name: "rename",
+            click: () => {
+                isStaging = !isStaging;
+            }
         },
         {
             label: "Delete",
-            name: "delete"
+            name: "delete", //
+            click: () => {
+                console.log('Deleting');
+
+                if(isFolder) {
+                    fs.rmdirSync(full_path);
+                } else {
+                    fs.unlinkSync(full_path);
+                }
+
+                // file_explorer.rescan();
+            }
         }
     ]   
+
     const handleContextMenu = (ev, ) => {
         if(ev.altKey) {
             ev.preventDefault();
@@ -117,7 +197,7 @@
                 options: contextMenuConfigs.filter(a => {
                     let otionIsCustom = a.custom;
 
-                    return !otionIsCustom || otionIsCustom(properties.full_path)
+                    return !otionIsCustom || otionIsCustom(full_path)
                 }),
             });
         } else {
@@ -125,31 +205,104 @@
             ev.stopPropagation();
         }
     };
+
+    const initialFormFocus = (ev) => {
+        ev.focus();
+
+        let keyDownListener = (keypressed) => {
+            if(keypressed.code === 'Escape') {
+                ev.blur();
+                ev.removeEventListener('keydown', keyDownListener);
+            }
+
+            if(keypressed.code === 'Enter') {
+                submitNaming();
+            }
+
+        };
+
+        ev.addEventListener('keydown', keyDownListener);
+
+        if(!_new) {
+            oldName = _name;
+        }
+    }
+
+    const handleFileNaming = (ev) => {
+        let newName = ev.target.value;
+        mirrorNameToPath(newName);
+    }
+
+    const cancelNaming = () => {
+        if(_new) {
+            file_explorer.cancelStaging();
+        } else {
+            mirrorNameToPath(oldName);
+            isStaging = false;
+        }
+    }
+
+    const submitNaming = () => {
+        isStaging = false;
+
+        if(_new) {
+            if(isFolder) {
+                fs.mkdirSync(full_path, {});
+            } else {
+                fs.writeFileSync(full_path, '', {encoding: 'utf-8'});
+            }
+        } else {
+            fs.renameSync(path.join(path.dirname(full_path), oldName), full_path);
+        }
+
+        // file_explorer.rescan();
+    }
+
+    const handleNamingBlur = (ev) => {
+        if(!ev.sourceCapabilities || _name.length === 0) {
+            cancelNaming();
+        } else {
+            submitNaming();
+        }
+    }
+
+    onMount(()=> {
+    })
 </script>
 
 
-<div class="single-folder-item {isExpanded ? 'expanded' : ''}{parentIsExpanded ? '' : ' parent-colapsed'}">
+<div class="single-folder-item index{index} {isExpanded ? 'expanded' : ''}{parentIsExpanded ? '' : ' parent-colapsed'} staging-{isStaging}">
     <div class="header-part" style="padding-left: {1 + level*.7}rem;" on:click={handleExpansionToggle} on:contextmenu={handleContextMenu} id="{isEditable ? '' : 'unselectable'}">
         <div class="left-side">
-            {#if properties.isFolder}
+            {#if isFolder}
                 <div class="arrow-placeholder">
                     <div style="-webkit-mask-size: 1rem;" class="arrow-icon">
                     </div>
                 </div>
             {:else}
-                <div class="file-icon-placeholder {iconProps}">
+                <div class="file-icon-placeholder {iconManager.getIconForPath(full_path) || iconProps}">
                 </div>
             {/if}
 
-            <div class="directory-name">
-                {properties.name}
-            </div>
+            {#if isStaging}
+                <input class="staging-directory-name" placeholder="" use:initialFormFocus on:input={handleFileNaming} bind:value={_name} on:blur={handleNamingBlur}/>
+            {:else}
+                <div class="directory-name">
+                    {_name}
+                </div>
+            {/if}
         </div>
     </div>
 
     {#if items}
-        {#each items as singleItemProps}
-            <svelte:self properties={singleItemProps} level={level+1} parentIsExpanded={isExpanded}/>
+        {#each items as singleItemProps, childIndex}
+            <svelte:self     
+            bind:isFolder={singleItemProps.isFolder}
+            bind:full_path={singleItemProps.full_path}
+            bind:isStaging={singleItemProps.isStaging}
+            bind:_new={singleItemProps.new}
+            bind:_name={singleItemProps.name}
+            bind:children={singleItemProps.children} level={level+1} parentIsExpanded={isExpanded} index={childIndex} entityDirectory={singleItemProps.name}/>
         {/each}
     {/if}
 </div>
@@ -181,6 +334,10 @@
         cursor: pointer !important;
     }
 
+    .header-part:focus {
+        outline-color: var(--outline-color);
+    }
+
     .header-part:hover {
         background-color: #2a2d2e;
         cursor: pointer;
@@ -188,6 +345,7 @@
 
     .left-side {
         display: flex;
+        width: -webkit-fill-available;
     }
 
     .arrow-placeholder {
@@ -222,6 +380,19 @@
         display: none;
     }
 
+    .staging-directory-name {
+        width: -webkit-fill-available;
+        padding: 0;
+        border: 0;
+        background: none;
+        margin: 0;
+        background-color: var(--directory-rename-bg);
+        color: var(--base-text-color);
+    }
+
+    .staging-directory-name:focus {
+        outline-color: var(--outline-color);
+    }
     /* .single-folder-item {
         display: flex;
         flex-direction: column;

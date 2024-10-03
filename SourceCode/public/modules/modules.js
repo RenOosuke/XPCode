@@ -1,7 +1,11 @@
+window.timeA = new Date().getTime();
+
 window.fs = require("fs");
 window.path = require('path');
+window.chokidar = require('chokidar');
 
 window.launchArguments = nw.__dirname; // nw.App.fullArgv;
+
 window.directory = path.basename(launchArguments);
 console.log('Launch arguments - ', launchArguments);
 
@@ -198,6 +202,9 @@ window.themeUtils = {
             '--primary-light-bg': '#1f1f1f',
             '--primary-light2-bg': '#adaeae',
             '--primary-light3-bg': '#444444',
+            '--directory-rename-bg': '#313131',
+            '--outline-color': '#0078d4',
+            '--base-text-color': '#cccccc'
         };
 
         let colorVariables = Object.keys(colorVariablesMapping);
@@ -246,6 +253,7 @@ window.VSCode = {
 
     }
 }
+
 // var readline = require('readline');
 // var spawn = child_process.spawn;
 

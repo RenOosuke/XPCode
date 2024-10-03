@@ -502,4 +502,7 @@
     let sorter = new FileSorter(explorerService, contextService);
 
     VSCode.original.comparer = sorter;
+
+    let timeB = new Date().getTime();
+    console.log((timeB - timeA) / 1000)
 }

@@ -639,6 +639,9 @@
         "package-lock.json": "_json_light",
         "d.ts": "_typescript",
         "script.d.ts": "_typescript",
+        "cmd": "_windows",
+        "bat": "_windows",
+        "ps1": "_powershell"
       };
       
       const fileNames = {
@@ -744,6 +747,10 @@
         const extension = file_explorer.getFileExtension(baseName);
         let iconKey = null;
       
+        if(filePath.includes('New File')) {
+          console.log(`FILE PATH`, filePath);
+        }
+        
         // Step 1: Check if the file name matches (e.g., "readme.md")
         if (fileNames[baseName]) {
           iconKey = fileNames[baseName];

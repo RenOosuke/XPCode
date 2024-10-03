@@ -2,7 +2,27 @@ window.sidebarTabs = {
     activeTab: '',
 }
 
+const treeChangeEvent = (directoryEl, create) => {
+  let directoriesInPath = directoryEl.full_path.split('\\').length;
+  let directoriesInLaunchPath = launchArguments.split('\\').length;
+  let level = directoriesInPath - directoriesInLaunchPath;
+  let parentDir = path.dirname(directoryEl.full_path);
+  let index = directoryEl.index || file_explorer.folders[parentDir].children.findIndex(child => child.full_path === directoryEl.full_path);
+
+  // ${level}_${parentDir}
+  return new CustomEvent(`tree_changed`, {
+    detail: {
+      element: directoryEl,
+      parentDir,
+      index,
+      create
+    }
+  })
+}
+
 window.file_explorer = {
+    lastReloaded: new Date(),
+    refreshTime: 2000,
     // Recursive function to get files and directories, with nested folders having "children"
     getFilesInDirectory: function (dirPath) {
       return new Promise((resolve, reject) => {
@@ -62,18 +82,13 @@ window.file_explorer = {
               isFolder: false
             });
           } else if (stats.isDirectory()) {
-            // Recursive call to get the folder's children
-            window.file_explorer.getFilesInDirectory(filePath)
-              .then((children) => {
-                resolve({
-                  name: path.basename(filePath),
-                  full_path: path.resolve(filePath),
-                  file_extension: null, // Folders don't have extensions
-                  isFolder: true,
-                  children: children[0].children || [] // Add its children recursively
-                });
-              })
-              .catch(err => reject(err));
+            resolve({
+              name: path.basename(filePath),
+              full_path: path.resolve(filePath),
+              file_extension: null, // Folders don't have extensions
+              isFolder: true,
+              children: []
+            })
           }
         });
       });
@@ -105,5 +120,80 @@ window.file_explorer = {
           return parts.slice(1).join('.'); // return the last part (the extension)
         }
         return null;
+      },
+
+    tree: {
+      
+    },
+
+    folders: {
+
+    },
+
+    currentDirectory: {
+
+    },
+
+    chokidarUpdate: (filePath, isFolder, isCreating) => {
+      let details = {
+        isFolder,
+        name: path.basename(filePath),
+        full_path: filePath
       }
+
+      if(isCreating) {
+
+        if(isFolder) {
+          details.children = [];
+          file_explorer.folders[filePath] = details;
+          details.last_sorted = new Date();
+        } else {
+          details.file_extension = path.extname(filePath);
+        }
+        
+        let parentDir = path.dirname(filePath);
+
+        if(file_explorer.folders[parentDir]) {
+          if(new Date() - file_explorer.folders[parentDir].last_sorted >= 500) {
+            file_explorer.folders[parentDir].children = file_explorer.sortDirectories([...file_explorer.folders[parentDir].children, details]);
+            last_sorted = new Date();
+          } else {
+            file_explorer.folders[parentDir].children = [...file_explorer.folders[parentDir].children, details];
+          }
+        }
+      } else {
+        if(isFolder) {
+          file_explorer.folders[filePath] = undefined;
+        }
+
+        let parentDir = path.dirname(filePath);
+
+        let indexOfRemovedElement = file_explorer.folders[parentDir].children.findIndex(child => child.full_path === filePath)
+        file_explorer.folders[parentDir].children.splice(indexOfRemovedElement, 1);
+        details.index = indexOfRemovedElement;
+      }
+
+      let difference = new Date() - file_explorer.lastReloaded; 
+      if( difference > file_explorer.refreshTime) {
+        console.log(difference);
+        let fileEvent = treeChangeEvent(details, isCreating);
+        console.log(fileEvent);
+        document.dispatchEvent(fileEvent);
+        file_explorer.lastReloaded = new Date();
+      }
+      // file_explorer.folders
+    },
   };
+
+  const watcher = chokidar.watch(launchArguments, {
+    ignored: /(^|[\/\\])\../, // ignore dotfiles
+    persistent: true
+  });
+  
+  watcher.on('addDir', path => file_explorer.chokidarUpdate(path, true, true));
+  watcher.on('unlinkDir', path => file_explorer.chokidarUpdate(path, true, false));
+
+  watcher.on('add', path => file_explorer.chokidarUpdate(path, false, true));
+  watcher.on('unlink', path => file_explorer.chokidarUpdate(path, false, false));
+  
+  watcher.on('change', path => console.log(`File ${path} has been changed`));

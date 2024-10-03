@@ -7,24 +7,20 @@ import Explorer from "./Explorer.svelte";
     export let activeTab;
 </script>
 
-{#if activeTab === 'files'}
-    <Explorer>
+<Explorer {activeTab}>
 
-    </Explorer>
-{:else if activeTab === 'search'}
-    <Search>
-        
-    </Search>
-{:else if activeTab === 'git'}
-    <Git>
+</Explorer>
 
-    </Git>
-{:else if activeTab === 'debug'}
-    <Debug>
+<Search {activeTab}>
+    
+</Search>
 
-    </Debug>
-{/if}
+<Git {activeTab}>
 
+</Git>
+<Debug {activeTab}>
+
+</Debug>
 
 <style>
 </style>

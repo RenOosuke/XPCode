@@ -16,6 +16,7 @@
     "svelte": "^3.29.4"
   },
   "dependencies": {
+    "chokidar": "^2.1.5",
     "decompress": "^4.2.1",
     "gulp": "^4.0.2",
     "parallelshell": "^3.0.2",
