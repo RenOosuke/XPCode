@@ -1,10 +1,13 @@
 window.timeA = new Date().getTime();
 
+window.DEV = nw.App.manifest.DEV;
+
 window.fs = require("fs");
 window.path = require('path');
-window.chokidar = require('chokidar');
 
-window.launchArguments = nw.__dirname; // nw.App.fullArgv;
+testDirectory = path.resolve('../TestDirectory')
+
+window.launchArguments = !DEV ? (nw.App.fullArgv[0]) : (fs.existsSync(testDirectory) ? testDirectory : nw.__dirname); // nw.App.fullArgv;
 
 window.directory = path.basename(launchArguments);
 console.log('Launch arguments - ', launchArguments);
@@ -190,7 +193,16 @@ window.themeUtils = {
             'chevron-right',
             'chevron-left',
             'chevron-down',
-            'chevron-up'
+            'chevron-up',
+            'close-all-editors',
+            'collapse-all',
+            'expand-all',
+            'filter',
+            'new-file',
+            'new-folder',
+            'pin',
+            'refresh',
+            'save-all',
         ];
 
         iconNames.forEach((iconName) => {
@@ -204,7 +216,11 @@ window.themeUtils = {
             '--primary-light3-bg': '#444444',
             '--directory-rename-bg': '#313131',
             '--outline-color': '#0078d4',
-            '--base-text-color': '#cccccc'
+            '--base-text-color': '#cccccc',
+            '--base-border-color': '#2b2b2b',
+            '--secondary-border-color': '#454545',
+            '--icon-hover-bg': '#2d2e2e',
+            '--tooltip-bg': '#202020',
         };
 
         let colorVariables = Object.keys(colorVariablesMapping);
