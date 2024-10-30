@@ -4,18 +4,54 @@
     export let tabButtons;
     export let tabContent
 
+    let tabOutlined = false;
+    let tabWindowOutlined = false;
+
     const handleTabClick = (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+
         isExpanded = !isExpanded;
+        tabOutlined = true;
+
+        const listenForBlur = (clickedEv) => {
+            let target = clickedEv.target;
+
+            let classPath = elementUtils.getClassList(target).join(' '); 
+
+            if(!classPath.includes('explorer-tab-header ') || !classPath.includes(`${tabName} `)) {
+                tabOutlined = false;
+            }
+        }
+
+        document.addEventListener('mousedown', listenForBlur);
+    }
+
+    const outlineTab = () => {
+        if(isExpanded) {
+            tabWindowOutlined = true;
+        }
+
+        const listenForBlur = (clickedEv) => {
+            let target = clickedEv.target;
+
+            let classPath = elementUtils.getClassList(target).join(' '); 
+
+            if(!classPath.includes('explorer-tab ') || classPath.includes('explorer-tab-header ')) {
+                tabWindowOutlined = false;
+            }
+        }
+
+        document.addEventListener('mousedown', listenForBlur);
     }
 </script>
 
 
-<div class="explorer-tab {isExpanded ? 'expanded' : ''}">
-    <div class="explorer-tab-header" on:click={handleTabClick}>
+<div class="explorer-tab {isExpanded ? 'expanded' : ''} {tabWindowOutlined ? 'window-outlined' : ''}" on:click={outlineTab}>
+    <div class="explorer-tab-header {tabName} {tabOutlined ? 'outlined' : ''}" on:click={handleTabClick}>
         <div class="left-side">
             <div class="arrow-placeholder">
                 <div style="-webkit-mask-size: 1rem;" class="arrow-icon">
-                    <!-- -webkit-mask: var(--{isExpanded ? 'chevron-down' : 'chevron-right'}-icon);  -->
                 </div>
             </div>
     
@@ -25,6 +61,13 @@
         </div>
 
         <div class="right-side">
+            {#each tabButtons as singleTabButton}
+                <div class="single-tab-button-placeholder {singleTabButton.icon}-icon" data-title-top="{singleTabButton.title}">
+                    <diV class="single-tab-button" style="-webkit-mask: var(--{singleTabButton.icon}-icon);-webkit-mask-size: 1rem;">
+
+                    </diV>
+                </div>
+            {/each}
            <!---ADD THE BUTTONS HERE AFTERWARDS--> 
         </div>
     </div>
@@ -48,26 +91,53 @@
     .explorer-tab-header {
         display: flex;
         justify-content: space-between;
-        margin: .2rem 0;
         cursor: pointer;
-        padding-bottom: .15rem;
-        padding-top: .05rem;
+        padding-bottom: .35rem;
+        padding-top: .25rem;
+
+        /* border-color: #2b2b2b; */
+        min-height: .8rem;
+        height: .8rem;
+    }
+
+    .explorer-tab {
         border: solid 1px;
         border-top-color: transparent !important;
         border-left-color: transparent !important;
         border-right-color: transparent !important;
-        /* border-color: #2b2b2b; */
         border-bottom-color: #2b2b2b;
-        min-height: .8rem;
+
+        transition: max-height 0.45s ease; /* Smooth animation for max-height */
     }
 
-    .explorer-tab-header:active {
-        border: solid 1px #0078d4 !important;
+    .explorer-tab:not(.expanded) {
+        max-height: 1.45rem;
     }
-   
-    /* .explorer-tab:first-child .explorer-tab-header {
-        border-top-color: transparent;
-    } */
+
+    .explorer-tab.expanded {
+        max-height: 95vh;
+    }
+
+    :global(.explorer-tab.window-outlined>:not(.explorer-tab-header)) {
+        outline: var(--outline-color) 1px solid;
+
+        /* outline-color: var(--outline-color);
+        outline-width: 1px;
+        outline-offset: -1px; */
+    }
+
+    :global(.tab-body) {
+        margin-top: .1rem;
+        padding-top: .1rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+    }
+
+    .explorer-tab-header.outlined {
+        outline: var(--outline-color) 1px solid;
+    }
 
     .explorer-tab:last-child .explorer-tab-header {
         border-bottom-color: transparent;
@@ -87,7 +157,6 @@
 
     .expanded .explorer-tab-header {
         border-bottom-color: transparent;
-        /* border-color: #2b2b2b; */
     }
 
     .left-side {
@@ -97,9 +166,59 @@
         font-weight: 700;
     }
 
+    .right-side {
+        display: none;
+    }
+
+    .expanded:hover .right-side, .expanded.window-outlined .right-side, .expanded .explorer-tab-header.outlined .right-side {
+        display: flex;
+    }
+
     .expanded {
         flex-grow: 1;
         display: flex;
         flex-direction: column;
+        border-style: solid;
+        border-width: 1px;
+        border-color: var(--base-border-color);
+        border-top-color: transparent;
+        border-left-color: transparent;
+        border-right-color: transparent;
+    }
+
+    .single-tab-button {
+        background-color: var(--base-text-color);
+        height: 100%;
+        width: 100%;
+    }
+    
+    .single-tab-button-placeholder {
+        height: 1rem;
+        width: 1rem;
+        margin-right: .35rem;
+        padding: .1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        font-size: .65rem;
+    }
+
+    .single-tab-button-placeholder:hover {
+        background-color: var(--icon-hover-bg);
+        border-radius: .2rem;
+    }
+
+    .more-icon {
+        padding: .2rem;
+    }
+
+    .single-tab-button-placeholder::after {
+        width: max-content;
+        top: -200%;
+        height: fit-content;
+        content: attr(data-title-top);
+        /* left: 0; */
+        padding: .6rem !important;
+        box-shadow: rgba(0, 0, 0, 0.2) 0px 7px 29px 0px;
     }
 </style>

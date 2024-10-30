@@ -488,7 +488,7 @@
     }
 
     .icon-placeholder-more:hover{
-        background-color: #2d2e2e;
+        background-color: var(--icon-hover-bg);
         cursor: pointer;
     }
 </style>

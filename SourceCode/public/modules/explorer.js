@@ -3,10 +3,10 @@ window.sidebarTabs = {
 }
 
 const treeChangeEvent = (directoryEl, create) => {
-  let directoriesInPath = directoryEl.full_path.split('\\').length;
+  let parentDir = path.dirname(directoryEl.full_path);
+  let directoriesInPath = parentDir.split('\\').length;
   let directoriesInLaunchPath = launchArguments.split('\\').length;
   let level = directoriesInPath - directoriesInLaunchPath;
-  let parentDir = path.dirname(directoryEl.full_path);
   let index = directoryEl.index || file_explorer.folders[parentDir].children.findIndex(child => child.full_path === directoryEl.full_path);
 
   // ${level}_${parentDir}
@@ -15,7 +15,8 @@ const treeChangeEvent = (directoryEl, create) => {
       element: directoryEl,
       parentDir,
       index,
-      create
+      create,
+      level
     }
   })
 }
@@ -155,14 +156,15 @@ window.file_explorer = {
 
         if(file_explorer.folders[parentDir]) {
           if(new Date() - file_explorer.folders[parentDir].last_sorted >= 500) {
-            file_explorer.folders[parentDir].children = file_explorer.sortDirectories([...file_explorer.folders[parentDir].children, details]);
+            file_explorer.folders[parentDir].children = file_explorer.sortDirectories([...(file_explorer.folders[parentDir]).children, details]);
             last_sorted = new Date();
           } else {
-            file_explorer.folders[parentDir].children = [...file_explorer.folders[parentDir].children, details];
+            file_explorer.folders[parentDir].children = [...(file_explorer.folders[parentDir]).children, details];
           }
         }
       } else {
         if(isFolder) {
+          console.log('FOLDER GOT DELETED', filePath);
           file_explorer.folders[filePath] = undefined;
         }
 
@@ -183,17 +185,126 @@ window.file_explorer = {
       }
       // file_explorer.folders
     },
+    explorerItemMenuConfig: (full_path) => [
+      {
+          label: 'Open Preview',
+          name: 'open_preview',
+          custom: (filePath) => {
+              let fileBasename = path.basename(filePath);
+              let isAMarkdownFile = fileBasename.includes('.md');
+              
+              let canPreview = isAMarkdownFile; 
+
+              return canPreview;
+          }
+      },
+      {
+          label: "Run Code",
+          name: "run_code"
+      },
+      {
+          label: "Open to the Side",
+          name: "open_to_the_side"
+      },
+      {
+          label: "Open With...",
+          name: "open_with"
+      },
+      {
+          label: "Reveal in File Explorer",
+          name: "reveal_in_file_explorer"
+      },
+      {
+          label: "Open in Integrated Terminal",
+          name: "open_in_integrated_terminal"
+      },
+      {
+          separator: true
+      },
+      {
+          label: "Select for Compare",
+          name: "select_for_compare"
+      },
+      {
+          label: "Find File References",
+          name: "find_file_references"
+      },
+      {
+          label: "Open Timeline",
+          name: "open_timeline"
+      },
+      {
+          separator: true
+      },
+      {
+          label: "Cut",
+          name: "cut"
+      },
+      {
+          label: "Copy",
+          name: "copy"
+      },
+      {
+          separator: true
+      },
+      {
+          label: "Copy Path",
+          name: "copy_path",
+          click: () => {
+              fsUtils.copyToClipboard(full_path);
+          }
+      },
+      {
+          label: "Copy Relative Path",
+          name: "copy_relative_path",
+          click: () => {
+              fsUtils.copyToClipboard(path.relative(launchArguments, full_path));
+          }
+      },
+      {
+          separator: true
+      },
+      {
+          label: "Rename...",
+          name: "rename",
+          click: () => {
+              isStaging = !isStaging;
+          }
+      },
+      {
+          label: "Delete",
+          name: "delete", //
+          click: () => {
+              console.log('Deleting');
+
+              if(isFolder) {
+                  fs.rmdirSync(full_path);
+              } else {
+                  fs.unlinkSync(full_path);
+              }
+
+              // file_explorer.rescan();
+          }
+      }
+    ]   
   };
 
-  const watcher = chokidar.watch(launchArguments, {
-    ignored: /(^|[\/\\])\../, // ignore dotfiles
-    persistent: true
-  });
+  // const watcher = chokidar.watch(launchArguments, {
+  //   ignored: /(^|[\/\\])\../, // ignore dotfiles
+  //   persistent: true
+  // });
   
-  watcher.on('addDir', path => file_explorer.chokidarUpdate(path, true, true));
-  watcher.on('unlinkDir', path => file_explorer.chokidarUpdate(path, true, false));
+  
+  xp_chokidar.on('Directory created', path => file_explorer.chokidarUpdate(path, true, true))
+  xp_chokidar.on('Directory deleted', path => file_explorer.chokidarUpdate(path, true, false));
+  // watcher.on('addDir', path => file_explorer.chokidarUpdate(path, true, true));
+  // watcher.on('unlinkDir', path => file_explorer.chokidarUpdate(path, true, false));
 
-  watcher.on('add', path => file_explorer.chokidarUpdate(path, false, true));
-  watcher.on('unlink', path => file_explorer.chokidarUpdate(path, false, false));
+  xp_chokidar.on('File created', path => file_explorer.chokidarUpdate(path, false, true));
+  xp_chokidar.on('File deleted', path => file_explorer.chokidarUpdate(path, false, false));
+  // watcher.on('add', path => file_explorer.chokidarUpdate(path, false, true));
+  // watcher.on('unlink', path => file_explorer.chokidarUpdate(path, false, false));
   
-  watcher.on('change', path => console.log(`File ${path} has been changed`));
+  xp_chokidar.on('File modified', path => console.log(`File ${path} has been changed`));
+  xp_chokidar.watch(launchArguments)
+  // watcher.on('change', path => console.log(`File ${path} has been changed`));

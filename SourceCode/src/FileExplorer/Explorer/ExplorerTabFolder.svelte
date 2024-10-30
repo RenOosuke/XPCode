@@ -1,6 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import SingleFolderItem from "./Folder/SingleFolderItem.svelte";
+    import { children } from "svelte/internal";
   export let isExpanded;
 
     let folderItems = [];
@@ -130,7 +131,7 @@
         if(path.extname(launchArguments)) {
 
         } else {
-            let sortedItems = file_explorer.sortDirectories(file_explorer.folders[launchArguments].children);
+            let sortedItems = file_explorer.sortDirectories((file_explorer.folders[launchArguments] || {children: []}).children);
             console.log(sortedItems);
             folderItems = sortedItems;
         }
@@ -145,8 +146,13 @@
 
         scan();
 
+        setTimeout(() => {
+            file_explorer.refreshTime = 10;
+        }, 100);
+        
         let treeChangeEvent = (ev) => {
             let eventDetails = ev.detail;
+            file_explorer.changeEvent = eventDetails;
             // scan();
             console.log(ev);
             if(eventDetails.parentDir === launchArguments) {
@@ -174,7 +180,7 @@
 </script>
 
 
-<div class="current-directory {isExpanded ? 'expanded' : 'colapsed'}" on:contextmenu={handleContextMenu}>
+<div class="current-directory tab-body {isExpanded ? 'expanded' : 'colapsed'}" on:contextmenu={handleContextMenu}>
     {#each folderItems as singleItemProps, index}
     <SingleFolderItem
     bind:isFolder={singleItemProps.isFolder}
@@ -193,13 +199,6 @@
 
 
 <style>
-    .current-directory {
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-        overflow-y: auto;
-    }
-
     ::-webkit-scrollbar {
         width: .8rem;
     }

@@ -2,7 +2,7 @@
 </script>
 
 
-<div>
+<div class="tab-body">
 </div>
 
 

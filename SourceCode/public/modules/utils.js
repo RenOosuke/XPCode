@@ -13,6 +13,16 @@ window.utils = {
     }
 }
 
+window.elementUtils = {
+    getClassList: (element) => {
+        if(!element.parentElement) {
+            return [];
+        }
+
+        return [...elementUtils.getClassList(element.parentElement), element.className];
+    } 
+}
+
 window.fsUtils = {
     copyToClipboard: (textToCopy) => {
         const textArea = document.createElement("textarea");

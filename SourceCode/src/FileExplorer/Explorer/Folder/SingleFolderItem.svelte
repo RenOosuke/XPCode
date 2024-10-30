@@ -3,7 +3,8 @@
 
     // /** @type {{isFolder: boolean; full_path: string; isStaging: boolean; new: boolean; name: string;}}*/
     // export let properties;
-    export let isFolder, full_path, isStaging, _new, _name, children;
+    export let isFolder, full_path, isStaging = undefined, 
+    _new = undefined, _name, children = undefined;
     export let level;
     export let parentIsExpanded;
     export let index;
@@ -15,13 +16,11 @@
     // let iconProps = iconManager.getIconForPath(full_path);
     let gotSorted = false;
     let items = [];
-    
-    let cachedPath;
 
     let oldName;
 
     if(isStaging) {
-        console.log(properties);
+        // console.log(properties);
     }
     
     if(!isFolder) {
@@ -36,26 +35,20 @@
     }
 
     const reloadChildren = () => {
-        console.log(parentIsExpanded);
+        // console.log(parentIsExpanded, level);
 
         if(parentIsExpanded) {
                 items = isFolder ? file_explorer.sortDirectories(children || []) : [];
-                console.log('Rerendered children');
-                isExpanded = file_explorer.tree[full_path] = isExpanded;
+                // console.log('Rerendered children: ' + full_path);
         }
     }
 
-    reloadChildren();
-
     $: {
-        // if(full_path != cachedPath || parentIsExpanded) {
-        //     // console.log(full_path);
-        //     cachedPath = full_path;
-            
-        //     reloadChildren();
-        // }
+        if(parentIsExpanded) {
+            reloadChildren();
+        }
     }
-
+    
     const localRescan = () => {
 
     }
@@ -70,9 +63,9 @@
             gotSorted = true;
         }
 
-        if(!children) {
-            console.log(properties, iconProps,)
-        }
+        // if(!children) {
+        //     console.log(properties, iconProps,)
+        // }
     }
 
     const mirrorNameToPath = (newName) => {
@@ -83,109 +76,6 @@
         }
     }
 
-    const contextMenuConfigs = [
-        {
-            label: 'Open Preview',
-            name: 'open_preview',
-            custom: (filePath) => {
-                let fileBasename = path.basename(filePath);
-                let isAMarkdownFile = fileBasename.includes('.md');
-                
-                let canPreview = isAMarkdownFile; 
-
-                return canPreview;
-            }
-        },
-        {
-            label: "Run Code",
-            name: "run_code"
-        },
-        {
-            label: "Open to the Side",
-            name: "open_to_the_side"
-        },
-        {
-            label: "Open With...",
-            name: "open_with"
-        },
-        {
-            label: "Reveal in File Explorer",
-            name: "reveal_in_file_explorer"
-        },
-        {
-            label: "Open in Integrated Terminal",
-            name: "open_in_integrated_terminal"
-        },
-        {
-            separator: true
-        },
-        {
-            label: "Select for Compare",
-            name: "select_for_compare"
-        },
-        {
-            label: "Find File References",
-            name: "find_file_references"
-        },
-        {
-            label: "Open Timeline",
-            name: "open_timeline"
-        },
-        {
-            separator: true
-        },
-        {
-            label: "Cut",
-            name: "cut"
-        },
-        {
-            label: "Copy",
-            name: "copy"
-        },
-        {
-            separator: true
-        },
-        {
-            label: "Copy Path",
-            name: "copy_path",
-            click: () => {
-                fsUtils.copyToClipboard(full_path);
-            }
-        },
-        {
-            label: "Copy Relative Path",
-            name: "copy_relative_path",
-            click: () => {
-                fsUtils.copyToClipboard(path.relative(launchArguments, full_path));
-            }
-        },
-        {
-            separator: true
-        },
-        {
-            label: "Rename...",
-            name: "rename",
-            click: () => {
-                isStaging = !isStaging;
-            }
-        },
-        {
-            label: "Delete",
-            name: "delete", //
-            click: () => {
-                console.log('Deleting');
-
-                if(isFolder) {
-                    fs.rmdirSync(full_path);
-                } else {
-                    fs.unlinkSync(full_path);
-                }
-
-                // file_explorer.rescan();
-            }
-        }
-    ]   
-
     const handleContextMenu = (ev, ) => {
         if(ev.altKey) {
             ev.preventDefault();
@@ -194,10 +84,10 @@
                 x: ev.clientX,
                 y: ev.clientY,
                 shouldBlur: true,
-                options: contextMenuConfigs.filter(a => {
-                    let otionIsCustom = a.custom;
+                options: file_explorer.explorerItemMenuConfig(full_path).filter(a => {
+                    let optionIsCustom = a.custom;
 
-                    return !otionIsCustom || otionIsCustom(full_path)
+                    return !optionIsCustom || otionIsCustom(full_path)
                 }),
             });
         } else {
@@ -205,6 +95,20 @@
             ev.stopPropagation();
         }
     };
+
+    $: {
+        let eventDetails = file_explorer.changeEvent;
+
+        if(eventDetails && parentIsExpanded) {
+            if(eventDetails.level === level && full_path.includes(eventDetails.parentDir)) {
+                if(isFolder) {
+                    items = file_explorer.sortDirectories(file_explorer.folders[full_path].children);
+                    isExpanded = file_explorer.tree[full_path];
+                    console.log('CUSTOM EVENT', items);
+                }
+            }
+        }
+    }
 
     const initialFormFocus = (ev) => {
         ev.focus();
@@ -267,6 +171,46 @@
     }
 
     onMount(()=> {
+        // let treeChangeEvent = (ev) => {
+        //     let eventDetails = ev.detail;
+
+        //     if(eventDetails.level === level && full_path.includes(eventDetails.parentDir)) {
+        //         if(isFolder) {
+        //             items = file_explorer.sortDirectories(file_explorer.folders[full_path].children);
+        //             isExpanded = file_explorer.tree[full_path] = isExpanded;
+        //             console.log('CUSTOM EVENT', items);
+        //         }
+        //     }
+
+        //     // if(eventDetails.level === level+1 && eventDetails.parentDir.includes(full_path)) {
+        //     //     if(isFolder) {
+        //     //         items = ;
+        //     //     }
+        //     // }
+        //     // scan();
+        //     // console.log(ev);
+        //     // if(eventDetails.parentDir === launchArguments) {
+        //     //     if(eventDetails.create) {
+        //     //         let elementToPush = eventDetails.element;
+
+        //     //         folderItems = [
+        //     //             ...folderItems.slice(0, eventDetails.index),
+        //     //             elementToPush,
+        //     //             ...folderItems.slice(eventDetails.index)
+        //     //         ];
+        //     //     } else {
+        //     //         folderItems = [
+        //     //             ...folderItems.slice(0, eventDetails.index),
+        //     //             ...folderItems.slice(eventDetails.index+1)
+        //     //         ]
+
+        //     //         console.log(folderItems);
+        //     //     }
+        //     // }
+
+        // }
+
+        // document.addEventListener('tree_changed', treeChangeEvent);
     })
 </script>
 
@@ -369,11 +313,12 @@
     }
 
     .directory-name {
-        line-height: 1.3;
-        font-size: .85rem;
+        line-height: 1.2;
+        font-size: .8rem;
         display: flex;
         flex-direction: column;
         justify-content: center;
+        padding-bottom: .05rem;
     }
 
     .parent-colapsed {
