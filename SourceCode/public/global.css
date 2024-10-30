@@ -64,3 +64,36 @@ button:not(:disabled):active {
 button:focus {
 	border-color: #666;
 }
+
+[data-title-top]:hover:after, [data-title-left]:hover:after, [data-title-right]:hover:after, [data-title-bottom]:hover:after {
+	opacity: 1;
+	transition: all 0.1s ease 0.5s;
+	visibility: visible;
+}
+
+[data-title-top]:after, [data-title-left]:after, [data-title-right]:after, [data-title-bottom]:after  {
+	background-color: var(--tooltip-bg);
+	color: #111;
+	font-size: 150%;
+	position: absolute;
+	padding: 1px 5px 2px 5px;
+	bottom: -1.6em;
+	left: 0%;
+	box-shadow: 1px 1px 3px #222222;
+	opacity: 0;
+	border: 1px solid #111111;
+	z-index: 99999;
+	visibility: hidden;
+	padding: 1rem;
+	border: solid var(--secondary-border-color) 1px;
+	color: var(--base-text-color);
+}
+
+[data-title-top]:after {
+	top: -50%;
+	content: attr(data-title-top);
+}
+
+[data-title-top], [data-title-left], [data-title-right], [data-title-bottom]  {
+	position: relative;
+}
