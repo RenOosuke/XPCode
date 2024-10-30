@@ -55,7 +55,10 @@ You'll find your app in MainFolder/BuiltApp/${YourProjectName}/${YourProjectName
 
 
 
+If you're building the application yoursef you have to add xpcode.exe (it's a starter that parser relative paths as starting arguments for nw.exe) 
 
+A) in the BuiltApp/XPCode every time
+B) in the version folder inside of NWCache (only once)
 -------------
 
 If you want to take everything a step further and protect your code -> go inside the package.nw folder 
