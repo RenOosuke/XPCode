@@ -16,7 +16,6 @@
     "svelte": "^3.29.4"
   },
   "dependencies": {
-    "chokidar": "^2.1.5",
     "decompress": "^4.2.1",
     "gulp": "^4.0.2",
     "parallelshell": "^3.0.2",
@@ -30,5 +29,6 @@
     "height": 500,
     "min_height": 300,
     "min_width": 460
-  }
+  },
+  "DEV": true
 }
