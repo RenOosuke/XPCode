@@ -7,8 +7,11 @@ const treeChangeEvent = (directoryEl, create) => {
   let directoriesInPath = parentDir.split('\\').length;
   let directoriesInLaunchPath = launchArguments.split('\\').length;
   let level = directoriesInPath - directoriesInLaunchPath;
-  let index = directoryEl.index || file_explorer.folders[parentDir].children.findIndex(child => child.full_path === directoryEl.full_path);
+  let index = directoryEl.index;
 
+  if(index == undefined || index == null || index == -1){
+    index = file_explorer.folders[parentDir].children.findIndex(child => child.full_path === directoryEl.full_path)
+  }
   // ${level}_${parentDir}
   return new CustomEvent(`tree_changed`, {
     detail: {
@@ -155,7 +158,7 @@ window.file_explorer = {
         let parentDir = path.dirname(filePath);
 
         if(file_explorer.folders[parentDir]) {
-          if(new Date() - file_explorer.folders[parentDir].last_sorted >= 500) {
+          if(new Date() - file_explorer.folders[parentDir].last_sorted >= file_explorer.refreshTime || 500) {
             file_explorer.folders[parentDir].children = file_explorer.sortDirectories([...(file_explorer.folders[parentDir]).children, details]);
             last_sorted = new Date();
           } else {
@@ -164,7 +167,6 @@ window.file_explorer = {
         }
       } else {
         if(isFolder) {
-          console.log('FOLDER GOT DELETED', filePath);
           file_explorer.folders[filePath] = undefined;
         }
 
@@ -176,16 +178,15 @@ window.file_explorer = {
       }
 
       let difference = new Date() - file_explorer.lastReloaded; 
-      if( difference > file_explorer.refreshTime) {
-        console.log(difference);
+      if( difference >= file_explorer.refreshTime) {
         let fileEvent = treeChangeEvent(details, isCreating);
-        console.log(fileEvent);
         document.dispatchEvent(fileEvent);
         file_explorer.lastReloaded = new Date();
+      } else {
       }
       // file_explorer.folders
     },
-    explorerItemMenuConfig: (full_path) => [
+    explorerItemMenuConfig: (full_path, evaluator, additionalData) => [
       {
           label: 'Open Preview',
           name: 'open_preview',
@@ -268,7 +269,7 @@ window.file_explorer = {
           label: "Rename...",
           name: "rename",
           click: () => {
-              isStaging = !isStaging;
+              evaluator(`isStaging`, `!isStaging;`)
           }
       },
       {
@@ -277,7 +278,7 @@ window.file_explorer = {
           click: () => {
               console.log('Deleting');
 
-              if(isFolder) {
+              if(additionalData.isFolder) {
                   fs.rmdirSync(full_path);
               } else {
                   fs.unlinkSync(full_path);
@@ -286,7 +287,13 @@ window.file_explorer = {
               // file_explorer.rescan();
           }
       }
-    ]   
+    ],
+    selectedItems: [
+
+    ],
+    hoveredItem: undefined,
+
+    hoverListeners: 0
   };
 
   // const watcher = chokidar.watch(launchArguments, {
@@ -306,5 +313,7 @@ window.file_explorer = {
   // watcher.on('unlink', path => file_explorer.chokidarUpdate(path, false, false));
   
   xp_chokidar.on('File modified', path => console.log(`File ${path} has been changed`));
+  // xp_chokidar.on("Finished logging existing paths",)
   xp_chokidar.watch(launchArguments)
+
   // watcher.on('change', path => console.log(`File ${path} has been changed`));

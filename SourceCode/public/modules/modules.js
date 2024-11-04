@@ -221,6 +221,8 @@ window.themeUtils = {
             '--secondary-border-color': '#454545',
             '--icon-hover-bg': '#2d2e2e',
             '--tooltip-bg': '#202020',
+            '--item-select-bg': '#04395e',
+            
         };
 
         let colorVariables = Object.keys(colorVariablesMapping);
