@@ -12,14 +12,22 @@
     //     console.log(ev)
 
     // })
+    let _rerenderSelectedItems = (shouldExpand) => document.dispatchEvent(new CustomEvent('file_explorer_element_selected', {detail: shouldExpand}));
+    let _getVisibleElements = () => {
+        return jQuery('.header-part:visible').toArray()
+    };
+
     window.shortcuts = {
+        getVisibleElements: _getVisibleElements,
         pause: () => {
             _shortcutsPaused = true;
         },
 
         start: () => {
             _shortcutsPaused = false;
-        }
+        },
+
+        rerenderSelected: _rerenderSelectedItems
     }
 
     let _keysGotRefreshed = true;
@@ -39,15 +47,14 @@
     let pivotKeys = {
         'Control': true,
         'Shift': true,
-        'Alt': true
+        'Alt': true,
+        'F2': true
     }
 
     let selectionCancelOptions = {
         'Escape': true,
         'Tab': true
     }
-
-    let _rerenderSelectedItems = (shouldExpand) => document.dispatchEvent(new CustomEvent('file_explorer_element_selected', {detail: shouldExpand}));
 
     document.addEventListener('keydown', (ev) => {
         if(pivotKeys[ev.key] && !_shortcutsPaused) {
@@ -68,7 +75,7 @@
 
         if(file_explorer.hoveredItem != undefined){
             if(arrowKeyOptions[ev.key]) {
-                let visibleItems = jQuery('.header-part:visible').toArray();
+                let visibleItems = _getVisibleElements();
                 let oldHoveredItem = file_explorer.hoveredItem;
                 let indexOfHoveredItem = visibleItems.findIndex(el => el.getAttribute('full_path') === oldHoveredItem)
                 let newIndex = arrowKeyOptions[ev.key](indexOfHoveredItem, visibleItems.length-1);
@@ -109,7 +116,6 @@
 
                 _rerenderSelectedItems(shouldExpand);
             }
-
         }
     })
 

@@ -30,8 +30,33 @@
     }
 
     const outlineTab = () => {
+        const selectAllPerKeyboard = (ev) => {
+            if(ev.key == "a" && ev.ctrlKey) {
+                ev.preventDefault()
+                ev.stopPropagation();
+
+                let elements = shortcuts.getVisibleElements();
+                let paths = elements.map(_path => _path.getAttribute('full_path'));
+                file_explorer.hoveredItem = undefined;
+                file_explorer.selectedItems = paths;
+                shortcuts.rerenderSelected();
+            }
+        }
+        
         if(isExpanded) {
             tabWindowOutlined = true;
+
+            file_explorer.grayedOut = false;
+            themeUtils.setGrayedOut();
+
+            if(file_explorer.selectedItems.length>0) {
+                file_explorer.hoveredItem = undefined;
+                file_explorer.selectedItems = [];
+                shortcuts.rerenderSelected();
+            } else {
+                document.addEventListener('keydown', selectAllPerKeyboard)
+            }
+
         }
 
         const listenForBlur = (clickedEv) => {
@@ -41,6 +66,12 @@
 
             if(!classPath.includes('explorer-tab ') || classPath.includes('explorer-tab-header ') || classPath.includes('single-folder-item')) {
                 tabWindowOutlined = false;
+                document.removeEventListener('keydown', selectAllPerKeyboard);
+
+                if(file_explorer.selectedItems.length>0) {
+                    file_explorer.grayedOut = true;
+                    themeUtils.setGrayedOut();
+                }
             }
         }
 

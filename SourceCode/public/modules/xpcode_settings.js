@@ -18,6 +18,10 @@
 
                 }
             }
+        },
+
+        shortcuts: {
+            rename: "F2",
         }
     }
 

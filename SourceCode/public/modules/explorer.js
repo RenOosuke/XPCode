@@ -293,7 +293,9 @@ window.file_explorer = {
     ],
     hoveredItem: undefined,
 
-    hoverListeners: 0
+    hoverListeners: 0,
+    selectedAll: false,
+    grayedOut: false,
   };
 
   // const watcher = chokidar.watch(launchArguments, {

@@ -228,46 +228,10 @@
                 _expansionToggle()
             }
         })
-        // let treeChangeEvent = (ev) => {
-        //     let eventDetails = ev.detail;
 
-        //     if(eventDetails.level === level && full_path.includes(eventDetails.parentDir)) {
-        //         if(isFolder) {
-        //             items = file_explorer.sortDirectories(file_explorer.folders[full_path].children);
-        //             isExpanded = file_explorer.tree[full_path] = isExpanded;
-        //             console.log('CUSTOM EVENT', items);
-        //         }
-        //     }
-
-        //     // if(eventDetails.level === level+1 && eventDetails.parentDir.includes(full_path)) {
-        //     //     if(isFolder) {
-        //     //         items = ;
-        //     //     }
-        //     // }
-        //     // scan();
-        //     // console.log(ev);
-        //     // if(eventDetails.parentDir === launchArguments) {
-        //     //     if(eventDetails.create) {
-        //     //         let elementToPush = eventDetails.element;
-
-        //     //         folderItems = [
-        //     //             ...folderItems.slice(0, eventDetails.index),
-        //     //             elementToPush,
-        //     //             ...folderItems.slice(eventDetails.index)
-        //     //         ];
-        //     //     } else {
-        //     //         folderItems = [
-        //     //             ...folderItems.slice(0, eventDetails.index),
-        //     //             ...folderItems.slice(eventDetails.index+1)
-        //     //         ]
-
-        //     //         console.log(folderItems);
-        //     //     }
-        //     // }
-
-        // }
-
-        // document.addEventListener('tree_changed', treeChangeEvent);
+        document.addEventListener('keyboard_shortcut', (ev) => {
+            console.log(ev);
+        })
     })
 </script>
 
@@ -401,11 +365,15 @@
         flex-direction: column;
     } */
 
-     ._hovered {
-         border: solid 1px var(--outline-color);
-        }
+    ._hovered {
+        border: solid 1px var(--outline-color);
+    }
         
     ._selected {
         background-color: var(--item-select-bg);    
      }
+
+     :global(.explorer-tab-header.folder.grayed-out + .current-directory ._selected) {
+        background-color: var(--gray-out-selection) !important;
+    }
 </style>
