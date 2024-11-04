@@ -9,7 +9,13 @@
                 "File deleted": [],
                 "Directory created": [],
                 "Directory deleted": [],
-                "File modified": []
+                "File modified": [],
+                "Finished logging existing paths": [
+                    () => {
+                        file_explorer.refreshTime = 1
+                        console.log("======changed the refresh time ====================================")
+                    }
+                ]
             };
 
             let _on = (/**@type {chokidarCases} */ chokidarCase, cb) => {
@@ -17,6 +23,7 @@
             };
 
             let chokidarEvent = (/** @type {string}*/ _event) => {
+                
                 let [eventCase, eventPath] = _event.split(": ");
                 
                 let funcs = _cases[eventCase];
