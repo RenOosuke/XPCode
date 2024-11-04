@@ -1,6 +1,6 @@
 <script>
   import { onMount } from "svelte";
-  export let zIndex;
+  export let zIndex = 20;
   export let options = [];
   export let hide;
   export let additionalStyle = {};
@@ -8,7 +8,7 @@
   export let x;
   export let y;
   export let shouldBlur;
-  export let hideTopBorder;
+  export let hideTopBorder = false;
 
   let handleMenuOptionClick = (/** @type {MouseEvent}*/ ev, option) => {
     console.log(option.name);
@@ -65,12 +65,12 @@
         <div class="splitter"></div>
       {:else}
         <div
-          class="menu-item{(option || {}).disabled ? ' disabled' : ''}"
+          class="menu-item{(option || {}).disabled ? ' disabled' : ''} {option.icon_prefix ? 'shorter' : ''}"
           on:click={(ev) => handleMenuOptionClick(ev, option)}
         >
           {#if option.icon_prefix}
-            <div class="explorer-menu-prefix">
-              {option.toggled ? "✓" : ""}
+            <div class="explorer-menu-prefix {option.toggled ? "" : "transparent"}" >
+              ✓
             </div>
           {/if}
 
@@ -275,5 +275,18 @@
   .menu-item.disabled {
     color: var(--primary-light3-bg);
     cursor: default;
+  }
+
+  .explorer-menu-prefix {
+        width: fit-content;
+        display: inline;
+    }
+
+    .explorer-menu-prefix.transparent {
+      color: transparent;
+    }
+
+  .menu-item.shorter {
+    padding-left: .75rem;
   }
 </style>

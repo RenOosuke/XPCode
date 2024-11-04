@@ -12,6 +12,8 @@
 
     let isExpanded = false;
     let isEditable = false;
+    let isHovered = false;
+    let isSelected = false;
 
     // let iconProps = iconManager.getIconForPath(full_path);
     let gotSorted = false;
@@ -49,12 +51,7 @@
         }
     }
     
-    const localRescan = () => {
-
-    }
-
-    const handleExpansionToggle = (ev) => {
-        ev.stopPropagation();
+    const _expansionToggle = () => {
         isExpanded = !isExpanded;
         file_explorer.tree[full_path] = isExpanded;
         
@@ -63,9 +60,13 @@
             gotSorted = true;
         }
 
-        // if(!children) {
-        //     console.log(properties, iconProps,)
-        // }
+    }
+
+    const handleExpansionToggle = (ev) => {
+        ev.stopPropagation();
+
+        handleItemClick(ev);
+        _expansionToggle();
     }
 
     const mirrorNameToPath = (newName) => {
@@ -77,19 +78,31 @@
     }
 
     const handleContextMenu = (ev, ) => {
-        if(ev.altKey) {
+        if(!ev.altKey) {
             ev.preventDefault();
+            ev.stopPropagation();
+            
+            const evaluator = (fieldToUpdate, newValue) => {
+                switch(fieldToUpdate) {
+                    case 'isStaging':
+                        isStaging = eval(newValue)
+                        break
+                }
+            }
 
             menu({
                 x: ev.clientX,
                 y: ev.clientY,
                 shouldBlur: true,
-                options: file_explorer.explorerItemMenuConfig(full_path).filter(a => {
+                options: file_explorer.explorerItemMenuConfig(full_path, evaluator, {isStaging, isFolder}).filter(a => {
                     let optionIsCustom = a.custom;
+                    console.log(a)
 
-                    return !optionIsCustom || otionIsCustom(full_path)
+                    return !optionIsCustom || optionIsCustom(full_path)
                 }),
             });
+
+            // ev.stopPropagation();
         } else {
             // ev.preventDefault();
             ev.stopPropagation();
@@ -169,8 +182,52 @@
             submitNaming();
         }
     }
+    
+    let blurListener = (_ev) => {
+        file_explorer.selectedItems = [];
+        file_explorer.hoveredItem = undefined;
+        triggerHoverRerender();
+        document.removeEventListener('click', blurListener);
+        file_explorer.hoverListeners--;
+    }
+
+    const triggerHoverRerender = () => {
+        document.dispatchEvent(new CustomEvent('file_explorer_element_selected'));
+    }
+
+    const handleItemClick = (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+
+        if(ev.ctrlKey) {
+            file_explorer.selectedItems.push(full_path);
+        } else {
+            file_explorer.selectedItems = [full_path];
+        }
+
+        file_explorer.hoveredItem = full_path;
+        
+        if(file_explorer.hoverListeners == 0) {
+            document.addEventListener('click', blurListener)
+            file_explorer.hoverListeners++;
+        }
+
+        triggerHoverRerender();
+    }
+
+    const handleFileBlur = (ev) => {
+        console.log(ev);
+    }
 
     onMount(()=> {
+        document.addEventListener('file_explorer_element_selected', (ev) => {
+            isHovered = full_path == file_explorer.hoveredItem;
+            isSelected = file_explorer.selectedItems.includes(full_path);
+
+            if(ev.detail && isHovered) {
+                _expansionToggle()
+            }
+        })
         // let treeChangeEvent = (ev) => {
         //     let eventDetails = ev.detail;
 
@@ -214,9 +271,9 @@
     })
 </script>
 
-
-<div class="single-folder-item index{index} {isExpanded ? 'expanded' : ''}{parentIsExpanded ? '' : ' parent-colapsed'} staging-{isStaging}">
-    <div class="header-part" style="padding-left: {1 + level*.7}rem;" on:click={handleExpansionToggle} on:contextmenu={handleContextMenu} id="{isEditable ? '' : 'unselectable'}">
+<!-- on:click={handleItemClick} -->
+<div class="single-folder-item index{index} {isExpanded ? 'expanded' : ''}{parentIsExpanded ? '' : ' parent-colapsed'} staging-{isStaging}" >
+    <div class="header-part {isHovered ? ' _hovered': ''}{isSelected ? ' _selected' : ''}" style="padding-left: {1 + level*.7}rem;" on:click={handleExpansionToggle} on:contextmenu={handleContextMenu} id="{isEditable ? '' : 'unselectable'}" on:blur={handleFileBlur} full_path={full_path}>
         <div class="left-side">
             {#if isFolder}
                 <div class="arrow-placeholder">
@@ -276,13 +333,14 @@
         min-height: 1rem;
         /* margin-bottom: .1rem; */
         cursor: pointer !important;
+        border: solid 1px transparent;
     }
 
     .header-part:focus {
         outline-color: var(--outline-color);
     }
 
-    .header-part:hover {
+    .header-part:hover:not(._hovered):not(._selected) {
         background-color: #2a2d2e;
         cursor: pointer;
     }
@@ -342,4 +400,12 @@
         display: flex;
         flex-direction: column;
     } */
+
+     ._hovered {
+         border: solid 1px var(--outline-color);
+        }
+        
+    ._selected {
+        background-color: var(--item-select-bg);    
+     }
 </style>

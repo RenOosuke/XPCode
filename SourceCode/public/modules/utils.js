@@ -20,7 +20,28 @@ window.elementUtils = {
         }
 
         return [...elementUtils.getClassList(element.parentElement), element.className];
-    } 
+    },
+    blurElement: () => {
+        let shadowElement = document.createElement('div');
+        
+        shadowElement.nodeType = 'div';
+        shadowElement.style.width = '100%';
+        shadowElement.style.height = '100%';
+        shadowElement.style.background = 'blue';
+        shadowElement.style.position = 'absolute';
+        shadowElement.style.top = '0';
+        shadowElement.style.left = '0';
+        document.body.appendChild(shadowElement);
+
+        shadowElement.addEventListener('click', (ev) => {
+            // console.log()
+            document.body.removeChild(shadowElement);
+            let clickedElement = document.elementFromPoint(ev.x, ev.y);
+            console.log(clickedElement);
+        })
+
+        return shadowElement
+    }
 }
 
 window.fsUtils = {

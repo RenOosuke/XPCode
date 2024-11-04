@@ -146,9 +146,9 @@
 
         scan();
 
-        setTimeout(() => {
-            file_explorer.refreshTime = 10;
-        }, 100);
+        // setTimeout(() => {
+        //     file_explorer.refreshTime = 10;
+        // }, 100);
         
         let treeChangeEvent = (ev) => {
             let eventDetails = ev.detail;

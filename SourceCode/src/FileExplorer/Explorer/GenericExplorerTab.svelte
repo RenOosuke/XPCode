@@ -1,9 +1,11 @@
 <script>
+    import { onMount } from "svelte";
     let isExpanded = false;
     export let tabName;
     export let tabButtons;
     export let tabContent
 
+    let isDisabled = false;
     let tabOutlined = false;
     let tabWindowOutlined = false;
 
@@ -37,17 +39,50 @@
 
             let classPath = elementUtils.getClassList(target).join(' '); 
 
-            if(!classPath.includes('explorer-tab ') || classPath.includes('explorer-tab-header ')) {
+            if(!classPath.includes('explorer-tab ') || classPath.includes('explorer-tab-header ') || classPath.includes('single-folder-item')) {
                 tabWindowOutlined = false;
             }
         }
 
         document.addEventListener('mousedown', listenForBlur);
     }
+
+    onMount(() => {
+        let translationObject = {
+            open_editors: 'active',
+            folders: 'folder',
+            outline: 'outline',
+            timeline: 'timeline',
+            npm_scripts: 'npm scripts'
+        }
+
+        let routeTranslation = {
+            'active' : "open_editors",
+            'folder' : "folders",
+            'outline' : "outline",
+            'timeline' : "timeline",
+            'npm scripts' : "npm_scripts",
+        }
+
+        let tabroute = `explorer_tabs.show.files.${routeTranslation[tabName]}`;
+        isDisabled = !settings.section.get(tabroute)
+        console.log(isDisabled)
+
+        document.addEventListener('tabsConfigChanged', (ev) => {
+
+            let eventTab = ev.detail.tabName;
+            let translatedTabName = translationObject[eventTab];
+
+            if(tabName == translatedTabName) {
+                // console.log(ev.detail)
+                isDisabled = !isDisabled
+            }
+        })
+    })
 </script>
 
 
-<div class="explorer-tab {isExpanded ? 'expanded' : ''} {tabWindowOutlined ? 'window-outlined' : ''}" on:click={outlineTab}>
+<div class="explorer-tab {isExpanded ? 'expanded' : ''} {tabWindowOutlined ? 'window-outlined' : ''} {isDisabled ? 'tabDisabled' : ''}" on:click={outlineTab}>
     <div class="explorer-tab-header {tabName} {tabOutlined ? 'outlined' : ''}" on:click={handleTabClick}>
         <div class="left-side">
             <div class="arrow-placeholder">
@@ -220,5 +255,9 @@
         /* left: 0; */
         padding: .6rem !important;
         box-shadow: rgba(0, 0, 0, 0.2) 0px 7px 29px 0px;
+    }
+
+    .tabDisabled {
+        display: none;
     }
 </style>
