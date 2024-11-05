@@ -1,7 +1,6 @@
 {
     window.xp_chokidar = (() => {
-        const path = require('path');
-        const { spawn } = require('child_process');
+        const { spawn } = child_process;
 
         let cachedWatchers = (() => {
             let _cases = {

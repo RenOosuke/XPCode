@@ -25,7 +25,8 @@
                 rename: "F2",
                 delete: "Delete",
                 new_file: "Win__n",
-                new_folder: "Win__Alt__n"
+                new_folder: "Win__Alt__n",
+                reveal_in_file_explorer: "Shift__Alt__r"
             }
         }
     }

@@ -261,11 +261,23 @@ window.file_explorer = {
       },
       {
           label: "Cut",
-          name: "cut"
+          name: "cut",
+          click: () => {
+            clipboardHelper.sendCommand('cut', {
+              file_explorer: true,
+              files: [full_path]
+            })
+          }
       },
       {
           label: "Copy",
-          name: "copy"
+          name: "copy",
+          click: () => {
+            clipboardHelper.sendCommand('copy', {
+              file_explorer: true,
+              files: [full_path]
+            })
+          }
       },
       {
           separator: true
