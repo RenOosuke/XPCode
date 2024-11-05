@@ -39,6 +39,14 @@ type file_explorer = {
     
    },
    chokidarUpdate: (filePath: any, isFolder: any, isCreating: any) => void;
+   selectedItems: PathLike[],
+   hoveredItem: PathLike | undefined,
+   hoverListeners: number,
+   grayedOut: boolean;
+   staging: {
+    oldName: PathLike,
+    newName: PathLike
+   }
 }
 
 declare var file_explorer: file_explorer;
