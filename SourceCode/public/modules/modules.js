@@ -21,9 +21,9 @@ window._i = function (template, values) {
 
 window.child_process = require('child_process');
 
-console.log(child_process.exec('cmd', function(err, stdout, stderr){
-    console.l(stdout);
-}));
+// console.log(child_process.exec('cmd', function(err, stdout, stderr){
+//     console.l(stdout);
+// }));
 
 // child_process.exec('start cmd /K', function(err, stdout, stderr) {
 //     console.log(stdout);

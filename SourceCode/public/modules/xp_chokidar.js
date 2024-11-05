@@ -13,7 +13,6 @@
                 "Finished logging existing paths": [
                     () => {
                         file_explorer.refreshTime = 1
-                        console.log("======changed the refresh time ====================================")
                     }
                 ]
             };

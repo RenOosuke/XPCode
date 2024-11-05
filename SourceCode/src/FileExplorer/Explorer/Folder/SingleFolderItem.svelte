@@ -81,6 +81,8 @@
                 let pathsInParent = file_explorer.folders[parentDirectory];
                 let neighborExists = pathsInParent.children.findIndex(_path => _path.full_path == new_path);
                 overlapsExistingPath = neighborExists > -1
+            } else {
+                overlapsExistingPath = false;
             }
         }
     };
@@ -193,6 +195,14 @@
             setTimeout(() => {
                 ev.focus();
     
+                //find out what extension is in the name
+                let extStr = path.extname(_name) || undefined;
+                //find the index of the extension
+                let indexOfExt = _name.indexOf(extStr);
+                //select the name up till the extension OR the entire thing
+                let end = indexOfExt > -1 ? indexOfExt : _name.length;
+                ev.setSelectionRange(0, end)
+
                 let keyDownListener = (keypressed) => {
                     if (keypressed.code === "Escape") {
                         ev.removeEventListener("keydown", keyDownListener);
@@ -215,7 +225,7 @@
     };
 
     const handleFileNaming = (ev) => {
-        let newName = ev.target.value;
+        let newName = ev.target.value || _name;
         mirrorNameToPath(newName);
     };
 
@@ -223,10 +233,11 @@
         if (_new) {
             file_explorer.cancelStaging();
         } else {
-            mirrorNameToPath(file_explorer.staging.oldName);
+            // mirrorNameToPath(file_explorer.staging.oldName || _name);
             isStaging = false;
         }
 
+        _name = file_explorer.staging.oldName || _name;
         new_path = false;
         overlapsExistingPath = false
         file_explorer.staging.oldName = undefined;
@@ -236,7 +247,9 @@
     const submitNaming = () => {
         isStaging = false;
 
-        if (_new) {
+        let nameIsDifferent = _name != file_explorer.staging.oldName;
+
+        if (_new && nameIsDifferent) {
             file_explorer.cancelStaging();
 
             if (isFolder) {
@@ -244,7 +257,9 @@
             } else {
                 fs.writeFileSync(new_path, "", { encoding: "utf-8" });
             }
-        } else {
+        }
+
+        if (!_new && nameIsDifferent) {
             fs.renameSync(
                 path.join(path.dirname(full_path), file_explorer.staging.oldName),
                 new_path,
@@ -474,6 +489,7 @@ class="single-folder-item index{index} {isExpanded
         /* margin-bottom: .1rem; */
         cursor: pointer !important;
         border: solid 1px transparent;
+        position: relative;
     }
 
     .header-part:focus {
@@ -565,6 +581,7 @@ class="single-folder-item index{index} {isExpanded
         border: solid 1px transparent;
     }
 
+    
     .hasError input {
         border: solid 1px var(--error-border-color) !important;
     }
@@ -572,8 +589,26 @@ class="single-folder-item index{index} {isExpanded
     .staging-true ._selected {
         background-color: var(--gray-out-selection) !important;
     }
-
+    
     .staging-true ._hovered {
-        border: solid 1px var(--error-border-color) !important;
+        border: solid 1px transparent !important;
+    }
+    
+    input {
+        position: absolute;
+        border: solid 1px transparent;
+    }
+
+    .staging-true input {
+        top: 0;
+        right: 0;
+        width: calc(100% - 2.2rem);
+        height: 100%;
+        /* transform: translate(0%, -15%); */
+    }
+
+    .staging-true input:focus {
+        outline: none;
+        border: solid 1px var(--outline-color);    
     }
 </style>
