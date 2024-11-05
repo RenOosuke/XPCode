@@ -43,7 +43,7 @@
             };
         })();
 
-        let chokidarPath = path.resolve('public\\modules\\chokidar\\xp_chokidar.exe');
+        let chokidarPath = path.resolve('public\\modules\\executables\\xp_chokidar.exe');
 
         let directoryWatcher = (pathToExec) => {
             const watcherProcess = spawn(chokidarPath, [pathToExec]);

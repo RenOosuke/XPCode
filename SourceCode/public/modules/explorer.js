@@ -232,7 +232,10 @@ window.file_explorer = {
       },
       {
           label: "Reveal in File Explorer",
-          name: "reveal_in_file_explorer"
+          name: "reveal_in_file_explorer",
+          click: () => {
+            child_process.exec(`explorer /select, ${full_path}`)
+          }
       },
       {
           label: "Open in Integrated Terminal",

@@ -333,7 +333,7 @@
                         );
                         funcConfig.click();
                     }
-                    break;
+                break;
 
                 case "delete":
                     if (file_explorer.selectedItems.includes(full_path)) {
@@ -358,7 +358,8 @@
                 case "new_file":
                     if (
                         !file_explorer.grayedOut &&
-                        file_explorer.hoveredItem == full_path
+                        file_explorer.hoveredItem == full_path && 
+                        isFolder
                     ) {
                         let funcConfig = getContextMenuConfig().find(
                             (op) => op.name == action,
@@ -366,6 +367,16 @@
                         funcConfig.click();
                     }
                     break;
+
+                case  "reveal_in_file_explorer":
+                    if (file_explorer.hoveredItem == full_path) {
+                        let funcConfig = getContextMenuConfig().find(
+                            (op) => op.name == action,
+                        );
+                        
+                        funcConfig.click();
+                    }
+                break;
             }
         });
 
