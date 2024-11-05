@@ -63,13 +63,17 @@
             let target = clickedEv.target;
 
             let classPath = elementUtils.getClassList(target).join(' '); 
-
-            if(!classPath.includes('explorer-tab ') || classPath.includes('explorer-tab-header ') || classPath.includes('single-folder-item')) {
+            let isTargetAFile = classPath.includes('single-folder-item');
+            if(!classPath.includes('explorer-tab ') || classPath.includes('explorer-tab-header ') || isTargetAFile) {
                 tabWindowOutlined = false;
                 document.removeEventListener('keydown', selectAllPerKeyboard);
 
-                if(file_explorer.selectedItems.length>0) {
+                if(file_explorer.selectedItems.length>0 && !isTargetAFile) {
                     file_explorer.grayedOut = true;
+                    console.log('TAB UNSELECT')
+                    themeUtils.setGrayedOut();
+                } else {
+                    file_explorer.grayedOut = false;
                     themeUtils.setGrayedOut();
                 }
             }

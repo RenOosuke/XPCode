@@ -11,7 +11,6 @@
   export let hideTopBorder = false;
 
   let handleMenuOptionClick = (/** @type {MouseEvent}*/ ev, option) => {
-    console.log(option.name);
     ev.stopPropagation();
 
     if (option.click) {

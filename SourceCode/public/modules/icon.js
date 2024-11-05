@@ -737,7 +737,7 @@
       // Function to get file extension from a path
       // Function to get file name from a path
       function getFileName(filePath) {
-        return filePath.split('/').pop().toLowerCase(); // get the last part (the file name)
+        return path.resolve(filePath).split('\\').pop().toLowerCase(); // get the last part (the file name)
       }
       
       // Icon Manager function
@@ -772,8 +772,8 @@
       }
       
       // Example usage
-      const filePath = '/path/to/file/readme.md';
-      const iconInfo = getIconForPath(filePath);
+      // const filePath = '/path/to/file/readme.md';
+      // const iconInfo = getIconForPath(filePath);
       
       window.iconManager = {
         getIconForPath

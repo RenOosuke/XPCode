@@ -1,3 +1,5 @@
+/** explorer.js */
+
 window.sidebarTabs = {
     activeTab: '',
 }
@@ -177,8 +179,9 @@ window.file_explorer = {
         details.index = indexOfRemovedElement;
       }
 
-      let difference = new Date() - file_explorer.lastReloaded; 
-      if( difference >= file_explorer.refreshTime) {
+      let difference = new Date() - file_explorer.lastReloaded;
+
+      if( difference >= file_explorer.refreshTime-1) {
         let fileEvent = treeChangeEvent(details, isCreating);
         document.dispatchEvent(fileEvent);
         file_explorer.lastReloaded = new Date();
@@ -187,6 +190,22 @@ window.file_explorer = {
       // file_explorer.folders
     },
     explorerItemMenuConfig: (full_path, evaluator, additionalData) => [
+        {
+          label: "New File...",
+          name: "new_file",
+          click: () => (additionalData.new_file || voidFunction)(),
+          custom: () => {
+            return additionalData.isFolder
+          }
+      },
+      {
+          label: "New Folder...",
+          name: "new_folder",
+          click: () => (additionalData.new_folder || voidFunction)(),
+          custom: () => {
+            return additionalData.isFolder
+          }
+      },
       {
           label: 'Open Preview',
           name: 'open_preview',
@@ -276,8 +295,6 @@ window.file_explorer = {
           label: "Delete",
           name: "delete", //
           click: () => {
-              console.log('Deleting');
-
               if(additionalData.isFolder) {
                   fs.rmdirSync(full_path);
               } else {
@@ -296,6 +313,10 @@ window.file_explorer = {
     hoverListeners: 0,
     selectedAll: false,
     grayedOut: false,
+    staging: {
+      oldName: undefined,
+      newName: undefined
+    }
   };
 
   // const watcher = chokidar.watch(launchArguments, {

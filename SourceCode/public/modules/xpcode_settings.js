@@ -1,6 +1,6 @@
 {
+    let _parentDir = path.resolve('public/data');
     let pathToSettings = path.resolve('public/data/settings.json');
-
     let defaultSettings = {
         explorer_tabs: {
             show: {
@@ -21,9 +21,18 @@
         },
 
         shortcuts: {
-            rename: "F2",
+            file_explorer: {
+                rename: "F2",
+                delete: "Delete",
+                new_file: "Win__n",
+                new_folder: "Win__Alt__n"
+            }
         }
     }
+
+    if(!fs.existsSync(_parentDir)) {
+        mkdirSync(_parentDir);
+    };
 
     if(!fs.existsSync(pathToSettings)) {
         fs.writeFileSync(pathToSettings, JSON.stringify(defaultSettings), 'utf8');

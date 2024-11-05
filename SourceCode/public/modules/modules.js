@@ -1,5 +1,6 @@
 window.timeA = new Date().getTime();
 
+window.voidFunction = () => {return};
 window.DEV = nw.App.manifest.DEV;
 
 window.fs = require("fs");
@@ -222,7 +223,8 @@ window.themeUtils = {
             '--icon-hover-bg': '#2d2e2e',
             '--tooltip-bg': '#202020',
             '--item-select-bg': '#04395e',
-            
+            '--gray-out-selection': '#37373d',
+            '--error-border-color': '#bd1100'
         };
 
         let colorVariables = Object.keys(colorVariablesMapping);
@@ -232,6 +234,19 @@ window.themeUtils = {
         })
     },
 
+    setGrayedOut: () => {
+        let bool = file_explorer.grayedOut;
+
+        let folderTab = jQuery('.explorer-tab-header.folder')[0];
+
+        if(folderTab) {
+            if(bool) {
+                folderTab.classList.add('grayed-out')
+            } else {
+                folderTab.classList.remove('grayed-out')
+            }
+        }
+    },
     variables: {
         bg: {
             primaryDark: 'var(--primary-dark-bg)'

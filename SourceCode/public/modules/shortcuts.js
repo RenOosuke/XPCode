@@ -12,10 +12,23 @@
     //     console.log(ev)
 
     // })
-    let _rerenderSelectedItems = (shouldExpand) => document.dispatchEvent(new CustomEvent('file_explorer_element_selected', {detail: shouldExpand}));
+    let _rerenderSelectedItems = (shouldExpand) => 
+        document.dispatchEvent(new CustomEvent('file_explorer_element_selected', {detail: shouldExpand}));
+    
     let _getVisibleElements = () => {
         return jQuery('.header-part:visible').toArray()
     };
+    
+    let customShortcutEvent = (tab, functionName) => {
+        return document.dispatchEvent(new CustomEvent(`keyboard_shortcut.${tab}`, {detail: {
+            functionName
+        }}));
+    }
+    
+    let shortcutTranslation = {
+        'Control': 'Ctrl',
+        'Meta': 'Win'
+    }
 
     window.shortcuts = {
         getVisibleElements: _getVisibleElements,
@@ -30,12 +43,24 @@
         rerenderSelected: _rerenderSelectedItems
     }
 
+
     let _keysGotRefreshed = true;
 
     const checkForKeyCombinations = () => {
-        if(_keysGotRefreshed) {
-            console.log(_activeKeys, 'Got triggered');
+        let fileExplorerCombinations = settings.section.get('shortcuts.file_explorer');        
+        let fileExplorerEntries = Object.values(fileExplorerCombinations)
+        let joinedKeys = _activeKeys.map(key => shortcutTranslation[key] || key).join('__');
+        
+        let fileExplorerCombinationIndex = fileExplorerEntries.findIndex((val) => {
+            return joinedKeys == val
+        })
+
+        if(fileExplorerCombinationIndex > -1) {
+            let fileExplorerFunctions = Object.keys(fileExplorerCombinations);
+            let functionName = fileExplorerFunctions[fileExplorerCombinationIndex]
+            customShortcutEvent('file_explorer', functionName);
             _keysGotRefreshed = false;
+            return;
         }
     }
 
@@ -48,7 +73,9 @@
         'Control': true,
         'Shift': true,
         'Alt': true,
-        'F2': true
+        'F2': true,
+        'Delete': true,
+        'Meta': true
     }
 
     let selectionCancelOptions = {
@@ -57,7 +84,7 @@
     }
 
     document.addEventListener('keydown', (ev) => {
-        if(pivotKeys[ev.key] && !_shortcutsPaused) {
+        if(pivotKeys[ev.key] && !_shortcutsPaused && _keysGotRefreshed) {
             if(!_activeKeys.includes(ev.key)) {
                 _activeKeys.push(ev.key)
             }
@@ -65,7 +92,7 @@
             checkForKeyCombinations();
         }
 
-        else if(_activeKeys.length > 0 && pivotKeys[_activeKeys[0]] && !_shortcutsPaused) {
+        else if(_activeKeys.length > 0 && pivotKeys[_activeKeys[0]] && !_shortcutsPaused && _keysGotRefreshed) {
             if(!_activeKeys.includes(ev.key)) {
                 _activeKeys.push(ev.key)
             }
@@ -73,7 +100,7 @@
             checkForKeyCombinations();
         }
 
-        if(file_explorer.hoveredItem != undefined){
+        if(file_explorer.hoveredItem != undefined && !file_explorer.grayedOut){
             if(arrowKeyOptions[ev.key]) {
                 let visibleItems = _getVisibleElements();
                 let oldHoveredItem = file_explorer.hoveredItem;
