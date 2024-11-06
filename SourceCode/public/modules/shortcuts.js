@@ -40,7 +40,10 @@
             _shortcutsPaused = false;
         },
 
-        rerenderSelected: _rerenderSelectedItems
+        rerenderSelected: _rerenderSelectedItems,
+        getKeysAreRefreshed: () => {
+            return _keysGotRefreshed;
+        }
     }
 
 

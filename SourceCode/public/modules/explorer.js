@@ -185,7 +185,10 @@ window.file_explorer = {
         let fileEvent = treeChangeEvent(details, isCreating);
         document.dispatchEvent(fileEvent);
         file_explorer.lastReloaded = new Date();
-      } else {
+      }
+
+      if(file_explorer.cutPaths.length>0 && file_explorer.cutPaths.includes(filePath)) {
+        file_explorer.cutPaths = file_explorer.cutPaths.filter(a => a != filePath);
       }
       // file_explorer.folders
     },
@@ -263,20 +266,42 @@ window.file_explorer = {
           label: "Cut",
           name: "cut",
           click: () => {
+            let itemsToSelect = file_explorer.selectedItems;
+
+            if(!itemsToSelect.includes(full_path)) {
+              itemsToSelect = [full_path]
+            }
+
             clipboardHelper.sendCommand('cut', {
               file_explorer: true,
-              files: [full_path]
-            })
+              files: itemsToSelect
+            }).then(a => {
+
+              if(false){
+                console.log(a);
+              }
+            });
           }
       },
       {
           label: "Copy",
           name: "copy",
           click: () => {
+            let itemsToSelect = file_explorer.selectedItems;
+
+            if(!itemsToSelect.includes(full_path)) {
+              itemsToSelect = [full_path]
+            }
+
             clipboardHelper.sendCommand('copy', {
               file_explorer: true,
-              files: [full_path]
-            })
+              files: itemsToSelect
+            }).then(a => {
+
+              if(false){
+                console.log(a);
+              }
+            });
           }
       },
       {
@@ -331,7 +356,8 @@ window.file_explorer = {
     staging: {
       oldName: undefined,
       newName: undefined
-    }
+    },
+    cutPaths: []
   };
 
   // const watcher = chokidar.watch(launchArguments, {

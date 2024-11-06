@@ -19,6 +19,10 @@ window._i = function (template, values) {
     });
 }
 
+window.range = function (start, end) {
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+}
+
 window.child_process = require('child_process');
 
 // console.log(child_process.exec('cmd', function(err, stdout, stderr){

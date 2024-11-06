@@ -3,7 +3,7 @@
     import { onMount } from "svelte";
     export let isFolder,
         full_path,
-        isStaging = undefined,
+        isStaging = false,
         _new = undefined,
         _name,
         children = undefined;
@@ -17,6 +17,8 @@
     let isHovered = false;
     let isSelected = false;
     let isEditing = true;
+    let isCut = false;
+
     let overlapsExistingPath = false;
 
     let new_path;
@@ -68,7 +70,10 @@
         ev.stopPropagation();
 
         handleItemClick(ev);
-        _expansionToggle();
+
+        if(isFolder) {
+            _expansionToggle();
+        }
     };
 
     const mirrorNameToPath = (newName) => {
@@ -288,17 +293,59 @@
     };
 
     const triggerHoverRerender = () => {
-        document.dispatchEvent(
-            new CustomEvent("file_explorer_element_selected"),
-        );
+        shortcuts.rerenderSelected()
     };
 
     const handleItemClick = (ev) => {
         ev.preventDefault();
         ev.stopPropagation();
 
-        if (ev.ctrlKey) {
-            file_explorer.selectedItems.push(full_path);
+        let _selectedItems = file_explorer.selectedItems
+        
+        if (ev.ctrlKey && !ev.shiftKey) {
+            if(_selectedItems.includes(full_path)) {
+                file_explorer.selectedItems = _selectedItems.filter(a => a!= full_path)
+            } else {
+                _selectedItems.push(full_path);
+            }
+        } else 
+        
+        if(ev.shiftKey) {
+            let visibleElements = shortcuts.getVisibleElements().map(a => a.getAttribute('full_path'));
+
+            let indexesInTheVisibleItems = [full_path, file_explorer.hoveredItem]
+            .map(a => visibleElements.indexOf(a))
+            .sort((a, b) => a-b)
+            .filter(a => a > -1);
+
+            console.log(indexesInTheVisibleItems);
+
+            let startOfSelection = indexesInTheVisibleItems[0];
+            let endOfSelection = indexesInTheVisibleItems[indexesInTheVisibleItems.length-1];
+
+            let indexedRange = range(startOfSelection, endOfSelection)
+            let translatedIndexesToSelectedPaths = indexedRange.map(a => visibleElements[a]);
+
+            // Ctrl + Shift + Mouse Key
+            if(ev.ctrlKey) {
+                // all previously selected items without the hovered item to be that are in the new selection range (intersection, but without the current element)
+                let preexistingItems = translatedIndexesToSelectedPaths.filter(a => _selectedItems.includes(a) && a != full_path);
+
+                // a union of the preselected and newly selected items
+                let combinedSelection = [..._selectedItems, ...translatedIndexesToSelectedPaths];
+
+                if(_selectedItems.includes(full_path) && _selectedItems.includes(full_path)) {
+                    // remove from the union the preexisting items 
+                    let combinedAndFiltered = combinedSelection.filter(a => !preexistingItems.includes(a))
+                    file_explorer.selectedItems = combinedAndFiltered;
+                } else {
+                    file_explorer.selectedItems = combinedSelection;
+                }
+
+            } else {
+                // If control key is not held, selected items are from previously clicked item up till the current item clicked
+                file_explorer.selectedItems = translatedIndexesToSelectedPaths
+            }
         } else {
             file_explorer.selectedItems = [full_path];
         }
@@ -317,6 +364,7 @@
         document.addEventListener("file_explorer_element_selected", (ev) => {
             isHovered = full_path == file_explorer.hoveredItem;
             isSelected = file_explorer.selectedItems.includes(full_path);
+            isCut = file_explorer.cutPaths.includes(full_path);
 
             if (ev.detail && isHovered) {
                 _expansionToggle();
@@ -326,15 +374,6 @@
         document.addEventListener("keyboard_shortcut.file_explorer", (ev) => {
             let action = ev.detail.functionName;
             switch (action) {
-                case "rename":
-                    if (full_path == file_explorer.selectedItems[0]) {
-                        let funcConfig = getContextMenuConfig().find(
-                            (op) => op.name == action,
-                        );
-                        funcConfig.click();
-                    }
-                break;
-
                 case "delete":
                     if (file_explorer.selectedItems.includes(full_path)) {
                         let funcConfig = getContextMenuConfig().find(
@@ -368,15 +407,19 @@
                     }
                     break;
 
+                case "rename":
                 case  "reveal_in_file_explorer":
+                case 'copy':
+                case 'cut':
                     if (file_explorer.hoveredItem == full_path) {
                         let funcConfig = getContextMenuConfig().find(
                             (op) => op.name == action,
                         );
                         
                         funcConfig.click();
-                    }
-                break;
+                    }    
+                break
+
             }
         });
 
@@ -419,7 +462,7 @@ class="single-folder-item index{index} {isExpanded
 <div
         class="header-part {isHovered ? ' _hovered' : ''}{isSelected
             ? ' _selected'
-            : ''}"
+            : ''}{isCut ? ' is-cut' : ''}"
         style="padding-left: {1 + level * 0.7}rem;"
         on:click={handleExpansionToggle}
         on:contextmenu={handleContextMenu}
@@ -621,5 +664,9 @@ class="single-folder-item index{index} {isExpanded
     .staging-true input:focus {
         outline: none;
         border: solid 1px var(--outline-color);    
+    }
+
+    .staging-false .is-cut .directory-name, .staging-false .is-cut .file-icon-placeholder{
+        opacity: .5;
     }
 </style>
