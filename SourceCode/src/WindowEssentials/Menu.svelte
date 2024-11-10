@@ -53,7 +53,7 @@
   });
 </script>
 
-<div class="context-menu-shadow">
+<div class="context-menu-shadow" id="unselectable">
   <div
     class="context-menu-placeholder dark"
     style="{x ? `left: ${x}px;` : ''} {y ? `top: ${y}px;` : ''}"

@@ -33,6 +33,8 @@
         let rejectCurrentCommand = null;
 
         // Set up a single stdout listener to handle all command responses
+        let fullCommand = '';
+
         _clipboardHelper.stdout.on('data', (data) => {
             if (!resolveCurrentCommand) {
                 // console.log(data.toString());
@@ -40,6 +42,11 @@
             }
 
             let commandOutput = data.toString();
+
+            if(fullCommand.length>0) {
+                commandOutput = fullCommand + commandOutput;
+            }
+
             let lines = commandOutput.split('\n');
             let lastLine = lines[lines.length - 2] || ""; // Second last line due to potential trailing newline
             let isFullResponse = lastLine === PROGRAM_CONSTS.END;
@@ -49,6 +56,9 @@
                 let fullResponse = lines.join('\n');
                 resolveCurrentCommand(fullResponse); // Resolve the promise with the response
                 resolveCurrentCommand = null; // Clear current command handler
+                fullCommand = '';
+            } else {
+                fullCommand += commandOutput;
             }
         });
 
@@ -58,8 +68,21 @@
             }
 
             let err = data.toString();
+            console.log(err);
             rejectCurrentCommand(err);
         })
+
+        _clipboardHelper.on('error', (data)=> {
+            if(!rejectCurrentCommand) {
+                return
+            }
+
+            let err = data.toString();
+            console.log(err);
+            rejectCurrentCommand(err);
+        })
+
+        // _clipboardHelper.stderr.on
 
         const sendCommand = (command, commandParameters) => {
             return new Promise((resolve, reject) => {
@@ -71,6 +94,16 @@
                             let newLines = fullResponse.split('\n');
                             clipboardType = newLines[0].split(PROGRAM_CONSTS.CLIPBOARD_TYPE)[1].trim();
                             let content = newLines.slice(1, newLines.length).join('\n').split('\u000d').slice(0, -1).join('\n');
+
+                            switch(clipboardType) {
+                                case 'file':
+                                    let pathsInClipboard = content.split('\n').filter(_path => _path.length>0);
+                                    content = pathsInClipboard
+                                break;
+
+                                case 'image':
+                                break;
+                            }
 
                             resolve({
                                 contentType: clipboardType,
@@ -129,6 +162,30 @@
                         }
                         break;
 
+                    case 'paste':
+                        if (commandParameters.file_explorer) {
+                            resolveCurrentCommand = (fullResponse) => {
+                                // if(fullResponse.length == 0) {
+                                    
+                                //     file_explorer.cutPaths = commandParameters.files;
+                                //     shortcuts.rerenderSelected()
+
+                                //     resolve({
+                                //         action: 'cut',
+                                //         success: true,
+                                //         files: commandParameters.files
+                                //     })
+                                // } else {
+                                //     throw new Error(`Unhandled case: length (${fullResponse.length}) content (${fullResponse})`)
+                                // }
+                                console.log(fullResponse)
+                                resolve(fullResponse)
+                            }
+
+                            const destinationToPaste = parsePaths(commandParameters.files);
+                            _clipboardHelper.stdin.write(`paste_files ${destinationToPaste}\n`);
+                        }
+                        break;
                     default:
                         reject(new Error("Unsupported command."));
                         resolveCurrentCommand = null; // Clear handler on unsupported command

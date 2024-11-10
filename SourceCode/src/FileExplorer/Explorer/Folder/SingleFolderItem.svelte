@@ -26,7 +26,7 @@
     let iconProps;
 
     let gotSorted = false;
-    let items = [];
+    let items = children || [];
 
     const reloadChildren = () => {
         // console.log(parentIsExpanded, level);
@@ -164,21 +164,27 @@
         );
     };
 
+    const getContextMenuFunctions = (action) => file_explorer.contextFunctions[action]({full_path, additionalData: { isStaging, isFolder }, evaluator})
+
     const handleContextMenu = (ev) => {
         if (!ev.altKey) {
             ev.preventDefault();
             ev.stopPropagation();
 
-            menu({
-                x: ev.clientX,
-                y: ev.clientY,
-                shouldBlur: true,
-                options: getContextMenuConfig().filter((a) => {
-                    let optionIsCustom = a.custom;
-
-                    return !optionIsCustom || optionIsCustom(full_path);
-                }),
-            });
+            getContextMenuConfig().then(
+                configLoaded => {
+                    menu({
+                        x: ev.clientX,
+                        y: ev.clientY,
+                        shouldBlur: true,
+                        options: configLoaded.filter((a) => {
+                            let optionIsCustom = a.custom;
+        
+                            return !optionIsCustom || optionIsCustom(full_path);
+                        }),
+                    });
+                }
+            )
 
             // Select an item by rightclicking it (only give border as if it's hovered);
             isHovered = true;
@@ -196,6 +202,8 @@
     };
 
     const initialFormFocus = (ev) => {
+        console.log(items);
+
         if(file_explorer.staging.oldName === undefined) {
             setTimeout(() => {
                 ev.focus();
@@ -285,8 +293,8 @@
     };
 
     let blurListener = (_ev) => {
-        file_explorer.selectedItems = [];
-        file_explorer.hoveredItem = undefined;
+        // file_explorer.selectedItems = [];
+        // file_explorer.hoveredItem = undefined;
         triggerHoverRerender();
         document.removeEventListener("click", blurListener);
         file_explorer.hoverListeners--;
@@ -359,7 +367,17 @@
 
         triggerHoverRerender();
     };
+    
+    const genericHotkeyAction =(action) => {
+        getContextMenuConfig().then((configLoaded) => {
+            let funcConfig = configLoaded.find(
+                (op) => op.name == action,
+            );
 
+            funcConfig.click();
+        })
+    }
+    
     onMount(() => {
         document.addEventListener("file_explorer_element_selected", (ev) => {
             isHovered = full_path == file_explorer.hoveredItem;
@@ -376,21 +394,20 @@
             switch (action) {
                 case "delete":
                     if (file_explorer.selectedItems.includes(full_path)) {
-                        let funcConfig = getContextMenuConfig().find(
-                            (op) => op.name == action,
-                        );
-
+                        
+                        console.log(full_path);
+                        
                         if (isFolder) {
                             let childItems = file_explorer.selectedItems.filter(
                                 (_path) => _path.includes(`${full_path}\\`),
                             );
                             file_explorer.selectedItems =
-                                file_explorer.selectedItems.filter(
-                                    (_path) => !childItems.includes(_path),
-                                );
+                            file_explorer.selectedItems.filter(
+                                (_path) => !childItems.includes(_path),
+                            );
                         }
-
-                        funcConfig.click();
+                        
+                        getContextMenuFunctions(action)
                     }
                     break;
 
@@ -400,10 +417,7 @@
                         file_explorer.hoveredItem == full_path && 
                         isFolder
                     ) {
-                        let funcConfig = getContextMenuConfig().find(
-                            (op) => op.name == action,
-                        );
-                        funcConfig.click();
+                        genericHotkeyAction(action);
                     }
                     break;
 
@@ -412,11 +426,7 @@
                 case 'copy':
                 case 'cut':
                     if (file_explorer.hoveredItem == full_path) {
-                        let funcConfig = getContextMenuConfig().find(
-                            (op) => op.name == action,
-                        );
-                        
-                        funcConfig.click();
+                        genericHotkeyAction(action);
                     }    
                 break
 
@@ -632,7 +642,7 @@ class="single-folder-item index{index} {isExpanded
                 + .current-directory
                 ._hovered
         ) {
-        border: solid 1px transparent;
+        border: solid 1px transparent !important;
     }
 
     

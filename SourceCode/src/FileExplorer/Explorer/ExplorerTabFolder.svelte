@@ -16,119 +16,145 @@
         console.log(level);
     };
 
-    const targetlessMenu = [
-        {
-            label: "New File...",
-            name: "new_file",
-            click: () => {
-                let firstFileIndex = folderItems.findIndex(
-                    (a) => a.isFolder === false,
-                );
-
-                folderItems = [
-                    ...folderItems.slice(0, firstFileIndex),
-                    {
-                        name: "",
-                        full_path: path.resolve(`${launchArguments}\\New File`),
-                        isFolder: false,
-                        isStaging: true,
-                        new: true,
-                    },
-                    ...folderItems.slice(firstFileIndex),
-                ];
-
-                file_explorer.cancelStaging = () => {
-                    console.log(folderItems);
-                    folderItems = [...folderItems.filter((a) => !a.new)];
-                };
+    const targetlessMenu = () => {
+        return clipboardHelper.sendCommand('check').then(clipboardData => {
+            const isPasteEnabled = clipboardData.contentType === 'file' && clipboardData.content.length > 0;
+            
+            return   [
+            {
+                label: "New File...",
+                name: "new_file",
+                click: () => {
+                    let firstFileIndex = folderItems.findIndex(
+                        (a) => a.isFolder === false,
+                    );
+    
+                    folderItems = [
+                        ...folderItems.slice(0, firstFileIndex),
+                        {
+                            name: "",
+                            full_path: path.resolve(`${launchArguments}\\New File`),
+                            isFolder: false,
+                            isStaging: true,
+                            new: true,
+                        },
+                        ...folderItems.slice(firstFileIndex),
+                    ];
+    
+                    file_explorer.cancelStaging = () => {
+                        folderItems = [...folderItems.filter((a) => !a.new)];
+                    };
+                },
             },
-        },
-        {
-            label: "New Folder...",
-            name: "new_folder",
-            click: () => {
-                folderItems = [
-                    {
-                        name: "",
-                        full_path: path.resolve(
-                            `${launchArguments}\\New Folder`,
-                        ),
-                        isFolder: true,
-                        isStaging: true,
-                        new: true,
-                    },
-                    ...folderItems,
-                ];
-
-                file_explorer.cancelStaging = () => {
-                    folderItems = [...folderItems.filter((a) => !a.new)];
-                };
+            {
+                label: "New Folder...",
+                name: "new_folder",
+                click: () => {
+                    folderItems = [
+                        {
+                            name: "",
+                            full_path: path.resolve(
+                                `${launchArguments}\\New Folder`,
+                            ),
+                            isFolder: true,
+                            isStaging: true,
+                            new: true,
+                        },
+                        ...folderItems,
+                    ];
+    
+                    file_explorer.cancelStaging = () => {
+                        folderItems = [...folderItems.filter((a) => !a.new)];
+                    };
+                },
             },
-        },
-        {
-            label: "Reveal in File Explorer",
-            name: "reveal_in_file_explorer",
-        },
-        {
-            label: "Open in Integrated Terminal",
-            name: "open_in_integrated_terminal",
-        },
-        {
-            separator: true,
-        },
-        {
-            label: "Add Folder to Workspace...",
-            name: "add_folder_to_workspace",
-        },
-        {
-            label: "Open Folder Settings",
-            name: "open_folder_settings",
-        },
-        {
-            label: "Remove Folder from Workspace",
-            name: "remove_folder_from_workspace",
-        },
-        {
-            separator: true,
-        },
-        {
-            label: "Find in Folder...",
-            name: "find_in_folder",
-        },
-        {
-            label: "Paste",
-            name: "paste",
-        },
-        {
-            separator: true,
-        },
-        {
-            label: "Copy Path",
-            name: "copy_path",
-        },
-        {
-            label: "Copy Relative Path",
-            name: "copy_relative_path",
-        },
-    ];
+            {
+                label: "Reveal in File Explorer",
+                name: "reveal_in_file_explorer",
+                click: () => {
+                    child_process.exec(`explorer /select, ${full_path}`)
+                }
+            },
+            {
+                label: "Open in Integrated Terminal",
+                name: "open_in_integrated_terminal",
+            },
+            {
+                separator: true,
+            },
+            {
+                label: "Add Folder to Workspace...",
+                name: "add_folder_to_workspace",
+            },
+            {
+                label: "Open Folder Settings",
+                name: "open_folder_settings",
+            },
+            {
+                label: "Remove Folder from Workspace",
+                name: "remove_folder_from_workspace",
+            },
+            {
+                separator: true,
+            },
+            {
+                label: "Find in Folder...",
+                name: "find_in_folder",
+            },
+            {
+                label: "Paste",
+                name: "paste",
+                disabled: !isPasteEnabled,
+                click: () => {
+                    let itemsToSelect = [launchArguments]
+
+                    clipboardHelper.sendCommand('paste', {
+                        file_explorer: true,
+                        files: itemsToSelect
+                    }).then(a => {
+                        if(false){
+                            console.log(a);
+                        }
+                    });
+                }
+            },
+            {
+                separator: true,
+            },
+            {
+                label: "Copy Path",
+                name: "copy_path",
+            },
+            {
+                label: "Copy Relative Path",
+                name: "copy_relative_path",
+            },
+            ];
+        });
+    }
 
     const sortItems = (tempFolderItems) => {
-        console.log(tempFolderItems[tempFolderItems.length - 1]);
         let res = file_explorer.sortDirectories(tempFolderItems);
         folderItems = [...res];
     };
 
     const handleContextMenu = (ev) => {
+
         if (ev.altKey) {
         } else {
             ev.preventDefault();
-            menu({
-                x: ev.clientX,
-                y: ev.clientY,
-                shouldBlur: true,
-                options: targetlessMenu,
+
+            targetlessMenu().then(targetlessMenuLoaded => {
+
+                let _end = new Date();
+
+                menu({
+                    x: ev.clientX,
+                    y: ev.clientY,
+                    shouldBlur: true,
+                    options: targetlessMenuLoaded,
+                });
             });
-            console.log(ev);
         }
     };
 
@@ -141,7 +167,6 @@
                 (file_explorer.folders[launchArguments] || { children: [] })
                     .children,
             );
-            console.log(sortedItems);
             folderItems = sortedItems;
         }
     };
@@ -150,7 +175,6 @@
 
     onMount(() => {
         window.SCANNER = scan;
-        console.log("MOUNTED");
 
         scan();
 
@@ -194,10 +218,13 @@
                         file_explorer.hoveredItem == undefined &&
                         !file_explorer.grayedOut
                     ) {
-                        let funcConfig = targetlessMenu.find(
-                            (op) => op.name == action,
-                        );
-                        funcConfig.click();
+                        targetlessMenu().then(targetlessMenuLoaded => {
+                            let funcConfig = targetlessMenuLoaded.find(
+                                (op) => op.name == action,
+                            );
+
+                            funcConfig.click();
+                        })
                     }
                     break;
             }

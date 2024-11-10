@@ -70,7 +70,6 @@
 
                 if(file_explorer.selectedItems.length>0 && !isTargetAFile) {
                     file_explorer.grayedOut = true;
-                    console.log('TAB UNSELECT')
                     themeUtils.setGrayedOut();
                 } else {
                     file_explorer.grayedOut = false;
@@ -100,8 +99,7 @@
         }
 
         let tabroute = `explorer_tabs.show.files.${routeTranslation[tabName]}`;
-        isDisabled = !settings.section.get(tabroute)
-        console.log(isDisabled)
+        isDisabled = !settings.section.get(tabroute);
 
         document.addEventListener('tabsConfigChanged', (ev) => {
 

@@ -189,10 +189,14 @@ window.file_explorer = {
 
       if(file_explorer.cutPaths.length>0 && file_explorer.cutPaths.includes(filePath)) {
         file_explorer.cutPaths = file_explorer.cutPaths.filter(a => a != filePath);
+        shortcuts.rerenderSelected()
       }
-      // file_explorer.folders
     },
-    explorerItemMenuConfig: (full_path, evaluator, additionalData) => [
+    explorerItemMenuConfig: (full_path, evaluator, additionalData) => {
+      return clipboardHelper.sendCommand('check').then(clipboardData => {
+        const isPasteEnabled = clipboardData.contentType === 'file' && clipboardData.content.length > 0;
+
+      return [
         {
           label: "New File...",
           name: "new_file",
@@ -305,6 +309,26 @@ window.file_explorer = {
           }
       },
       {
+        label: "Paste",
+        name: "paste",
+        disabled: !isPasteEnabled,
+        click: () => {
+            let itemsToSelect = [full_path]
+
+            clipboardHelper.sendCommand('paste', {
+                file_explorer: true,
+                files: itemsToSelect
+            }).then(a => {
+                  if(false){
+                      console.log(a);
+                  }
+            });
+        },
+        custom: () => {
+          return additionalData.isFolder
+        }
+      },
+      {
           separator: true
       },
       {
@@ -335,16 +359,11 @@ window.file_explorer = {
           label: "Delete",
           name: "delete", //
           click: () => {
-              if(additionalData.isFolder) {
-                  fs.rmdirSync(full_path);
-              } else {
-                  fs.unlinkSync(full_path);
-              }
-
-              // file_explorer.rescan();
+            file_explorer.contextFunctions.delete({full_path, additionalData});
           }
       }
-    ],
+      ]})
+    },
     selectedItems: [
 
     ],
@@ -357,7 +376,18 @@ window.file_explorer = {
       oldName: undefined,
       newName: undefined
     },
-    cutPaths: []
+    cutPaths: [],
+    contextFunctions: {
+      delete: ({full_path, additionalData}) => {
+        console.log(full_path);
+        
+        if(additionalData.isFolder) {
+            fs.rmdirSync(full_path);
+        } else {
+            fs.unlinkSync(full_path);
+        }
+      }
+    }
   };
 
   // const watcher = chokidar.watch(launchArguments, {
