@@ -1,3 +1,8 @@
+/** modules.js */
+const SETTING_VARIABLES = {
+    VARIABLES_EXPLORER_X_OFFSET: 'variables.explorer.x_offset'
+}
+
 window.timeA = new Date().getTime();
 
 window.voidFunction = () => {return};
@@ -167,93 +172,140 @@ window.spreader = (...objs) =>  {
     return mergedObj;
 }
 
-window.themeUtils = {
-    isDark: true,
-    iconsPath: () => {
-        let mode =  themeUtils.isDark ? 'dark' : 'light';
-        let iconsPath = path.join(paths.icons, mode);
-        return iconsPath.split('\\').join('/');
-    },
-    changeTheme: () => {
+{
+    let isInitialLoad = true;
 
-        let inactiveColor = themeUtils.isDark ? " rgb(133, 133, 133)" : "black";
-        let activeColor = themeUtils.isDark ? "white" : "black";
-
-        const root = document.documentElement;
-        root.style.setProperty("--sidebar-inactive-icon", inactiveColor);
-        root.style.setProperty("--sidebar-active-icon", activeColor);
-        
-        let iconsPath = themeUtils.iconsPath();
-
-        let iconNames = [
-            'files',
-            'search',
-            'debug',
-            'account',
-            'settings',
-            'left_arrow',
-            'right_arrow',
-            'more',
-            'git',
-            'chevron-right',
-            'chevron-left',
-            'chevron-down',
-            'chevron-up',
-            'close-all-editors',
-            'collapse-all',
-            'expand-all',
-            'filter',
-            'new-file',
-            'new-folder',
-            'pin',
-            'refresh',
-            'save-all',
-        ];
-
-        iconNames.forEach((iconName) => {
-            root.style.setProperty(`--${iconName}-icon`, `url('${iconsPath}/${iconName}.svg') no-repeat center`)
-        });
-
-        let colorVariablesMapping = {
-            '--primary-dark-bg': '#181818',
-            '--primary-light-bg': '#1f1f1f',
-            '--primary-light2-bg': '#adaeae',
-            '--primary-light3-bg': '#444444',
-            '--directory-rename-bg': '#313131',
-            '--outline-color': '#0078d4',
-            '--base-text-color': '#cccccc',
-            '--base-border-color': '#2b2b2b',
-            '--secondary-border-color': '#454545',
-            '--icon-hover-bg': '#2d2e2e',
-            '--tooltip-bg': '#202020',
-            '--item-select-bg': '#04395e',
-            '--gray-out-selection': '#37373d',
-            '--error-border-color': '#bd1100'
-        };
-
-        let colorVariables = Object.keys(colorVariablesMapping);
-
-        colorVariables.forEach((varName) => {
-            root.style.setProperty(varName, colorVariablesMapping[varName]);
-        })
-    },
-
-    setGrayedOut: () => {
-        let bool = file_explorer.grayedOut;
-
-        let folderTab = jQuery('.explorer-tab-header.folder')[0];
-
-        if(folderTab) {
-            if(bool) {
-                folderTab.classList.add('grayed-out')
-            } else {
-                folderTab.classList.remove('grayed-out')
+    window.themeUtils = {
+        isDark: true,
+        iconsPath: () => {
+            let mode =  themeUtils.isDark ? 'dark' : 'light';
+            let iconsPath = path.join(paths.icons, mode);
+            return iconsPath.split('\\').join('/');
+        },
+        changeTheme: () => {
+    
+            let inactiveColor = themeUtils.isDark ? " rgb(133, 133, 133)" : "black";
+            let activeColor = themeUtils.isDark ? "white" : "black";
+    
+            const root = document.documentElement;
+            root.style.setProperty("--sidebar-inactive-icon", inactiveColor);
+            root.style.setProperty("--sidebar-active-icon", activeColor);
+            
+            let iconsPath = themeUtils.iconsPath();
+    
+            let iconNames = [
+                'files',
+                'search',
+                'debug',
+                'account',
+                'settings',
+                'left_arrow',
+                'right_arrow',
+                'more',
+                'git',
+                'chevron-right',
+                'chevron-left',
+                'chevron-down',
+                'chevron-up',
+                'close-all-editors',
+                'collapse-all',
+                'expand-all',
+                'filter',
+                'new-file',
+                'new-folder',
+                'pin',
+                'refresh',
+                'save-all',
+            ];
+    
+            iconNames.forEach((iconName) => {
+                root.style.setProperty(`--${iconName}-icon`, `url('${iconsPath}/${iconName}.svg') no-repeat center`)
+            });
+    
+            let colorVariablesMapping = {
+                '--primary-dark-bg': '#181818',
+                '--primary-light-bg': '#1f1f1f',
+                '--primary-light2-bg': '#adaeae',
+                '--primary-light3-bg': '#444444',
+                '--directory-rename-bg': '#313131',
+                '--outline-color': '#0078d4',
+                '--base-text-color': '#cccccc',
+                '--base-border-color': '#2b2b2b',
+                '--secondary-border-color': '#454545',
+                '--icon-hover-bg': '#2d2e2e',
+                '--tooltip-bg': '#202020',
+                '--item-select-bg': '#04395e',
+                '--gray-out-selection': '#37373d',
+                '--error-border-color': '#bd1100'
+            };
+    
+            let colorVariables = Object.keys(colorVariablesMapping);
+    
+            colorVariables.forEach((varName) => {
+                root.style.setProperty(varName, colorVariablesMapping[varName]);
+            })
+        },
+    
+        setGrayedOut: () => {
+            let bool = file_explorer.grayedOut;
+    
+            let folderTab = jQuery('.explorer-tab-header.folder')[0];
+    
+            if(folderTab) {
+                if(bool) {
+                    folderTab.classList.add('grayed-out')
+                } else {
+                    folderTab.classList.remove('grayed-out')
+                }
             }
-        }
-    },
-    variables: {
-        bg: {
-            primaryDark: 'var(--primary-dark-bg)'
+        },
+        variables: {
+            bg: {
+                primaryDark: 'var(--primary-dark-bg)'
+            }
+        },
+        settingToPropertyTranslator: (key) => {
+            let prop2key = {
+                '--side-tab-offset': SETTING_VARIABLES.VARIABLES_EXPLORER_X_OFFSET,
+    
+            }
+    
+            let key2prop = {
+                [SETTING_VARIABLES.VARIABLES_EXPLORER_X_OFFSET]:'--side-tab-offset',
+            }
+    
+            return prop2key[key] || key2prop[key];
+        },
+        getValueType: (key) => {
+            let valueParsingFunction = (val) => {
+                return val
+            };
+
+            switch(key){
+                case SETTING_VARIABLES.VARIABLES_EXPLORER_X_OFFSET:
+                    valueParsingFunction = (val) => {
+                        return `"${val}"`;
+                    }
+                break; 
+            }
+
+            return valueParsingFunction;
+        },
+        setProperty: (_property, value, priority) => {
+    
+            let settingKey = themeUtils.settingToPropertyTranslator(_property);
+    
+            if(settingKey && !isInitialLoad) {
+                let valueParser = themeUtils.getValueType(settingKey);
+                let parsedValue = valueParser(value);
+                settings.section.set(settingKey, parsedValue)
+            }
+    
+            document.documentElement.style.setProperty(_property, value, priority)
+        },
+        endInitialLoad: () => {
+            isInitialLoad = false;
+            delete themeUtils.endInitialLoad;
         }
     }
 }

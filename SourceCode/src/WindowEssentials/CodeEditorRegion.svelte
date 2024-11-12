@@ -14,7 +14,9 @@
 <style>
     .code_editor_region {
         display: flex;
-        width: 100%;
+        /* width: 100%; */
+        flex-grow: 1;
+        min-width: 16rem;
         flex-direction: column;
     }
     

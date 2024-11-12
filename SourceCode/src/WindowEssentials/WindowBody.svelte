@@ -1,5 +1,6 @@
 <script>
-  import CodeEditorRegion from "./CodeEditorRegion.svelte";
+    /**WindowBody.svelte*/
+import CodeEditorRegion from "./CodeEditorRegion.svelte";
 import FileExplorer from "./FileExplorer.svelte";
 import SideBar from "./SideBar.svelte";
 

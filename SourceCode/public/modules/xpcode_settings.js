@@ -1,4 +1,5 @@
 {
+    /** modules.js */
     let _parentDir = path.resolve('public/data');
     let pathToSettings = path.resolve('public/data/settings.json');
     let defaultSettings = {
@@ -29,6 +30,12 @@
                 reveal_in_file_explorer: "Shift__Alt__r",
                 copy: "Ctrl__c",
                 cut: "Ctrl__x"
+            }
+        },
+
+        variables: {
+            explorer: {
+                x_offset: '0px'
             }
         }
     }
@@ -69,6 +76,7 @@
             eval(`propertyExists = ${propertyChain}`);
 
             if(!propertyExists) {
+                console.log(propertyExists);
                 eval(`${propertyChain} = {}`);
             };
 
@@ -89,6 +97,7 @@
 
                     eval(`sectionToReturn = _currentSettings.${sectionName}`);
                 } else {
+                    console.log(sectionName, _get()[sectionName])
                    sectionToReturn = _get()[sectionName] || {}
                 };
 
@@ -112,4 +121,31 @@
     }
 
     window.settings = _settings;
+
+    window.addEventListener('beforeunload', () => {
+        settings.update();
+        alert('Updated settings!');
+    });
+
+    let CSSPropertiesToReadOnStart = [
+        'side-tab-offset',
+    ]
+
+    CSSPropertiesToReadOnStart.forEach((propName) => {
+        let parsedPropName = `--${propName}`;
+        let settingsKey = themeUtils.settingToPropertyTranslator(parsedPropName);
+        let value = settings.section.get(settingsKey);
+
+        themeUtils.setProperty(parsedPropName, value);
+    })
+
+    let CSSPropertiesToInitialize = {
+        '--terminal-y-offset': '0px'
+    };
+
+    Object.keys(CSSPropertiesToInitialize).forEach((key) => {
+        themeUtils.setProperty(key, CSSPropertiesToInitialize[key]);
+    })
+
+    themeUtils.endInitialLoad();
 }

@@ -97,3 +97,23 @@ button:focus {
 [data-title-top], [data-title-left], [data-title-right], [data-title-bottom]  {
 	position: relative;
 }
+
+body.dragging {
+	-webkit-user-select: none; /* Safari */
+	-ms-user-select: none; /* IE 10 and IE 11 */
+	user-select: none; /* Standard syntax */
+	/* cursor: default; */
+}
+
+body.dragging #unselectable {
+	-webkit-user-select: none; /* Safari */
+	-ms-user-select: none; /* IE 10 and IE 11 */
+	user-select: none; /* Standard syntax */
+}
+
+body:not(.dragging) #unselectable {
+	-webkit-user-select: none; /* Safari */
+	-ms-user-select: none; /* IE 10 and IE 11 */
+	user-select: none; /* Standard syntax */
+	cursor: default;
+}

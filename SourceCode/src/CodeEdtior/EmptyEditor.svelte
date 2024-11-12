@@ -82,7 +82,8 @@
 
 <style>
     .empty_editor_window {
-        height: 100%;
+        /* height: 100%; */
+        flex-grow: 1;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -94,6 +95,7 @@
         width: fit-content;
         margin-left: auto;
         margin-right: auto;
+        max-width: 100%;
     }
 
     .logo {

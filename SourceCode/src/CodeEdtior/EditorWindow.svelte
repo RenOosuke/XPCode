@@ -39,7 +39,8 @@
 
 <style>
     .editor_window {
-        height: 100%;
+        /* height: 100%; */
+		flex-grow: 1;
     }
 
 	.editor_window.empty {
