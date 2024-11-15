@@ -526,6 +526,8 @@ window.file_explorer = {
   
   xp_chokidar.on('File modified', path => console.log(`File ${path} has been changed`));
   // xp_chokidar.on("Finished logging existing paths",)
-  xp_chokidar.watch(launchArguments)
+  setTimeout(() => {
+    xp_chokidar.watch(launchArguments)
+  }, 10);
 
   // watcher.on('change', path => console.log(`File ${path} has been changed`));
