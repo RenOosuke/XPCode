@@ -48,10 +48,10 @@
             const watcherProcess = spawn(chokidarPath, [pathToExec]);
 
             watcherProcess.stdout.on('data', (data) => {
-                const outputLines = data.toString().split('\n');
+                let outputLines = data.toString().split('\u000d\n').filter(a => a.length > 0);
 
                 outputLines.forEach((line) => {
-                    cachedWatchers.event(line.trim());
+                    cachedWatchers.event(line);
                 });
             });
 

@@ -475,8 +475,6 @@ window.file_explorer = {
 
               resizeTab(upperTab, safeDistance * -1);
               resizeTab(currentTabMeta, safeDistance);
-              
-              console.log(upperTab.name, upperTab.height, tabsConfig[tabIndex].name, tabsConfig[tabIndex].height);
 
               file_explorer.tabSizing.rerender();
               
