@@ -1,10 +1,12 @@
 <script>
+    let hasContent = false;
 </script>
 
 
-<div class="tab-body">
-</div>
-
+{#if hasContent}
+    <div class="tab-body">
+    </div>
+{/if}
 
 <style>
 </style>

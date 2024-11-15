@@ -99,7 +99,7 @@ import GenericExplorerTab from "./Explorer/GenericExplorerTab.svelte";
 
 
 <div class="explorer-tabs {activeTab === 'files' ? '' : 'hide'}">
-    {#each tabsToShow as singleTab}
+    {#each tabsToShow as singleTab (singleTab)}
         <GenericExplorerTab tabContent={contentMapping[singleTab]} tabName={singleTab} tabButtons={tabButtons[singleTab]}></GenericExplorerTab>
     {/each}
 </div>

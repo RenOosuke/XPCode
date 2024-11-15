@@ -387,6 +387,126 @@ window.file_explorer = {
             fs.unlinkSync(full_path);
         }
       }
+    },
+    tabSizing: {
+      open: [
+        
+      ],
+
+      rerender: () => {
+        file_explorer.tabSizing.open.forEach(tabMeta => {
+          themeUtils.setProperty(`--${tabMeta.name}-y-offset`, `${tabMeta.height}px`);
+        })
+      },
+
+      update: () => {
+        let newOpen = jQuery('.explorer-tab').toArray().map((tabEl) => {
+          let tabClasses = tabEl.classList
+          
+          return {
+            name: (tabClasses[1]).slice(8),
+            height: tabEl.getBoundingClientRect().height,
+            open: tabClasses.contains('expanded')
+          }
+        })
+
+        file_explorer.tabSizing.open = newOpen;
+        let fileExplorerEl = jQuery('.explorer-tabs')[0];
+      
+        file_explorer.tabSizing.maxHeight = fileExplorerEl.getBoundingClientRect().height;
+      },
+
+      resize: (() => {
+        const remSize = 16;
+        const minTabHeight = 5 * remSize
+        
+        const resizeTab = (tab, distance) => {
+          let heightSumOfRemainder = file_explorer.tabSizing.open.reduce((acc, curTab) => {
+            let heightToAdd = curTab.height;
+
+            if(curTab.name == tab.name) {
+              heightToAdd = 0;
+            };
+
+            return acc + heightToAdd
+          }, 0);
+
+          let allowedMaxHeight = file_explorer.tabSizing.maxHeight - heightSumOfRemainder;
+
+          tab.height -= distance;
+          tab.height = Math.max(tab.height, minTabHeight)
+          tab.height = Math.min(tab.height, allowedMaxHeight)
+        }
+
+        const calculateSafeDistance = (tab, distance) => {
+          let safeDistance = distance;
+
+          if(tab.height - distance < minTabHeight) {
+            safeDistance = tab.height - minTabHeight;
+          }
+
+          return safeDistance;
+        }
+
+        return (tabEvent) => {
+
+          let tabsConfig = file_explorer.tabSizing.open;
+          
+          let tabName = tabEvent.name;
+          let tabIndex = file_explorer.tabSizing.tabIndexes[tabName];
+          let currentTabMeta = tabsConfig[tabIndex];
+
+          let openedTabsAbove = tabsConfig.filter((upperTab, upperTabIndex) => {
+            return upperTabIndex < tabIndex && upperTab.open
+          }).map(upperTab => file_explorer.tabSizing.tabIndexes[upperTab.name]);
+
+          let idexOfFirstOpenTabAbove = openedTabsAbove[openedTabsAbove.length-1];
+          
+          let upperTab = tabsConfig[idexOfFirstOpenTabAbove];
+          
+          if(upperTab) {
+            let distance = tabEvent.distance;
+            let safeDistance = distance
+            
+            if(currentTabMeta.open) {
+
+              safeDistance = calculateSafeDistance(currentTabMeta, safeDistance);
+              safeDistance = -1 * calculateSafeDistance(upperTab, safeDistance * -1)
+
+              resizeTab(upperTab, safeDistance * -1);
+              resizeTab(currentTabMeta, safeDistance);
+              
+              console.log(upperTab.name, upperTab.height, tabsConfig[tabIndex].name, tabsConfig[tabIndex].height);
+
+              file_explorer.tabSizing.rerender();
+              
+            } else {
+              let lowerOpenedTab = tabsConfig.find((tabMeta, index) => {
+                return tabMeta.open && index > tabIndex;
+              });
+              
+              if(lowerOpenedTab) {
+                safeDistance = calculateSafeDistance(lowerOpenedTab, safeDistance);
+                safeDistance = -1 * calculateSafeDistance(upperTab, safeDistance * -1)
+  
+                resizeTab(upperTab, safeDistance * -1);
+                resizeTab(lowerOpenedTab, safeDistance);
+                file_explorer.tabSizing.rerender();
+              }
+            }
+          }
+        }
+      })(),
+
+      tabIndexes: {
+        'opne_editors': 0,
+        'folders': 1,
+        'outline': 2,
+        'timeline': 3,
+        'npm_scripts': 4
+      },
+
+      maxHeight: 0
     }
   };
 

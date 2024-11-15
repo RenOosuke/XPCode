@@ -30,6 +30,17 @@ type ignoredJSONObj = {per_path: {}, all: string[], by_name: {}, by_ext: {}, by_
 
 type singleFolderItem = {isFolder: boolean; full_path: string; isStaging: boolean; new: boolean; name: string;}; 
 
+type singleTabMeta = {
+    name: string,
+    height: number,
+    open: boolean
+}
+
+type tabEvent = {
+    name: string,
+    distance: number
+}
+
 type file_explorer = {
    getFilesInDirectory: (dirPath: any) => Promise<any>;
    rescan(): void;
@@ -46,6 +57,12 @@ type file_explorer = {
    staging: {
     oldName: PathLike,
     newName: PathLike
+   },
+   tabSizing: {
+    open: singleTabMeta[],
+    rerender(): void,
+    update(): void,
+    resize(tabEvent: tabEvent): void
    }
 }
 

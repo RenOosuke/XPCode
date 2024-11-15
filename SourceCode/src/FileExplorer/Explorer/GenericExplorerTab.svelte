@@ -1,5 +1,7 @@
 <script>
     import { onMount } from "svelte";
+    import ResizeableBorder from "../../WindowEssentials/ResizeableBorder.svelte";
+
     let isExpanded = false;
     export let tabName;
     export let tabButtons;
@@ -8,13 +10,32 @@
     let isDisabled = false;
     let tabOutlined = false;
     let tabWindowOutlined = false;
+    let disableExpansion = false;
+    
+    let initialOffset = 0;
 
     const handleTabClick = (ev) => {
         ev.preventDefault();
         ev.stopPropagation();
 
-        isExpanded = !isExpanded;
-        tabOutlined = true;
+        if(!disableExpansion) {
+            isExpanded = !isExpanded;
+            tabOutlined = true;
+            
+
+            // file_explorer.tabSizing.open[indexOfTab].open = isExpanded;
+
+            // let numberOfOpenTabs = file_explorer.tabSizing.open.filter(a => a.open);
+
+            // if (numberOfOpenTabs) {
+
+            // };
+            
+            // jQuery('file_explorer')[0].classList.
+            setTimeout(() => {
+                file_explorer.tabSizing.update();
+            }, 450) // since it takes 450 millis for the animation to finish, wait the duration, then update the tabsizes
+        }
 
         const listenForBlur = (clickedEv) => {
             let target = clickedEv.target;
@@ -64,7 +85,12 @@
 
             let classPath = elementUtils.getClassList(target).join(' '); 
             let isTargetAFile = classPath.includes('single-folder-item');
-            if(!classPath.includes('explorer-tab ') || classPath.includes('explorer-tab-header ') || isTargetAFile) {
+
+            let isNotExplorerTab = !classPath.includes('explorer-tab '); 
+            let isExploirerTabHeader = classPath.includes('explorer-tab-header ');
+            let isSameTab = classPath.includes(`tabname-${translatedTabName}`)
+            
+            if(isNotExplorerTab || isExploirerTabHeader || isTargetAFile || !isSameTab) {
                 tabWindowOutlined = false;
                 document.removeEventListener('keydown', selectAllPerKeyboard);
 
@@ -81,32 +107,65 @@
         document.addEventListener('mousedown', listenForBlur);
     }
 
-    onMount(() => {
-        let translationObject = {
-            open_editors: 'active',
-            folders: 'folder',
-            outline: 'outline',
-            timeline: 'timeline',
-            npm_scripts: 'npm scripts'
+    
+    let translationObject = {
+        open_editors: 'active',
+        folders: 'folder',
+        outline: 'outline',
+        timeline: 'timeline',
+        npm_scripts: 'npm scripts'
+    }
+    
+    let routeTranslation = {
+        'active' : "open_editors",
+        'folder' : "folders",
+        'outline' : "outline",
+        'timeline' : "timeline",
+        'npm scripts' : "npm_scripts",
+    }
+    
+    let translatedTabName = routeTranslation[tabName];
+
+    const handleResizing = (newDistance) => {
+        console.log(newDistance);
+
+        file_explorer.tabSizing.resize({
+            name: translatedTabName,
+            distance: newDistance
+        })
+    }
+
+    const onDragStart = () => {
+        let indexOfTab = file_explorer.tabSizing.tabIndexes[translatedTabName];
+
+        if(file_explorer.tabSizing.open.length == 0 || file_explorer.tabSizing.open[indexOfTab].open != isExpanded) {
+            file_explorer.tabSizing.update();
         }
 
-        let routeTranslation = {
-            'active' : "open_editors",
-            'folder' : "folders",
-            'outline' : "outline",
-            'timeline' : "timeline",
-            'npm scripts' : "npm_scripts",
-        }
+        disableExpansion = true
+    }
+    
+    const onDragEnd = () => {
+        file_explorer.tabSizing.update();
+
+        setTimeout(() => {
+            disableExpansion = false
+        }, 1)
+    }
+
+    onMount(() => {
+
 
         let tabroute = `explorer_tabs.show.files.${routeTranslation[tabName]}`;
+ 
         isDisabled = !settings.section.get(tabroute);
 
         document.addEventListener('tabsConfigChanged', (ev) => {
 
             let eventTab = ev.detail.tabName;
-            let translatedTabName = translationObject[eventTab];
+            let translatedEventTabName = translationObject[eventTab];
 
-            if(tabName == translatedTabName) {
+            if(tabName == translatedEventTabName) {
                 // console.log(ev.detail)
                 isDisabled = !isDisabled
             }
@@ -114,9 +173,13 @@
     })
 </script>
 
-
-<div class="explorer-tab {isExpanded ? 'expanded' : ''} {tabWindowOutlined ? 'window-outlined' : ''} {isDisabled ? 'tabDisabled' : ''}" on:click={outlineTab}>
+<div class="explorer-tab tabname-{translatedTabName} {isExpanded ? 'expanded' : ''} {tabWindowOutlined ? 'window-outlined' : ''} {isDisabled ? 'tabDisabled' : ''}" on:click={outlineTab}>
     <div class="explorer-tab-header {tabName} {tabOutlined ? 'outlined' : ''}" on:click={handleTabClick}>
+        <ResizeableBorder borders={{
+            // top: true,
+            top: true
+        }} {handleResizing} {onDragStart} {onDragEnd}></ResizeableBorder>
+
         <div class="left-side">
             <div class="arrow-placeholder">
                 <div style="-webkit-mask-size: 1rem;" class="arrow-icon">
@@ -166,6 +229,7 @@
         /* border-color: #2b2b2b; */
         min-height: .8rem;
         height: .8rem;
+        position: relative;
     }
 
     .explorer-tab {
@@ -184,6 +248,7 @@
 
     .explorer-tab.expanded {
         max-height: 95vh;
+        min-height: 5rem;
     }
 
     :global(.explorer-tab.window-outlined>:not(.explorer-tab-header)) {
@@ -292,5 +357,28 @@
 
     .tabDisabled {
         display: none;
+    }
+
+    /* .tabname-open_editors.expanded {
+        height: var(--open_editors-y-offset);
+    } */
+     
+    .tabname-folders.expanded {
+        min-height: var(--folders-y-offset);
+    }
+
+    .tabname-outline.expanded {
+        min-height: var(--outline-y-offset);
+    }
+    .tabname-timeline.expanded {
+        min-height: var(--timeline-y-offset);
+    }
+    .tabname-npm_scripts.expanded {
+        min-height: var(--npm_scripts-y-offset);
+    }
+
+    .tabname-open_editors.expanded {
+        min-height: .8rem;
+        flex-grow: 0;
     }
 </style>

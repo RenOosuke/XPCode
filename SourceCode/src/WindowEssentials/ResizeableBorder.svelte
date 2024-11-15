@@ -1,5 +1,7 @@
 <script>
     export let handleResizing;
+    export let onDragStart = undefined;
+    export let onDragEnd = undefined;
     export let borders = {}
     let {
         top = false,
@@ -26,6 +28,10 @@
         document.body.removeAttribute("id")
         document.body.removeAttribute("class")
         document.body.style.removeProperty('cursor');
+
+        if(onDragEnd) {
+            onDragEnd();
+        }
     }
 
     const mouseMoveTracker = (ev) => {
@@ -41,6 +47,10 @@
     }
 
     const handleMouseDown = (ev, _direction) => {
+        if(onDragStart) {
+            onDragStart();
+        }
+
         switch(_direction) {
             case 'top':
             case 'bottom':
