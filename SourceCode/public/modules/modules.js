@@ -38,11 +38,6 @@ window.child_process = require('child_process');
 //     console.log(stdout);
 // })
 
-child_process.spawn('C:\\Windows\\System32\\cmd.exe', {
-    shell: true,
-    stdio: 'pipe'
-})
-
 console.log(window.session);
 window.setTheme = function(themeName) {
     var foldersElement =  $('#explorer')[0];
@@ -236,7 +231,10 @@ window.spreader = (...objs) =>  {
                 '--tooltip-bg': '#202020',
                 '--item-select-bg': '#04395e',
                 '--gray-out-selection': '#37373d',
-                '--error-border-color': '#bd1100'
+                '--error-border-color': '#bd1100',
+                '--tree-line': '#313131',
+                '--focused-tree-line': '#585858',
+                '--file-hover-unselected': 'rgba(60, 66, 68, 0.35)'
             };
     
             let colorVariables = Object.keys(colorVariablesMapping);

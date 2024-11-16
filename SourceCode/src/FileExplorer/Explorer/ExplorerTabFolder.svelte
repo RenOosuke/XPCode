@@ -183,8 +183,7 @@
         // }, 100);
 
         let treeChangeEvent = (ev) => {
-            let eventDetails = ev.detail;
-            file_explorer.changeEvent = eventDetails;
+            let eventDetails = ev;
 
             if (eventDetails.parentDir === launchArguments) {
                 if (eventDetails.create) {
@@ -206,7 +205,11 @@
             }
         };
 
-        document.addEventListener("tree_changed", treeChangeEvent);
+        file_explorer.itemEvents[launchArguments] = {
+            childrenRerender: treeChangeEvent
+        }
+
+        // document.addEventListener("tree_changed", treeChangeEvent);
 
         document.addEventListener("keyboard_shortcut.file_explorer", (ev) => {
             let action = ev.detail.functionName;

@@ -15,15 +15,24 @@ const treeChangeEvent = (directoryEl, create) => {
     index = file_explorer.folders[parentDir].children.findIndex(child => child.full_path === directoryEl.full_path)
   }
   // ${level}_${parentDir}
-  return new CustomEvent(`tree_changed`, {
-    detail: {
-      element: directoryEl,
-      parentDir,
-      index,
-      create,
-      level
-    }
-  })
+
+  file_explorer.itemEvents[parentDir].childrenRerender({
+    element: directoryEl,
+    parentDir,
+    index,
+    create,
+    level
+  });
+
+  // return new CustomEvent(`tree_changed`, {
+  //   detail: {
+  //     element: directoryEl,
+  //     parentDir,
+  //     index,
+  //     create,
+  //     level
+  //   }
+  // })
 }
 
 window.file_explorer = {
@@ -182,8 +191,9 @@ window.file_explorer = {
       let difference = new Date() - file_explorer.lastReloaded;
 
       if( difference >= file_explorer.refreshTime-1) {
-        let fileEvent = treeChangeEvent(details, isCreating);
-        document.dispatchEvent(fileEvent);
+        // let fileEvent = 
+        treeChangeEvent(details, isCreating);
+        // document.dispatchEvent(fileEvent);
         file_explorer.lastReloaded = new Date();
       }
 
@@ -505,6 +515,9 @@ window.file_explorer = {
       },
 
       maxHeight: 0
+    },
+    itemEvents: {
+
     }
   };
 

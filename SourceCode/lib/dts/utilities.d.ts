@@ -63,7 +63,8 @@ type file_explorer = {
     rerender(): void,
     update(): void,
     resize(tabEvent: tabEvent): void
-   }
+   },
+   itemEvents: {}
 }
 
 declare var file_explorer: file_explorer;

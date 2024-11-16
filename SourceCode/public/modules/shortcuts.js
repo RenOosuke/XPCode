@@ -12,8 +12,72 @@
     //     console.log(ev)
 
     // })
-    let _rerenderSelectedItems = (shouldExpand) => 
-        document.dispatchEvent(new CustomEvent('file_explorer_element_selected', {detail: shouldExpand}));
+    let _rerenderSelectedItems = (() => {
+        let oldConfig = {
+            hoveredItem: file_explorer.hoveredItem,
+            cutPaths: [...file_explorer.cutPaths],
+            selectedItems: [...file_explorer.selectedItems]
+        }
+
+        return (shouldExpand) => {
+            // Render old selected items as unselected
+            oldConfig.selectedItems.forEach((selectedItem) => {
+                file_explorer.itemEvents[selectedItem].select(false);
+                // file_explorer.itemEvents[]
+                let parentDir = path.dirname(selectedItem);
+
+                if(parentDir != launchArguments) {
+                    file_explorer.itemEvents[parentDir].childSelected(false);
+                }
+            })
+            
+            // Render newly selected items
+            file_explorer.selectedItems.forEach((selectedItem) => {
+                file_explorer.itemEvents[selectedItem].select(true);
+
+                let parentDir = path.dirname(selectedItem);
+
+                if(parentDir != launchArguments) {
+                    file_explorer.itemEvents[parentDir].childSelected(true);
+                }
+            })
+
+            // Copy the new items as "old" for the next rerender
+            oldConfig.selectedItems = [...file_explorer.selectedItems];
+            
+            
+            // =========================================Cutting
+            
+            // Render old cut items as unselected
+            oldConfig.cutPaths.forEach((cutItem) => {
+                file_explorer.itemEvents[cutItem].cut(false);
+            })
+            
+            // Render newly cut items
+            file_explorer.cutPaths.forEach((cutItem) => {
+                file_explorer.itemEvents[cutItem].cut(true);
+            })
+
+            // Copy the new items as "old" for the next rerender
+            oldConfig.cutPaths = [...file_explorer.cutPaths];
+
+            // =========================================Hovering
+            if(oldConfig.hoveredItem && oldConfig.hoveredItem.length>0) {
+                file_explorer.itemEvents[oldConfig.hoveredItem].hover(false)
+            }
+
+            if(file_explorer.hoveredItem && file_explorer.hoveredItem.length>0) {
+                file_explorer.itemEvents[file_explorer.hoveredItem].hover(true);
+            }
+
+            oldConfig.hoveredItem = file_explorer.hoveredItem;
+
+            if(shouldExpand) {
+                file_explorer.itemEvents[file_explorer.hoveredItem].expand();
+            }
+        }
+    })()
+        // document.dispatchEvent(new CustomEvent('file_explorer_element_selected', {detail: shouldExpand}));
     
     let _getVisibleElements = () => {
         return jQuery('.header-part:visible').toArray()

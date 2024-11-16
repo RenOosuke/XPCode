@@ -18,7 +18,8 @@
     let isSelected = false;
     let isEditing = true;
     let isCut = false;
-
+    let shouldFocusTreeLine = false;
+    
     let overlapsExistingPath = false;
 
     let new_path;
@@ -379,15 +380,33 @@
     }
     
     onMount(() => {
-        document.addEventListener("file_explorer_element_selected", (ev) => {
-            isHovered = full_path == file_explorer.hoveredItem;
-            isSelected = file_explorer.selectedItems.includes(full_path);
-            isCut = file_explorer.cutPaths.includes(full_path);
+        file_explorer.itemEvents[full_path] = {
+            select: (selectionValue) => {
+                isSelected = selectionValue;
+            },
 
-            if (ev.detail && isHovered) {
-                _expansionToggle();
-            }
-        });
+            hover: (hoverValue) => {
+                isHovered = hoverValue
+                // isHovered = full_path == file_explorer.hoveredItem;
+            },
+
+            cut: (cutValue) => {
+                isCut = cutValue//file_explorer.cutPaths.includes(full_path)
+            },
+        }
+        
+        // document.addEventListener("file_explorer_element_selected", (ev) => {
+
+
+        // });
+
+        if(isFolder) {
+            document.addEventListener("sub_item_selected", (ev) => {
+                if(ev.detail.level == level && full_path == ev.detail.parentDir) {
+                    shouldFocusTreeLine;
+                }
+            })
+        }
 
         document.addEventListener("keyboard_shortcut.file_explorer", (ev) => {
             let action = ev.detail.functionName;
@@ -435,8 +454,7 @@
 
         if (isFolder) {
             let treeChangeEvent = (ev) => {
-                let eventDetails = ev.detail;
-                file_explorer.changeEvent = eventDetails;
+                let eventDetails = ev;
 
                 if (eventDetails.parentDir === full_path) {
                     if (eventDetails.create) {
@@ -456,7 +474,14 @@
                 }
             };
 
-            document.addEventListener("tree_changed", treeChangeEvent);
+            let subItemSelected = (selectionValue) => {
+                shouldFocusTreeLine = selectionValue;
+            }
+
+            file_explorer.itemEvents[full_path].childrenRerender = treeChangeEvent;
+            file_explorer.itemEvents[full_path].expand = _expansionToggle;
+            file_explorer.itemEvents[full_path].childSelected = subItemSelected;
+            // document.addEventListener("tree_changed", treeChangeEvent);
         }
     });
 </script>
@@ -467,7 +492,9 @@
 <div
 class="single-folder-item index{index} {isExpanded
         ? 'expanded'
-        : ''}{parentIsExpanded ? '' : ' parent-colapsed'} staging-{isStaging}{overlapsExistingPath ? ' hasError' : ''}"
+        : ''}{parentIsExpanded ? '' : ' parent-colapsed'} {isSelected
+            ? 'item_selected'
+            : ''} staging-{isStaging}{overlapsExistingPath ? ' hasError' : ''}"
 >
 <div
         class="header-part {isHovered ? ' _hovered' : ''}{isSelected
@@ -480,6 +507,12 @@ class="single-folder-item index{index} {isExpanded
         {full_path}
         >
         <div class="left-side">
+            <!-- {#if level>0}
+                <div class="tree-line">
+
+                </div>
+            {/if} -->
+
             {#if isFolder}
             <div class="arrow-placeholder">
                 <div
@@ -509,23 +542,30 @@ class="single-folder-item index{index} {isExpanded
                     {/if}
                 </div>
             </div>
-            
-    {#if items}
-        {#each items as singleItemProps, childIndex (singleItemProps.full_path)}
-            <svelte:self
-                bind:isFolder={singleItemProps.isFolder}
-                bind:full_path={singleItemProps.full_path}
-                bind:isStaging={singleItemProps.isStaging}
-                bind:_new={singleItemProps.new}
-                bind:_name={singleItemProps.name}
-                bind:children={singleItemProps.children}
-                level={level + 1}
-                parentIsExpanded={isExpanded}
-                index={childIndex}
-                entityDirectory={singleItemProps.name}
-            />
-        {/each}
-    {/if}
+
+        {#if items}
+            {#each items as singleItemProps, childIndex (singleItemProps.full_path)}
+                <svelte:self
+                    bind:isFolder={singleItemProps.isFolder}
+                    bind:full_path={singleItemProps.full_path}
+                    bind:isStaging={singleItemProps.isStaging}
+                    bind:_new={singleItemProps.new}
+                    bind:_name={singleItemProps.name}
+                    bind:children={singleItemProps.children}
+                    level={level + 1}
+                    parentIsExpanded={isExpanded}
+                    index={childIndex}
+                    entityDirectory={singleItemProps.name}
+                />
+            {/each}
+        {/if}
+
+        {#if isFolder && isExpanded}
+            <div class="tree-line {shouldFocusTreeLine ? 'tree_focused' : ''}" style="left: {1.65 + level * 0.7}rem;">
+
+            </div>
+        {/if}
+
 </div>
 
 <style>
@@ -561,7 +601,7 @@ class="single-folder-item index{index} {isExpanded
     }
 
     .header-part:hover:not(._hovered):not(._selected) {
-        background-color: #2a2d2e;
+        background-color: var(--file-hover-unselected);
         cursor: pointer;
     }
 
@@ -621,6 +661,10 @@ class="single-folder-item index{index} {isExpanded
         flex-direction: column;
     } */
 
+    .single-folder-item {
+        position: relative;
+    }
+
     ._hovered {
         border: solid 1px var(--outline-color);
     }
@@ -678,5 +722,22 @@ class="single-folder-item index{index} {isExpanded
 
     .staging-false .is-cut .directory-name, .staging-false .is-cut .file-icon-placeholder{
         opacity: .5;
+    }
+
+    .tree-line {
+        height: calc(100% - 1.4rem);
+        /* height: calc(100% + .2rem); */
+        width: 1px;
+        background-color: var(--tree-line);
+        /* border-left: 1px solid var(--tree-line); */
+        position: absolute;
+        z-index: 1000;
+        top: 1.4rem;
+        /* top: 50%; */
+        /* transform: translate(0, -50%); */
+    }
+
+    .tree-line.tree_focused {
+        border-left: solid 1px var(--focused-tree-line) !important;    
     }
 </style>
