@@ -188,7 +188,9 @@
             )
 
             // Select an item by rightclicking it (only give border as if it's hovered);
-            isHovered = true;
+            // isHovered = true;
+            file_explorer.hoveredItem = full_path
+            shortcuts.rerenderSelected()
 
             // Unselect it on blur, but don't remove the defautl listener
             let _hoverRerender = () => {
