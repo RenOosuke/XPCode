@@ -165,8 +165,6 @@
         );
     };
 
-    const getContextMenuFunctions = (action) => file_explorer.contextFunctions[action]({full_path, additionalData: { isStaging, isFolder }, evaluator})
-
     const handleContextMenu = (ev) => {
         if (!ev.altKey) {
             ev.preventDefault();
@@ -395,64 +393,8 @@
             cut: (cutValue) => {
                 isCut = cutValue//file_explorer.cutPaths.includes(full_path)
             },
+            genericHotkeyAction,
         }
-        
-        // document.addEventListener("file_explorer_element_selected", (ev) => {
-
-
-        // });
-
-        if(isFolder) {
-            document.addEventListener("sub_item_selected", (ev) => {
-                if(ev.detail.level == level && full_path == ev.detail.parentDir) {
-                    shouldFocusTreeLine;
-                }
-            })
-        }
-
-        document.addEventListener("keyboard_shortcut.file_explorer", (ev) => {
-            let action = ev.detail.functionName;
-            switch (action) {
-                case "delete":
-                    if (file_explorer.selectedItems.includes(full_path)) {
-                        
-                        console.log(full_path);
-                        
-                        if (isFolder) {
-                            let childItems = file_explorer.selectedItems.filter(
-                                (_path) => _path.includes(`${full_path}\\`),
-                            );
-                            file_explorer.selectedItems =
-                            file_explorer.selectedItems.filter(
-                                (_path) => !childItems.includes(_path),
-                            );
-                        }
-                        
-                        getContextMenuFunctions(action)
-                    }
-                    break;
-
-                case "new_file":
-                    if (
-                        !file_explorer.grayedOut &&
-                        file_explorer.hoveredItem == full_path && 
-                        isFolder
-                    ) {
-                        genericHotkeyAction(action);
-                    }
-                    break;
-
-                case "rename":
-                case  "reveal_in_file_explorer":
-                case 'copy':
-                case 'cut':
-                    if (file_explorer.hoveredItem == full_path) {
-                        genericHotkeyAction(action);
-                    }    
-                break
-
-            }
-        });
 
         if (isFolder) {
             let treeChangeEvent = (ev) => {
@@ -483,7 +425,6 @@
             file_explorer.itemEvents[full_path].childrenRerender = treeChangeEvent;
             file_explorer.itemEvents[full_path].expand = _expansionToggle;
             file_explorer.itemEvents[full_path].childSelected = subItemSelected;
-            // document.addEventListener("tree_changed", treeChangeEvent);
         }
     });
 </script>

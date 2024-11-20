@@ -4,6 +4,8 @@ window.sidebarTabs = {
     activeTab: '',
 }
 
+let updatesHappened = 0;
+
 const treeChangeEvent = (directoryEl, create) => {
   let parentDir = path.dirname(directoryEl.full_path);
   let directoriesInPath = parentDir.split('\\').length;
@@ -11,28 +13,22 @@ const treeChangeEvent = (directoryEl, create) => {
   let level = directoriesInPath - directoriesInLaunchPath;
   let index = directoryEl.index;
 
-  if(index == undefined || index == null || index == -1){
-    index = file_explorer.folders[parentDir].children.findIndex(child => child.full_path === directoryEl.full_path)
+  if(directoryEl.full_path !== launchArguments) {
+    if(index == undefined || index == null || index == -1){
+      index = file_explorer.folders[parentDir].children.findIndex(child => child.full_path === directoryEl.full_path)
+    }
+    // ${level}_${parentDir}
+  
+    let foundItem = file_explorer.itemEvents[parentDir];
+    
+    foundItem && foundItem.childrenRerender({
+      element: directoryEl,
+      parentDir,
+      index,
+      create,
+      level
+    });
   }
-  // ${level}_${parentDir}
-
-  file_explorer.itemEvents[parentDir].childrenRerender({
-    element: directoryEl,
-    parentDir,
-    index,
-    create,
-    level
-  });
-
-  // return new CustomEvent(`tree_changed`, {
-  //   detail: {
-  //     element: directoryEl,
-  //     parentDir,
-  //     index,
-  //     create,
-  //     level
-  //   }
-  // })
 }
 
 window.file_explorer = {
@@ -111,20 +107,6 @@ window.file_explorer = {
 
     sortDirectories: function(_directoriesList) {
         let directoriesList = [..._directoriesList];
-        // console.log(directoriesList);
-
-        // const basicComparison = (a, b) => {
-
-        //       if (a < b) {
-        //         return -1;
-        //       }
-
-        //       if (a > b) {
-        //         return 1;
-        //       }
-
-        //       return 0;
-        // }
 
         return directoriesList.sort(VSCode.original.comparer.compare)
     },
@@ -156,6 +138,8 @@ window.file_explorer = {
         full_path: filePath
       }
 
+      updatesHappened++;
+
       if(isCreating) {
 
         if(isFolder) {
@@ -171,7 +155,7 @@ window.file_explorer = {
         if(file_explorer.folders[parentDir]) {
           if(new Date() - file_explorer.folders[parentDir].last_sorted >= file_explorer.refreshTime || 500) {
             file_explorer.folders[parentDir].children = file_explorer.sortDirectories([...(file_explorer.folders[parentDir]).children, details]);
-            last_sorted = new Date();
+            file_explorer.folders[parentDir].last_sorted = new Date();
           } else {
             file_explorer.folders[parentDir].children = [...(file_explorer.folders[parentDir]).children, details];
           }
@@ -190,7 +174,7 @@ window.file_explorer = {
 
       let difference = new Date() - file_explorer.lastReloaded;
 
-      if( difference >= file_explorer.refreshTime-1) {
+      if( true || difference >= file_explorer.refreshTime-1) {
         // let fileEvent = 
         treeChangeEvent(details, isCreating);
         // document.dispatchEvent(fileEvent);
@@ -539,8 +523,6 @@ window.file_explorer = {
   
   xp_chokidar.on('File modified', path => console.log(`File ${path} has been changed`));
   // xp_chokidar.on("Finished logging existing paths",)
-  setTimeout(() => {
-    xp_chokidar.watch(launchArguments)
-  }, 10);
-
+  xp_chokidar.watch(launchArguments)
+  
   // watcher.on('change', path => console.log(`File ${path} has been changed`));

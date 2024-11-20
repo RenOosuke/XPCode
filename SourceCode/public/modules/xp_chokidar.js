@@ -28,6 +28,7 @@
 
                 if(funcs) {
                     funcs.forEach((subscribedFunction) => {
+                        // console.log(eventPath);
                         subscribedFunction(eventPath);
                     });
                 }
@@ -48,11 +49,18 @@
             const watcherProcess = spawn(chokidarPath, [pathToExec]);
 
             watcherProcess.stdout.on('data', (data) => {
-                let outputLines = data.toString().split('\u000d\n').filter(a => a.length > 0);
+                let outputLines = data.toString().split('\u000d\n');
+                outputLines = outputLines.filter(a => a.length > 0);
 
-                outputLines.forEach((line) => {
-                    cachedWatchers.event(line);
-                });
+                let i = 0;
+
+                for (i = 0; i < outputLines.length; i++) {
+                    try {
+                        cachedWatchers.event(outputLines[i]);
+                    } catch (err) {
+                        console.error(`Error processing line: "${outputLines[i]}"`, err);
+                    }
+                }
             });
 
             watcherProcess.stderr.on('data', (data) => {

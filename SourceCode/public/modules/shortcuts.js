@@ -2,7 +2,15 @@
     let _activeKeys = []
     let _canFillKeys = false
     let _shortcutsPaused = false;
-
+    const FILE_EXPLORER = 'file_explorer';
+    const ACTIONS = {
+        DELETE: 'delete',
+        NEW_FILE: 'new_file',
+        RENAME: 'rename',
+        REVEAL_IN_FILE_EXPLORER: 'reveal_in_file_explorer',
+        COPY: 'copy',
+        CUT: 'cut'
+    }
     // let keyTranslation = {
     //     'Ctrl',
         
@@ -84,9 +92,43 @@
     };
     
     let customShortcutEvent = (tab, functionName) => {
-        return document.dispatchEvent(new CustomEvent(`keyboard_shortcut.${tab}`, {detail: {
-            functionName
-        }}));
+        if(tab == FILE_EXPLORER) {
+            switch (functionName) {
+                case ACTIONS.DELETE:
+                    file_explorer.selectedItems = file_explorer.selectedItems.sort((fileA, fileB) => {
+                        return fileA.length - fileB.length
+                    });
+
+                
+                    let selectedFolders = file_explorer.selectedItems.filter((_path) => file_explorer.folders[_path])
+
+                    selectedFolders.forEach((_folder) => {
+                        file_explorer.selectedItems = file_explorer.selectedItems.filter(_path => _path == _folder || !_path.includes(_folder));
+                    });
+
+                    file_explorer.selectedItems.forEach((_selected) => {
+                        file_explorer.itemEvents[_selected].genericHotkeyAction(functionName);
+                    })
+                    break;
+    
+                case ACTIONS.NEW_FILE:
+                    if (
+                        !file_explorer.grayedOut &&
+                        file_explorer.hoveredItem
+                    ) {
+                        file_explorer.itemEvents[file_explorer.hoveredItem].genericHotkeyAction(functionName);
+                    }
+                    break;
+    
+                case ACTIONS.RENAME:
+                case ACTIONS.REVEAL_IN_FILE_EXPLORER:
+                case ACTIONS.COPY:
+                case ACTIONS.CUT:
+                    file_explorer.itemEvents[file_explorer.hoveredItem].genericHotkeyAction(functionName);
+                break
+    
+            }
+        }
     }
     
     let shortcutTranslation = {
@@ -112,6 +154,8 @@
 
 
     let _keysGotRefreshed = true;
+
+
 
     const checkForKeyCombinations = () => {
         let fileExplorerCombinations = settings.section.get('shortcuts.file_explorer');        
