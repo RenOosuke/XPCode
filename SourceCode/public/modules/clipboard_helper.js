@@ -8,87 +8,35 @@
 
         let clipboardPath = path.resolve('public\\modules\\executables\\clipboard_helper.exe');
 
-        const _clipboardHelper = spawn(clipboardPath, [], {
-            detached: true,
-            stdio: ['pipe', 'pipe', 'pipe']
-        });
-
         const parsePaths = (arr) => arr.join('::');
 
-        const stopWatching = () => {
-            console.log('CLOSING OFF');
-            sendCommand('exit');
-            _clipboardHelper.unref();
-
-            try {
-                _clipboardHelper.kill();
-            } catch (e) {}
+        const buildCommandLine = (command, commandParameters) => {
+            switch (command) {
+                case 'check':
+                    return 'check';
+                case 'copy':
+                    return `copy_files ${parsePaths(commandParameters.files)}`;
+                case 'cut':
+                    return `cut_files ${parsePaths(commandParameters.files)}`;
+                case 'paste':
+                    return `paste_files ${parsePaths(commandParameters.files)}`;
+                default:
+                    throw new Error('Unsupported command');
+            }
         };
-
-        if (typeof window !== 'undefined') {
-            window.addEventListener('beforeunload', stopWatching);
-        }
-
-        let resolveCurrentCommand = null;
-        let rejectCurrentCommand = null;
-
-        // Set up a single stdout listener to handle all command responses
-        let fullCommand = '';
-
-        _clipboardHelper.stdout.on('data', (data) => {
-            if (!resolveCurrentCommand) {
-                // console.log(data.toString());
-                return; // No active command to resolve
-            }
-
-            let commandOutput = data.toString();
-
-            if(fullCommand.length>0) {
-                commandOutput = fullCommand + commandOutput;
-            }
-
-            let lines = commandOutput.split('\n');
-            let lastLine = lines[lines.length - 2] || ""; // Second last line due to potential trailing newline
-            let isFullResponse = lastLine === PROGRAM_CONSTS.END;
-
-            if (isFullResponse) {
-                lines = lines.slice(0, -2); // Remove the "___end___" marker from the output
-                let fullResponse = lines.join('\n');
-                resolveCurrentCommand(fullResponse); // Resolve the promise with the response
-                resolveCurrentCommand = null; // Clear current command handler
-                fullCommand = '';
-            } else {
-                fullCommand += commandOutput;
-            }
-        });
-
-        _clipboardHelper.stderr.on('data', (data)=> {
-            if(!rejectCurrentCommand) {
-                return
-            }
-
-            let err = data.toString();
-            console.log(err);
-            rejectCurrentCommand(err);
-        })
-
-        _clipboardHelper.on('error', (data)=> {
-            if(!rejectCurrentCommand) {
-                return
-            }
-
-            let err = data.toString();
-            console.log(err);
-            rejectCurrentCommand(err);
-        })
-
-        // _clipboardHelper.stderr.on
 
         const sendCommand = (command, commandParameters) => {
             return new Promise((resolve, reject) => {
-                rejectCurrentCommand = reject;
+                const clipboardHelper = spawn(clipboardPath, [], {
+                    detached: false,
+                    stdio: ['pipe', 'pipe', 'pipe'],
+                });
 
-                switch (command) {
+                let resolveCurrentCommand = resolve;
+
+                let fullCommand = '';
+
+                switch(command) {
                     case 'check':
                         resolveCurrentCommand = (fullResponse) => {
                             let newLines = fullResponse.split('\n');
@@ -111,9 +59,7 @@
                             });
                         }
 
-                        _clipboardHelper.stdin.write(`${command}\n`);
-                        break;
-
+                    break;
                     case 'copy':
                         if (commandParameters.file_explorer) {
 
@@ -133,9 +79,9 @@
                                 }
                             }
 
-                            const filesToCopy = parsePaths(commandParameters.files);
+                            // const filesToCopy = parsePaths(commandParameters.files);
 
-                            _clipboardHelper.stdin.write(`copy_files ${filesToCopy}\n`);
+                            // _clipboardHelper.stdin.write(`copy_files ${filesToCopy}\n`);
                         }
                         break;
 
@@ -157,8 +103,8 @@
                                 }
                             }
 
-                            const filesToCut = parsePaths(commandParameters.files);
-                            _clipboardHelper.stdin.write(`cut_files ${filesToCut}\n`);
+                            // const filesToCut = parsePaths(commandParameters.files);
+                            // _clipboardHelper.stdin.write(`cut_files ${filesToCut}\n`);
                         }
                         break;
 
@@ -182,21 +128,58 @@
                                 resolve(fullResponse)
                             }
 
-                            const destinationToPaste = parsePaths(commandParameters.files);
-                            _clipboardHelper.stdin.write(`paste_files ${destinationToPaste}\n`);
+                            // const destinationToPaste = parsePaths(commandParameters.files);
+                            // _clipboardHelper.stdin.write(`paste_files ${destinationToPaste}\n`);
                         }
                         break;
-                    default:
-                        reject(new Error("Unsupported command."));
-                        resolveCurrentCommand = null; // Clear handler on unsupported command
-                        break;
+                }
+                
+                clipboardHelper.stdout.on('data', (data) => {
+                    let commandOutput = data.toString();
+                    if (fullCommand.length > 0) {
+                        commandOutput = fullCommand + commandOutput;
+                    }
+
+                    let lines = commandOutput.split('\n');
+                    let lastLine = lines[lines.length - 2] || ''; // Second last line
+                    let isFullResponse = lastLine === PROGRAM_CONSTS.END;
+
+                    if (isFullResponse) {
+                        lines = lines.slice(0, -2); // Remove "___end___"
+                        resolveCurrentCommand(lines.join('\n'));
+                        fullCommand = '';
+                        clipboardHelper.kill(); // Close the process once resolved
+                    } else {
+                        fullCommand += commandOutput;
+                    }
+                });
+
+                clipboardHelper.stderr.on('data', (data) => {
+                    reject(data.toString());
+                    clipboardHelper.kill(); // Ensure the process is terminated on error
+                });
+
+                clipboardHelper.on('error', (error) => {
+                    reject(error);
+                    clipboardHelper.kill(); // Terminate the process if it fails
+                });
+
+                clipboardHelper.on('close', (code) => {
+                    if (code !== 0) {
+                        reject(new Error(`Clipboard helper exited with code ${code}`));
+                    }
+                });
+
+                // Send the command to the clipboard helper
+                try {
+                    const commandLine = buildCommandLine(command, commandParameters);
+                    clipboardHelper.stdin.write(`${commandLine}\n`);
+                } catch (error) {
+                    reject(error);
+                    clipboardHelper.kill(); // Terminate process on write error
                 }
             });
         };
-
-        _clipboardHelper.on('close', (code) => {
-            console.log(`Clipboard helper exited with code ${code}`);
-        });
 
         return {
             parsePaths,
@@ -204,12 +187,3 @@
         };
     })();
 }
-
-
-// setTimeout(() => {
-//     clipboardHelper.sendCommand('check').then((a) => {
-//         console.log(a)
-
-//         // clipboardHelper.sendCommand('check').then(b => console.log(b));
-//     });
-// }, 3000)
