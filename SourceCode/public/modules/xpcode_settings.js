@@ -29,7 +29,12 @@
                 new_folder: "Win__Alt__n",
                 reveal_in_file_explorer: "Shift__Alt__r",
                 copy: "Ctrl__c",
-                cut: "Ctrl__x"
+                cut: "Ctrl__x",
+                paste: "Ctrl__v",
+            },
+            general: {
+                search_by_file_name: "Ctrl__p",
+                command_pallette: "Ctrl__Shift__p"
             }
         },
 

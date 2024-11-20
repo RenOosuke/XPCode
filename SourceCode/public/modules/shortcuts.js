@@ -9,7 +9,8 @@
         RENAME: 'rename',
         REVEAL_IN_FILE_EXPLORER: 'reveal_in_file_explorer',
         COPY: 'copy',
-        CUT: 'cut'
+        CUT: 'cut',
+        PASTE: 'paste'
     }
     // let keyTranslation = {
     //     'Ctrl',
@@ -91,43 +92,66 @@
         return jQuery('.header-part:visible').toArray()
     };
     
+    let explorerTabLevelEvent = (tab, functionName) => {
+        document.dispatchEvent(new CustomEvent(`keyboard_shortcut.${tab}`, {detail: {
+            functionName
+        }}))
+    }
+    
     let customShortcutEvent = (tab, functionName) => {
-        if(tab == FILE_EXPLORER) {
-            switch (functionName) {
-                case ACTIONS.DELETE:
-                    file_explorer.selectedItems = file_explorer.selectedItems.sort((fileA, fileB) => {
-                        return fileA.length - fileB.length
-                    });
-
-                
-                    let selectedFolders = file_explorer.selectedItems.filter((_path) => file_explorer.folders[_path])
-
-                    selectedFolders.forEach((_folder) => {
-                        file_explorer.selectedItems = file_explorer.selectedItems.filter(_path => _path == _folder || !_path.includes(_folder));
-                    });
-
-                    file_explorer.selectedItems.forEach((_selected) => {
-                        file_explorer.itemEvents[_selected].genericHotkeyAction(functionName);
-                    })
-                    break;
+        try {
+            if(tab == FILE_EXPLORER) {
+                switch (functionName) {
+                    case ACTIONS.DELETE:
+                        file_explorer.selectedItems = file_explorer.selectedItems.sort((fileA, fileB) => {
+                            return fileA.length - fileB.length
+                        });
     
-                case ACTIONS.NEW_FILE:
-                    if (
-                        !file_explorer.grayedOut &&
-                        file_explorer.hoveredItem
-                    ) {
-                        file_explorer.itemEvents[file_explorer.hoveredItem].genericHotkeyAction(functionName);
-                    }
-                    break;
+                    
+                        let selectedFolders = file_explorer.selectedItems.filter((_path) => file_explorer.folders[_path])
     
-                case ACTIONS.RENAME:
-                case ACTIONS.REVEAL_IN_FILE_EXPLORER:
-                case ACTIONS.COPY:
-                case ACTIONS.CUT:
-                    file_explorer.itemEvents[file_explorer.hoveredItem].genericHotkeyAction(functionName);
-                break
+                        selectedFolders.forEach((_folder) => {
+                            file_explorer.selectedItems = file_explorer.selectedItems.filter(_path => _path == _folder || !_path.includes(_folder));
+                        });
     
+                        file_explorer.selectedItems.forEach((_selected) => {
+                            file_explorer.itemEvents[_selected].genericHotkeyAction(functionName);
+                        })
+                        break;
+        
+                    case ACTIONS.NEW_FILE:
+                        if (
+                            !file_explorer.grayedOut
+                        ) {
+                            if(file_explorer.hoveredItem) {
+                                file_explorer.itemEvents[file_explorer.hoveredItem].genericHotkeyAction(functionName);
+                            } else {
+                                explorerTabLevelEvent(tab, functionName)
+                            }
+                        }
+                        break;
+        
+                    case ACTIONS.RENAME:
+                    case ACTIONS.REVEAL_IN_FILE_EXPLORER:
+                    case ACTIONS.COPY:
+                    case ACTIONS.CUT:
+                        if(file_explorer.hoveredItem) {
+                            file_explorer.itemEvents[file_explorer.hoveredItem].genericHotkeyAction(functionName);
+                        }
+                    break
+                    case ACTIONS.PASTE:
+                        if(file_explorer.folders[file_explorer.hoveredItem]) {
+                            file_explorer.itemEvents[file_explorer.hoveredItem].genericHotkeyAction(functionName);
+                        } else {
+                            if(!file_explorer.hoveredItem) {
+                                explorerTabLevelEvent(tab, functionName);
+                            }
+                        }
+                    break
+                }
             }
+        } catch (bug) {
+            console.error(bug);
         }
     }
     
@@ -260,8 +284,10 @@
     document.addEventListener('keyup', (ev) => {
         if(_activeKeys.includes(ev.key)) {
             _activeKeys = _activeKeys.filter(a => a!= ev.key)
+            
             if(_activeKeys.length == 0) {
                 _keysGotRefreshed = true
+                console.log('Keys got refreshed');
             }
         }
     })

@@ -215,6 +215,7 @@
             let action = ev.detail.functionName;
 
             switch (action) {
+                case "paste": 
                 case "new_file":
                 case "new_folder":
                     if (
@@ -229,7 +230,7 @@
                             funcConfig.click();
                         })
                     }
-                    break;
+                break;
             }
         });
     });
