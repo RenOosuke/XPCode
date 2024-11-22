@@ -4,6 +4,7 @@
   import WindowBody from "./WindowEssentials/WindowBody.svelte";
   import InfoFooter from "./WindowEssentials/InfoFooter.svelte";
 	import Menu from "./WindowEssentials/Menu.svelte";
+    import FileSearch from "./WindowEssentials/FileSearch.svelte";
 
 	// export let name;
 	const nw = window.nw;
@@ -40,6 +41,22 @@
 			let modalContainer = document.getElementsByClassName("menu_placeholder")[0];
 
 			const modal = new Menu({
+				target: modalContainer,
+				props: spreader(
+					menuProps,
+					{
+						hide: () => {
+							modal.$destroy();
+						},
+					}
+				)
+			});
+		};
+
+		window.fileSearch = (menuProps) => {
+			let modalContainer = document.getElementsByClassName("menu_placeholder")[0];
+
+			const modal = new FileSearch({
 				target: modalContainer,
 				props: spreader(
 					menuProps,

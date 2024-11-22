@@ -19,7 +19,7 @@
     let isEditing = true;
     let isCut = false;
     let shouldFocusTreeLine = false;
-    
+
     let overlapsExistingPath = false;
 
     let new_path;
@@ -44,15 +44,15 @@
             reloadChildren();
         }
     }
-    
+
     $: {
-        if(!isFolder && full_path) {
-            iconProps = iconManager.getIconForPath(full_path)
+        if (!isFolder && full_path) {
+            iconProps = iconManager.getIconForPath(full_path);
         }
     }
 
     $: {
-        if(new_path) {
+        if (new_path) {
             iconProps = iconManager.getIconForPath(new_path);
         }
     }
@@ -72,7 +72,7 @@
 
         handleItemClick(ev);
 
-        if(isFolder) {
+        if (isFolder) {
             _expansionToggle();
         }
     };
@@ -82,11 +82,13 @@
 
         if (newName.length > 0) {
             new_path = path.join(parentDirectory, newName);
-            
-            if(new_path != full_path) {
+
+            if (new_path != full_path) {
                 let pathsInParent = file_explorer.folders[parentDirectory];
-                let neighborExists = pathsInParent.children.findIndex(_path => _path.full_path == new_path);
-                overlapsExistingPath = neighborExists > -1
+                let neighborExists = pathsInParent.children.findIndex(
+                    (_path) => _path.full_path == new_path,
+                );
+                overlapsExistingPath = neighborExists > -1;
             } else {
                 overlapsExistingPath = false;
             }
@@ -170,25 +172,23 @@
             ev.preventDefault();
             ev.stopPropagation();
 
-            getContextMenuConfig().then(
-                configLoaded => {
-                    menu({
-                        x: ev.clientX,
-                        y: ev.clientY,
-                        shouldBlur: true,
-                        options: configLoaded.filter((a) => {
-                            let optionIsCustom = a.custom;
-        
-                            return !optionIsCustom || optionIsCustom(full_path);
-                        }),
-                    });
-                }
-            )
+            getContextMenuConfig().then((configLoaded) => {
+                menu({
+                    x: ev.clientX,
+                    y: ev.clientY,
+                    shouldBlur: true,
+                    options: configLoaded.filter((a) => {
+                        let optionIsCustom = a.custom;
+
+                        return !optionIsCustom || optionIsCustom(full_path);
+                    }),
+                });
+            });
 
             // Select an item by rightclicking it (only give border as if it's hovered);
             // isHovered = true;
-            file_explorer.hoveredItem = full_path
-            shortcuts.rerenderSelected()
+            file_explorer.hoveredItem = full_path;
+            shortcuts.rerenderSelected();
 
             // Unselect it on blur, but don't remove the defautl listener
             let _hoverRerender = () => {
@@ -205,32 +205,32 @@
     const initialFormFocus = (ev) => {
         console.log(items);
 
-        if(file_explorer.staging.oldName === undefined) {
+        if (file_explorer.staging.oldName === undefined) {
             setTimeout(() => {
                 ev.focus();
-    
+
                 //find out what extension is in the name
                 let extStr = path.extname(_name) || undefined;
                 //find the index of the extension
                 let indexOfExt = _name.indexOf(extStr);
                 //select the name up till the extension OR the entire thing
                 let end = indexOfExt > -1 ? indexOfExt : _name.length;
-                ev.setSelectionRange(0, end)
+                ev.setSelectionRange(0, end);
 
                 let keyDownListener = (keypressed) => {
                     if (keypressed.code === "Escape") {
                         ev.removeEventListener("keydown", keyDownListener);
                         ev.blur();
                     }
-                    
+
                     if (keypressed.code === "Enter" && !overlapsExistingPath) {
                         ev.removeEventListener("keydown", keyDownListener);
                         submitNaming();
                     }
                 };
-    
+
                 ev.addEventListener("keydown", keyDownListener);
-    
+
                 if (!_new) {
                     file_explorer.staging.oldName = _name;
                 }
@@ -253,7 +253,7 @@
 
         _name = file_explorer.staging.oldName || _name;
         new_path = false;
-        overlapsExistingPath = false
+        overlapsExistingPath = false;
         file_explorer.staging.oldName = undefined;
         file_explorer.isStaging = isStaging;
     };
@@ -275,19 +275,22 @@
 
         if (!_new && nameIsDifferent) {
             fs.renameSync(
-                path.join(path.dirname(full_path), file_explorer.staging.oldName),
+                path.join(
+                    path.dirname(full_path),
+                    file_explorer.staging.oldName,
+                ),
                 new_path,
             );
         }
-        
+
         file_explorer.staging.oldName = undefined;
         file_explorer.isStaging = isStaging;
     };
 
     const handleNamingBlur = (ev) => {
-        if(ev.sourceCapabilities && _name.length > 0) {
+        if (ev.sourceCapabilities && _name.length > 0) {
             submitNaming();
-        } else {            
+        } else {
             isStaging = false;
             cancelNaming();
         }
@@ -302,61 +305,83 @@
     };
 
     const triggerHoverRerender = () => {
-        shortcuts.rerenderSelected()
+        shortcuts.rerenderSelected();
     };
 
     const handleItemClick = (ev) => {
         ev.preventDefault();
         ev.stopPropagation();
 
-        let _selectedItems = file_explorer.selectedItems
-        
+        let _selectedItems = file_explorer.selectedItems;
+
         if (ev.ctrlKey && !ev.shiftKey) {
-            if(_selectedItems.includes(full_path)) {
-                file_explorer.selectedItems = _selectedItems.filter(a => a!= full_path)
+            if (_selectedItems.includes(full_path)) {
+                file_explorer.selectedItems = _selectedItems.filter(
+                    (a) => a != full_path,
+                );
             } else {
                 _selectedItems.push(full_path);
             }
-        } else 
-        
-        if(ev.shiftKey) {
-            let visibleElements = shortcuts.getVisibleElements().map(a => a.getAttribute('full_path'));
+        } else if (ev.shiftKey) {
+            let visibleElements = shortcuts
+                .getVisibleElements()
+                .map((a) => a.getAttribute("full_path"));
 
-            let indexesInTheVisibleItems = [full_path, file_explorer.hoveredItem]
-            .map(a => visibleElements.indexOf(a))
-            .sort((a, b) => a-b)
-            .filter(a => a > -1);
+            let indexesInTheVisibleItems = [
+                full_path,
+                file_explorer.hoveredItem,
+            ]
+                .map((a) => visibleElements.indexOf(a))
+                .sort((a, b) => a - b)
+                .filter((a) => a > -1);
 
             console.log(indexesInTheVisibleItems);
 
             let startOfSelection = indexesInTheVisibleItems[0];
-            let endOfSelection = indexesInTheVisibleItems[indexesInTheVisibleItems.length-1];
+            let endOfSelection =
+                indexesInTheVisibleItems[indexesInTheVisibleItems.length - 1];
 
-            let indexedRange = range(startOfSelection, endOfSelection)
-            let translatedIndexesToSelectedPaths = indexedRange.map(a => visibleElements[a]);
+            let indexedRange = range(startOfSelection, endOfSelection);
+            let translatedIndexesToSelectedPaths = indexedRange.map(
+                (a) => visibleElements[a],
+            );
 
             // Ctrl + Shift + Mouse Key
-            if(ev.ctrlKey) {
+            if (ev.ctrlKey) {
                 // all previously selected items without the hovered item to be that are in the new selection range (intersection, but without the current element)
-                let preexistingItems = translatedIndexesToSelectedPaths.filter(a => _selectedItems.includes(a) && a != full_path);
+                let preexistingItems = translatedIndexesToSelectedPaths.filter(
+                    (a) => _selectedItems.includes(a) && a != full_path,
+                );
 
                 // a union of the preselected and newly selected items
-                let combinedSelection = [..._selectedItems, ...translatedIndexesToSelectedPaths];
+                let combinedSelection = [
+                    ..._selectedItems,
+                    ...translatedIndexesToSelectedPaths,
+                ];
 
-                if(_selectedItems.includes(full_path) && _selectedItems.includes(full_path)) {
-                    // remove from the union the preexisting items 
-                    let combinedAndFiltered = combinedSelection.filter(a => !preexistingItems.includes(a))
+                if (
+                    _selectedItems.includes(full_path) &&
+                    _selectedItems.includes(full_path)
+                ) {
+                    // remove from the union the preexisting items
+                    let combinedAndFiltered = combinedSelection.filter(
+                        (a) => !preexistingItems.includes(a),
+                    );
                     file_explorer.selectedItems = combinedAndFiltered;
                 } else {
                     file_explorer.selectedItems = combinedSelection;
                 }
-
             } else {
                 // If control key is not held, selected items are from previously clicked item up till the current item clicked
-                file_explorer.selectedItems = translatedIndexesToSelectedPaths
+                file_explorer.selectedItems = translatedIndexesToSelectedPaths;
             }
         } else {
             file_explorer.selectedItems = [full_path];
+
+            if (!isFolder) {
+                file_explorer.recentlyOpened.unshift(full_path);
+                file_explorer.recentlyOpened.removeDublicates();
+            }
         }
 
         file_explorer.hoveredItem = full_path;
@@ -368,17 +393,15 @@
 
         triggerHoverRerender();
     };
-    
-    const genericHotkeyAction =(action) => {
+
+    const genericHotkeyAction = (action) => {
         getContextMenuConfig().then((configLoaded) => {
-            let funcConfig = configLoaded.find(
-                (op) => op.name == action,
-            );
+            let funcConfig = configLoaded.find((op) => op.name == action);
 
             funcConfig.click();
-        })
-    }
-    
+        });
+    };
+
     onMount(() => {
         file_explorer.itemEvents[full_path] = {
             select: (selectionValue) => {
@@ -386,15 +409,15 @@
             },
 
             hover: (hoverValue) => {
-                isHovered = hoverValue
+                isHovered = hoverValue;
                 // isHovered = full_path == file_explorer.hoveredItem;
             },
 
             cut: (cutValue) => {
-                isCut = cutValue//file_explorer.cutPaths.includes(full_path)
+                isCut = cutValue; //file_explorer.cutPaths.includes(full_path)
             },
             genericHotkeyAction,
-        }
+        };
 
         if (isFolder) {
             let treeChangeEvent = (ev) => {
@@ -420,9 +443,10 @@
 
             let subItemSelected = (selectionValue) => {
                 shouldFocusTreeLine = selectionValue;
-            }
+            };
 
-            file_explorer.itemEvents[full_path].childrenRerender = treeChangeEvent;
+            file_explorer.itemEvents[full_path].childrenRerender =
+                treeChangeEvent;
             file_explorer.itemEvents[full_path].expand = _expansionToggle;
             file_explorer.itemEvents[full_path].childSelected = subItemSelected;
         }
@@ -433,13 +457,13 @@
 
 <!-- on:click={handleItemClick} -->
 <div
-class="single-folder-item index{index} {isExpanded
+    class="single-folder-item index{index} {isExpanded
         ? 'expanded'
         : ''}{parentIsExpanded ? '' : ' parent-colapsed'} {isSelected
-            ? 'item_selected'
-            : ''} staging-{isStaging}{overlapsExistingPath ? ' hasError' : ''}"
+        ? 'item_selected'
+        : ''} staging-{isStaging}{overlapsExistingPath ? ' hasError' : ''}"
 >
-<div
+    <div
         class="header-part {isHovered ? ' _hovered' : ''}{isSelected
             ? ' _selected'
             : ''}{isCut ? ' is-cut' : ''}"
@@ -448,7 +472,7 @@ class="single-folder-item index{index} {isExpanded
         on:contextmenu={handleContextMenu}
         id={isEditable ? "" : "unselectable"}
         {full_path}
-        >
+    >
         <div class="left-side">
             <!-- {#if level>0}
                 <div class="tree-line">
@@ -457,58 +481,56 @@ class="single-folder-item index{index} {isExpanded
             {/if} -->
 
             {#if isFolder}
-            <div class="arrow-placeholder">
-                <div
-                style="-webkit-mask-size: 1rem;"
-                class="arrow-icon"
-                ></div>
-            </div>
-            {:else}
-            <div
-            class="file-icon-placeholder {iconProps}"
-            ></div>
-            {/if}
-            
-            {#if isStaging}
-            <input
-            class="staging-directory-name"
-            placeholder=""
-            use:initialFormFocus
-            on:blur={handleNamingBlur}
-            on:input={handleFileNaming}
-            bind:value={_name}
-                    />
-                    {:else}
-                    <div class="directory-name">
-                        {_name}
-                    </div>
-                    {/if}
+                <div class="arrow-placeholder">
+                    <div
+                        style="-webkit-mask-size: 1rem;"
+                        class="arrow-icon"
+                    ></div>
                 </div>
-            </div>
+            {:else}
+                <div class="file-icon-placeholder {iconProps}"></div>
+            {/if}
 
-        {#if items}
-            {#each items as singleItemProps, childIndex (singleItemProps.full_path)}
-                <svelte:self
-                    bind:isFolder={singleItemProps.isFolder}
-                    bind:full_path={singleItemProps.full_path}
-                    bind:isStaging={singleItemProps.isStaging}
-                    bind:_new={singleItemProps.new}
-                    bind:_name={singleItemProps.name}
-                    bind:children={singleItemProps.children}
-                    level={level + 1}
-                    parentIsExpanded={isExpanded}
-                    index={childIndex}
-                    entityDirectory={singleItemProps.name}
+            {#if isStaging}
+                <input
+                    class="staging-directory-name"
+                    placeholder=""
+                    use:initialFormFocus
+                    on:blur={handleNamingBlur}
+                    on:input={handleFileNaming}
+                    bind:value={_name}
                 />
-            {/each}
-        {/if}
+            {:else}
+                <div class="directory-name">
+                    {_name}
+                </div>
+            {/if}
+        </div>
+    </div>
 
-        {#if isFolder && isExpanded}
-            <div class="tree-line {shouldFocusTreeLine ? 'tree_focused' : ''}" style="left: {1.65 + level * 0.7}rem;">
+    {#if items}
+        {#each items as singleItemProps, childIndex (singleItemProps.full_path)}
+            <svelte:self
+                bind:isFolder={singleItemProps.isFolder}
+                bind:full_path={singleItemProps.full_path}
+                bind:isStaging={singleItemProps.isStaging}
+                bind:_new={singleItemProps.new}
+                bind:_name={singleItemProps.name}
+                bind:children={singleItemProps.children}
+                level={level + 1}
+                parentIsExpanded={isExpanded}
+                index={childIndex}
+                entityDirectory={singleItemProps.name}
+            />
+        {/each}
+    {/if}
 
-            </div>
-        {/if}
-
+    {#if isFolder && isExpanded}
+        <div
+            class="tree-line {shouldFocusTreeLine ? 'tree_focused' : ''}"
+            style="left: {1.65 + level * 0.7}rem;"
+        ></div>
+    {/if}
 </div>
 
 <style>
@@ -632,7 +654,6 @@ class="single-folder-item index{index} {isExpanded
         border: solid 1px transparent !important;
     }
 
-    
     .hasError input {
         border: solid 1px var(--error-border-color) !important;
     }
@@ -640,11 +661,11 @@ class="single-folder-item index{index} {isExpanded
     .staging-true ._selected {
         background-color: var(--gray-out-selection) !important;
     }
-    
+
     .staging-true ._hovered {
         border: solid 1px transparent !important;
     }
-    
+
     input {
         position: absolute;
         border: solid 1px transparent;
@@ -660,11 +681,12 @@ class="single-folder-item index{index} {isExpanded
 
     .staging-true input:focus {
         outline: none;
-        border: solid 1px var(--outline-color);    
+        border: solid 1px var(--outline-color);
     }
 
-    .staging-false .is-cut .directory-name, .staging-false .is-cut .file-icon-placeholder{
-        opacity: .5;
+    .staging-false .is-cut .directory-name,
+    .staging-false .is-cut .file-icon-placeholder {
+        opacity: 0.5;
     }
 
     .tree-line {
@@ -681,6 +703,6 @@ class="single-folder-item index{index} {isExpanded
     }
 
     .tree-line.tree_focused {
-        border-left: solid 1px var(--focused-tree-line) !important;    
+        border-left: solid 1px var(--focused-tree-line) !important;
     }
 </style>

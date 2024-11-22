@@ -211,6 +211,8 @@ window.spreader = (...objs) =>  {
                 'pin',
                 'refresh',
                 'save-all',
+                'split-horizontal',
+                'close'
             ];
     
             iconNames.forEach((iconName) => {
@@ -225,6 +227,9 @@ window.spreader = (...objs) =>  {
                 '--directory-rename-bg': '#313131',
                 '--outline-color': '#0078d4',
                 '--base-text-color': '#cccccc',
+                '--base-text-color-80': '#cccccccc',
+                '--base-text-color-60': '#cccccc99',
+                '--base-text-color-40': '#cccccc66',
                 '--base-border-color': '#2b2b2b',
                 '--secondary-border-color': '#454545',
                 '--icon-hover-bg': '#2d2e2e',
@@ -234,7 +239,12 @@ window.spreader = (...objs) =>  {
                 '--error-border-color': '#bd1100',
                 '--tree-line': '#313131',
                 '--focused-tree-line': '#585858',
-                '--file-hover-unselected': 'rgba(60, 66, 68, 0.35)'
+                '--file-hover-unselected': 'rgba(60, 66, 68, 0.35)',
+                '--file-search-bg': '#222222',
+                '--file-search-hover-bg': '#2a2d2e',
+                '--file-search-sections-labels-color': '#3794ff',
+                '--file-search-subtext-color': '#999999',
+                '--file-search-marker-color': '#2aaaff'
             };
     
             let colorVariables = Object.keys(colorVariablesMapping);

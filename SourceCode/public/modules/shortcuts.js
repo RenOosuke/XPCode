@@ -3,6 +3,8 @@
     let _canFillKeys = false
     let _shortcutsPaused = false;
     const FILE_EXPLORER = 'file_explorer';
+    const GENERAL = 'general';
+
     const ACTIONS = {
         DELETE: 'delete',
         NEW_FILE: 'new_file',
@@ -10,7 +12,8 @@
         REVEAL_IN_FILE_EXPLORER: 'reveal_in_file_explorer',
         COPY: 'copy',
         CUT: 'cut',
-        PASTE: 'paste'
+        PASTE: 'paste',
+        SEARCH_BY_FILE_NAME: 'search_by_file_name'
     }
     // let keyTranslation = {
     //     'Ctrl',
@@ -150,6 +153,14 @@
                     break
                 }
             }
+
+            if(tab == GENERAL) {
+                switch(functionName) {
+                    case ACTIONS.SEARCH_BY_FILE_NAME:
+                        fileSearch();
+                    break;
+                }
+            }
         } catch (bug) {
             console.error(bug);
         }
@@ -182,10 +193,29 @@
 
 
     const checkForKeyCombinations = () => {
-        let fileExplorerCombinations = settings.section.get('shortcuts.file_explorer');        
+        let fileExplorerCombinations = settings.section.get('shortcuts.file_explorer');  
+        let generalCombinations = settings.section.get('shortcuts.general');
+
         let fileExplorerEntries = Object.values(fileExplorerCombinations)
+        let generalEntries = Object.values(generalCombinations)
+
         let joinedKeys = _activeKeys.map(key => shortcutTranslation[key] || key).join('__');
         
+
+        let generalCombinationIndex = generalEntries.findIndex((val) => {
+            return joinedKeys == val
+        })
+
+        console.log(joinedKeys, generalCombinationIndex);
+        
+        if(generalCombinationIndex > -1) {
+            let generalFunctions = Object.keys(generalCombinations);
+            let functionName = generalFunctions[generalCombinationIndex]
+            customShortcutEvent(GENERAL, functionName);
+            _keysGotRefreshed = false;
+            return;
+        }
+ 
         let fileExplorerCombinationIndex = fileExplorerEntries.findIndex((val) => {
             return joinedKeys == val
         })
@@ -193,7 +223,7 @@
         if(fileExplorerCombinationIndex > -1) {
             let fileExplorerFunctions = Object.keys(fileExplorerCombinations);
             let functionName = fileExplorerFunctions[fileExplorerCombinationIndex]
-            customShortcutEvent('file_explorer', functionName);
+            customShortcutEvent(FILE_EXPLORER, functionName);
             _keysGotRefreshed = false;
             return;
         }

@@ -141,13 +141,13 @@ window.file_explorer = {
       updatesHappened++;
 
       if(isCreating) {
-
         if(isFolder) {
           details.children = [];
           file_explorer.folders[filePath] = details;
           details.last_sorted = new Date();
         } else {
           details.file_extension = path.extname(filePath);
+          file_explorer.allFiles.push(details);
         }
         
         let parentDir = path.dirname(filePath);
@@ -156,6 +156,8 @@ window.file_explorer = {
           if(new Date() - file_explorer.folders[parentDir].last_sorted >= file_explorer.refreshTime || 500) {
             file_explorer.folders[parentDir].children = file_explorer.sortDirectories([...(file_explorer.folders[parentDir]).children, details]);
             file_explorer.folders[parentDir].last_sorted = new Date();
+
+            file_explorer.allFiles = file_explorer.sortDirectories(file_explorer.allFiles);
           } else {
             file_explorer.folders[parentDir].children = [...(file_explorer.folders[parentDir]).children, details];
           }
@@ -163,8 +165,15 @@ window.file_explorer = {
       } else {
         if(isFolder) {
           file_explorer.folders[filePath] = undefined;
-        }
+        } else {
+          let removingFileIndex = file_explorer.allFiles.findIndex(_file => _file.full_path == filePath);
 
+          file_explorer.allFiles = [
+            ...file_explorer.allFiles.slice(0, removingFileIndex),
+            ...file_explorer.allFiles.slice(removingFileIndex+1),
+          ]
+        }
+        
         let parentDir = path.dirname(filePath);
 
         let indexOfRemovedElement = file_explorer.folders[parentDir].children.findIndex(child => child.full_path === filePath)
@@ -500,9 +509,31 @@ window.file_explorer = {
 
       maxHeight: 0
     },
-    itemEvents: {
+    itemEvents: {},
+    allFiles: [],
+    recentlyOpened: (() => {
+      let _files = [];
 
-    }
+      return {
+        get: () => _files,
+        removeDublicates: () => {
+          _files = Array.from(new Set(_files))
+        },
+        push: (..._arguments) => {
+          _files.push(..._arguments)
+        },
+        unshift: (...arguments) => {
+          _files.unshift(...arguments);
+        },
+        remove: (file) => {
+          let fileIndex = _files.findIndex(_file => _file == file);
+          _files = [
+            ..._files.slice(0, fileIndex),
+            ..._files.slice(fileIndex+1)
+          ]
+        }
+      }
+    })()
   };
 
   // const watcher = chokidar.watch(launchArguments, {

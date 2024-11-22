@@ -117,3 +117,28 @@ body:not(.dragging) #unselectable {
 	user-select: none; /* Standard syntax */
 	cursor: default;
 }
+
+.recent_files .single_file_row:first-of-type .right_side::before {
+    content: "recently opened";
+    display: block;
+    color: var(--file-search-sections-labels-color);
+	font-size: .9rem;
+	margin-right: .2rem;
+}
+
+.all_files .single_file_row:first-of-type .right_side::before {
+	content: "file results";
+    display: block;
+    color: var(--file-search-sections-labels-color);
+	font-size: .9rem;
+	margin-right: .2rem;
+}
+
+blue {
+	color: var(--file-search-marker-color); /* Set text color to blue */
+	display: run-in; /* Ensure it remains inline with other text */
+	font-size: inherit; /* Match the size of the surrounding text */
+	font-weight: inherit; /* Match the weight of the surrounding text */
+	font-style: inherit; /* Match the style (italic, etc.) of the surrounding text */
+	line-height: inherit; /* Match the line height of the surrounding text */
+}

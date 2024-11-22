@@ -41,6 +41,10 @@ type tabEvent = {
     distance: number
 }
 
+type singleFileDetails = {
+
+};
+
 type file_explorer = {
    getFilesInDirectory: (dirPath: any) => Promise<any>;
    rescan(): void;
@@ -64,7 +68,8 @@ type file_explorer = {
     update(): void,
     resize(tabEvent: tabEvent): void
    },
-   itemEvents: {}
+   itemEvents: {},
+   allFiles: singleFileDetails[]
 }
 
 declare var file_explorer: file_explorer;
