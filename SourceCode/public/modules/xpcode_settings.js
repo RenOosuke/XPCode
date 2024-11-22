@@ -1,5 +1,9 @@
 {
     /** modules.js */
+    const GENERAL_SHORTCUTS = 'shortcuts.general';
+    const SETTINGS_PATH = `${GENERAL_SHORTCUTS}.settings`;
+    const SHORTCUTS_PATH = `${GENERAL_SHORTCUTS}.shortcuts`;
+    const COLOR_THEME_PATH = `${GENERAL_SHORTCUTS}.color_theme`;
     let _parentDir = path.resolve('public/data');
     let pathToSettings = path.resolve('public/data/settings.json');
     let defaultSettings = {
@@ -34,7 +38,13 @@
             },
             general: {
                 search_by_file_name: "Ctrl__p",
-                command_pallette: "Ctrl__Shift__p"
+                command_palette: "Ctrl__Shift__p",
+                settings: "Ctrl__,",
+                shortcuts: "Ctrl__k__s",
+                color_theme: "Ctrl__k__t"
+            },
+            sidebar: {
+
             }
         },
 
@@ -122,7 +132,33 @@
                 _set(_currentSettings);
             }
         },
-        update: _update
+        update: _update,
+        contextMenu: {
+            preferences: () => {
+                return [
+                    { label: "Profiles", name: "profiles"},
+                    { label: "Settings", name: "settings", shortcut: shortcuts.combinationFromSettings(SETTINGS_PATH)},
+                    { label: "Keyboard Shortcuts", name: "keyboard_shortcuts", shortcut: shortcuts.combinationFromSettings(SHORTCUTS_PATH)},
+                    { label: "Snippets", name: "snippets"},
+                    { label: "Tasks", name: "tasks" },
+                    { label: "Themes", name: "themes", options: [
+                        {
+                            label: "Color Theme",
+                            name: "color_theme",
+                            shortcut: shortcuts.combinationFromSettings(COLOR_THEME_PATH)
+                        },
+                        {
+                            label: "File Icon Theme",
+                            name: "file_icon_theme"
+                        },
+                        {
+                            label: "Product Icon Theme",
+                            name: "product_icon_theme"
+                        }
+                    ]}
+                ]
+            }
+        }
     }
 
     window.settings = _settings;

@@ -184,6 +184,19 @@
         rerenderSelected: _rerenderSelectedItems,
         getKeysAreRefreshed: () => {
             return _keysGotRefreshed;
+        },
+        parseUserFriendly: (combination) => {
+            return combination.split('__').map((key) => {
+                key = key[0].toUpperCase() + key.slice(1);
+    
+                return key;
+            }).join('+');
+        },
+
+        combinationFromSettings: (_section) => {
+            let shortcut = settings.section.get(_section);
+            let userFriendlyShortcut = shortcuts.parseUserFriendly(shortcut);
+            return userFriendlyShortcut;
         }
     }
 

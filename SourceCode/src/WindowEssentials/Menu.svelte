@@ -19,8 +19,18 @@
     }
   };
 
-  let paddingLeftOffset = `calc(.5rem + 15rem)`;
+  // let level1ShouldBeLeft = false;
+  // let level2ShouldBeLeft = false;
 
+  // let level
+  let transformStyle = '';
+
+  let paddingLeftOffset = `calc(.5rem + 15rem)`;
+  let transformX = '0%';
+  let transformY = '0%';
+  let level2TransformY = '0%';
+  let level2TransformX = '0%'
+  
   onMount(() => {
     let shadow = jQuery(".context-menu-shadow")[0];
     shadow.addEventListener("contextmenu", (ev) => {
@@ -46,6 +56,22 @@
       hide();
     });
 
+    let screenRects = document.body.getBoundingClientRect();
+    let screenHeight = screenRects.height
+    let screenWidth = screenRects.width;
+
+
+    if(x>(screenWidth*0.8)) {
+      transformX = `-100%`
+    }
+
+    if(y>(screenHeight*0.6)) {
+      transformY = `calc(-100% + 2rem)`
+    }
+
+    if(y>(screenHeight*0.8)) {
+      level2TransformY = `calc(-100% + 2rem)`
+    }
     // if (shouldBlur) {
     //   let menuBody = jQuery(".menu_body")[0];
     //   menuBody.addEventListener("mouseleave", hide);
@@ -56,7 +82,7 @@
 <div class="context-menu-shadow" id="unselectable">
   <div
     class="context-menu-placeholder dark"
-    style="{x ? `left: ${x}px;` : ''} {y ? `top: ${y}px;` : ''}"
+    style="{x ? `left: ${x}px;` : ''} {y ? `top: ${y}px;` : ''}; transform: translate({transformX}, {transformY});"
     id="context-menu"
   >
     {#each options as option}
@@ -84,6 +110,12 @@
 
           {option.label} {!option.options && !option.click ? '(TO DO)' : ''}
 
+          {#if option.shortcut}
+            <span class="shortcut">
+              {option.shortcut}
+            </span>
+          {/if}
+
           {#if option.options && !isLeftSide}
             <div class="arrow-placeholder right-side">
               <div
@@ -94,18 +126,24 @@
           {/if}
 
           {#if option.options}
-            <div class="context-submenu {isLeftSide ? 'left' : ''}">
+            <div class="context-submenu {isLeftSide ? 'left' : ''}" style="transform: translate({level2TransformX}, {level2TransformY});">
               {#each option.options as submenu}
-                {#if (submenu || {}).separator}
+                {#if submenu.separator}
                   <div class="splitter"></div>
                 {:else}
                   <div
-                    class="menu-item{(submenu || {}).disabled ? ' disabled' : ''}"
+                    class="menu-item{submenu.disabled ? ' disabled' : ''}"
                     on:click={(ev) => handleMenuOptionClick(ev, submenu)}
                   >
-                    {(submenu || {}).label}
+                    {submenu.label} {!submenu.options && !submenu.click ? '(TO DO)' : ''}
 
-                    {#if (submenu || {}).options}
+                    {#if submenu.shortcut}
+                      <div class="shortcut">
+                        {submenu.shortcut}
+                      </div>
+                    {/if}
+
+                    {#if submenu.options}
                       <div class="arrow-placeholder right-side">
                         <div
                           class="arrow-right"
@@ -114,16 +152,22 @@
                       </div>
 
                       <div class="context-submenu-lvl2">
-                        {#each (submenu || {}).options as submenu_lvl2}
-                          {#if (submenu_lvl2 || {}).separator}
+                        {#each submenu.options as submenu_lvl2}
+                          {#if submenu_lvl2.separator}
                             <div class="splitter"></div>
                           {:else}
                             <div
-                              class="menu-item{(submenu_lvl2 || {}).disabled ? ' disabled' : ''}"
+                              class="menu-item{submenu_lvl2.disabled ? ' disabled' : ''}"
                               on:click={(ev) =>
                                 handleMenuOptionClick(ev, submenu_lvl2)}
                             >
-                              {(submenu_lvl2 || {}).label}
+                              {submenu_lvl2.label} {!submenu_lvl2.click ? '(TO DO)' : ''}
+
+                              {#if submenu_lvl2.shortcut}
+                                <div class="shortcut">
+                                  {submenu_lvl2.shortcut}
+                                </div>
+                              {/if}
                             </div>
                           {/if}
                         {/each}
@@ -160,8 +204,9 @@
     position: absolute;
     font-size: 0.8rem;
     background: var(--primary-dark-bg);
-    border: solid 1px #2b2b2b;
-    color: #adaeae;
+    border: solid .5px var(--secondary-border-color);
+    color: var(--base-text-color);
+    box-shadow: rgba(0, 0, 0, 0.36) 0px 2px 8px 0px;
   }
   .context-menu-placeholder .menu-item,
   .context-submenu .menu-item,
@@ -176,6 +221,8 @@
     height: 2rem;
     padding-top: 0.5rem;
     border-radius: 0.25rem;
+    display: flex;
+    justify-content: space-between;
   }
   .context-menu-placeholder .menu-item.prefix,
   .context-submenu .menu-item.prefix
@@ -250,10 +297,11 @@
     background-color: #04395e;
     color: #feffff;
   }
-  #context-menu.dark .context-menu-placeholder,
-  #context-menu.dark .context-submenu {
+  #context-menu.dark,
+  #context-menu.dark .context-submenu,
+  #context-menu.dark .context-submenu-lvl2 {
     /* color: #f0f0f0; */
-    background-color: var(--primary-dark-bg);
+    background-color: var(--primary-light-bg);
   }
 
   .arrow-placeholder {
@@ -287,5 +335,10 @@
 
   .menu-item.shorter {
     padding-left: .75rem;
+  }
+
+  .shortcut {
+    width: fit-content;
+    margin-right: 1.5rem;
   }
 </style>

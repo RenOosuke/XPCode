@@ -379,8 +379,7 @@
             file_explorer.selectedItems = [full_path];
 
             if (!isFolder) {
-                file_explorer.recentlyOpened.unshift(full_path);
-                file_explorer.recentlyOpened.removeDublicates();
+                file_explorer.openItem(full_path)
             }
         }
 

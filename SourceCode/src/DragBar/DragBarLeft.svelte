@@ -1,7 +1,7 @@
 <script>
   import { R } from "../../src-noconflict/ace";
 
-  const dragbarContextMenus = [
+  const dragbarContextMenus =  [
     {
       label: "File",
       name: "file",
@@ -36,10 +36,11 @@
     },
   ];
 
-  /**
-   * @type {{[any]: singleMenuItem[]}}
-   */
-  const menusByTab = {
+  const menusByTab =() => {
+    /**
+     * @type {{[any]: singleMenuItem[]}}
+     */
+    let config = {
     /**
      * @type {singleMenuItem[]}
      */
@@ -82,11 +83,13 @@
           {
             separator: true,
           },
+          {}
           ,
           // TODO
           /** INSERT TABS WITH PREVIOUSLY OPENED DIRECTORIES HERE*/ {
             separator: true,
           },
+          {}
           ,
           // TODO
           /** INSERT TABS WITH PREVIOUSLY OPENED FILES HERE*/ {
@@ -141,100 +144,7 @@
         label: "Preferences",
         name: "preferences",
         options: [
-          {
-            label: "Profiles (Default)",
-            name: "profiles",
-            options: [
-              {
-                label: "Default",
-                name: "default",
-              },
-              /** Display Rest of Profiles HERE*/
-              // TODO
-              {
-                separator: true,
-              },
-              {
-                label: "Show Profile Contents",
-                name: "show_profile_contents",
-              },
-              {
-                separator: true,
-              },
-              {
-                label: "Create Profile...",
-                name: "create_profile",
-              },
-              {
-                label: "Delete Profile...",
-                name: "delete_profile",
-                disabled: true,
-              },
-              {
-                separator: true,
-              },
-              {
-                label: "Export Profile...",
-                name: "export_profile",
-              },
-              {
-                label: "Import Profile...",
-                name: "import_profile",
-              },
-            ],
-          },
-          {
-            label: "Turn on Settings Sync...",
-            name: "turn_on_settings_sync",
-          },
-          {
-            separator: true,
-          },
-          {
-            label: "Settings",
-            name: "settings",
-          },
-          {
-            label: "Extensions",
-            name: "extensions",
-          },
-          {
-            label: "Keyboard Shortcuts",
-            name: "keyboard_shortcuts",
-          },
-          {
-            label: "Configure User Snippets",
-            name: "configure_user_snippets",
-          },
-          {
-            label: "User Tasks",
-            name: "user_tasks",
-          },
-          {
-            label: "Theme",
-            name: "theme",
-            options: [
-              {
-                label: "Color Theme",
-                name: "color_theme",
-              },
-              {
-                label: "File Icon Theme",
-                name: "file_icon_theme",
-              },
-              {
-                label: "Product Icon Theme",
-                name: "product_icon_theme",
-              },
-            ],
-          },
-          {
-            separator: true,
-          },
-          {
-            label: "Online Services Settings",
-            name: "online_services_settings",
-          },
+          ...settings.contextMenu.preferences(),
         ],
       },
       {
@@ -1122,28 +1032,27 @@
             name: "about"
         }
     ]
-  };
+    };
+
+    return config;
+  }  
 
   const handleDragBarMenButtonClick = (
     buttonName,
     /** @type {MouseEvent}*/ ev
   ) => {
-    if (menusByTab[buttonName]) {
-      // let
-      /** @type {HTMLElement}*/
-      let buttonClicked = ev.target;
-      let buttonParams = buttonClicked.getBoundingClientRect();
+    let buttonClicked = ev.target;
+    let buttonParams = buttonClicked.getBoundingClientRect();
 
-      let clientY = buttonParams.top + buttonParams.height;
-      let clientX = buttonParams.left;
-
-      menu({
-        x: clientX,
-        y: clientY,
-        shouldBlur: true,
-        options: menusByTab[buttonName],
-      });
-    }
+    let clientY = buttonParams.top + buttonParams.height;
+    let clientX = buttonParams.left;
+    
+    menu({
+      x: clientX,
+      y: clientY,
+      shouldBlur: true,
+      options: menusByTab()[buttonName],
+    });
   };
 
   let iconsPath = themeUtils.iconsPath();

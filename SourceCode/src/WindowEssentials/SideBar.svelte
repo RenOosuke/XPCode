@@ -5,6 +5,8 @@
     const backgroundColor = '#181818';
     const color = '#cccccc';
     const borderColor = '#2b2b2b';
+    const GENERAL_SHORTCUTS = 'shortcuts.general';
+    const COMMAND_PALETTE_PATH = `${GENERAL_SHORTCUTS}.command_palette`;
 
     // TEMP_HARDCODE
     const isDark = true;
@@ -17,12 +19,64 @@
     ];
 
     const bottom_icons = [
-        'account',
         'settings',
     ]
 
-    const bottomButtonMenu = (bottomIcon) => {
+    let configs = {
+        files: {
 
+        },
+
+        search: {
+
+        },
+
+        git: {
+
+        },
+
+        debug: {
+
+        },
+
+        settings: {
+
+        }
+    }
+
+    const settingsButtonContextMenu = () => {
+        /**
+         * @type {singleMenuItem[]}
+         */
+        let config = 
+        [
+            {
+                label: `Command Palette...`,
+                name: 'command_palette',
+                shortcut: shortcuts.combinationFromSettings(COMMAND_PALETTE_PATH)
+            },
+            {
+                separator: true
+            },
+            ...settings.contextMenu.preferences()
+        ];
+
+        return config;
+    } 
+
+    const settingsContextMenu = (ev) => {
+        // Get bottom right corner of the pressed settings cog to call the context menu
+        let targetRecs = jQuery('.lower_icons .icon_placeholder .bottom_icon')[0].getBoundingClientRect();
+        let x = targetRecs.right;
+        let y = targetRecs.bottom;
+
+        let options = settingsButtonContextMenu();
+
+        menu({
+            options,
+            x,
+            y   
+        });
     }
 
     let iconsPath = themeUtils.iconsPath();
@@ -53,7 +107,7 @@
 <div class="sidebar" style="background: {backgroundColor}; color: {color}; border-color: {borderColor};" id="unselectable" on:selectstart={(e) => e.preventDefault()}>
     <div class="upper_icons">
         {#each icons as icon, i}
-            <div class="icon_placeholder{i === activeIcon ? ' pressed' : ''}" on:click={() => updateSideBarTab(i)}>
+            <div class="icon_placeholder{i === activeIcon ? ' pressed' : ''}" on:click={() => updateSideBarTab(i)} >
                 <div class="pressed_line">
     
                 </div>
@@ -65,18 +119,12 @@
 
     <div class="lower_icons">
         {#each bottom_icons as icon, i}
-            <div class="icon_placeholder" on:click={() => bottomButtonMenu(icon)}>    
+            <div class="icon_placeholder" on:click={(ev) => settingsContextMenu(ev)}>    
                 <div style="-webkit-mask: var(--{icon}-icon);  -webkit-mask-size: 1.5rem;" class="bottom_icon">
 
                 </div>
             </div>
         {/each}
-
-        <!-- <div class="icon_placeholder remote_button" on:click={() => bottomButtonMenu('remote')}>    
-            <div style="-webkit-mask: url('{`${urlPath}/remote.svg`}') no-repeat center; -webkit-mask-size: 1rem; height: 1.5rem;" class="bottom_icon">
-
-            </div>
-        </div> -->
     </div>
 </div>
 
@@ -84,7 +132,7 @@
 <style>
     .sidebar {
         height: 100%;
-        width: 4rem;
+        width: 3rem;
         border-right: solid 1px;
         display: flex;
         flex-direction: column;

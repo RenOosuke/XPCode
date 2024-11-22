@@ -69,7 +69,8 @@ type file_explorer = {
     resize(tabEvent: tabEvent): void
    },
    itemEvents: {},
-   allFiles: singleFileDetails[]
+   allFiles: singleFileDetails[],
+   openItem: (full_path: string) => void;
 }
 
 declare var file_explorer: file_explorer;
@@ -188,6 +189,7 @@ type singleMenuItem = {
     click?: () => void,
     options?: singleMenuItem[],
     separator: true,
+    shortcut?: string
 }
 
 type Menu = {

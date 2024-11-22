@@ -233,11 +233,9 @@
     }
 
     const handleRowClick = (ev, file) => {
-        alert("Opening of files isnt implemented yet!");
-        endSearching();
         let absolutePath = getAbsolutePath(file);
-        console.log(absolutePath);
-        file_explorer.recentlyOpened.unshift(absolutePath)
+        file_explorer.openItem(absolutePath)
+        endSearching();
     }
 
     onMount(() => {

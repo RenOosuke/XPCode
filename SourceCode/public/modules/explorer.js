@@ -533,7 +533,12 @@ window.file_explorer = {
           ]
         }
       }
-    })()
+    })(),
+    
+    openItem: (full_path) => {
+      file_explorer.recentlyOpened.unshift(full_path);
+      file_explorer.recentlyOpened.removeDublicates();
+    }
   };
 
   // const watcher = chokidar.watch(launchArguments, {
