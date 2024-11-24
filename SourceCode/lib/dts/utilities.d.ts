@@ -71,6 +71,7 @@ type file_explorer = {
    itemEvents: {},
    allFiles: singleFileDetails[],
    openItem: (full_path: string) => void;
+   activeItem: PathLike | undefined
 }
 
 declare var file_explorer: file_explorer;

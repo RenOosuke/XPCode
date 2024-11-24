@@ -257,24 +257,6 @@
 </div>
 
 <style>
-    ::-webkit-scrollbar {
-        width: 0.8rem;
-    }
-
-    ::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: rgba(77, 77, 77, 0.5);
-        /* opacity: 50%; */
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: rgba(77, 77, 77, 1);
-        /* opacity: 100%; */
-    }
-
     .colapsed {
         display: none;
     }

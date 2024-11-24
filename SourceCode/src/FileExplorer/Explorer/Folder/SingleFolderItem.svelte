@@ -390,6 +390,10 @@
             file_explorer.hoverListeners++;
         }
 
+        outline.grayedOut = true;
+        file_explorer.grayedOut = false;
+        themeUtils.setGrayedOut();
+
         triggerHoverRerender();
     };
 

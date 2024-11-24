@@ -1,12 +1,11 @@
 <script>
-    import { onMount } from "svelte";
+    import { onMount, SvelteComponent } from "svelte";
   import DragBar from "./WindowEssentials/DragBar.svelte";
   import WindowBody from "./WindowEssentials/WindowBody.svelte";
   import InfoFooter from "./WindowEssentials/InfoFooter.svelte";
 	import Menu from "./WindowEssentials/Menu.svelte";
     import FileSearch from "./WindowEssentials/FileSearch.svelte";
 
-	// export let name;
 	const nw = window.nw;
 	
 	const { require } = window.nw;
@@ -70,21 +69,6 @@
 		};
 		
 		themeUtils.changeTheme();
-		// menu({zIndex: 10, options: 
-		// 	[
-		// 		{label: 'Da', click: () => console.log('YES')},
-		// 		{separator: true},
-		// 		{label: 'Da', click: () => console.log('YES')},
-		// 		{label: 'Da', click: () => console.log('YES')},
-		// 		{label: 'Da', click: () => console.log('YES')},
-		// 		{separator: true},
-		// 		{label: 'Da', click: () => console.log('YES')},
-		// 		{label: 'Da', click: () => console.log('YES')},
-		// 		{label: 'Da', click: () => console.log('YES')},
-		// 		{separator: true},
-		// 		{label: 'Da', click: () => console.log('YES')},
-
-		// 	], y: 30, x: 30})
 	})
 </script>
 
@@ -147,19 +131,10 @@
 		src: url(../../fonts/Seti.woff);
 	}
 
-	/* :global(.codicon[class*=codicon-]) {
-		display: inline-block;
-		font: normal normal normal 16px / 1 codicon;
-		text-align: center;
-		text-decoration: none;
-		text-rendering: auto;
-		text-transform: none;
-		-webkit-font-smoothing: antialiased;
-		-moz-osx-font-smoothing: grayscale;
-		user-select: none;
-		-webkit-user-select: none;
-	} */
-
+	@font-face {
+		font-family: codicon;
+		src: url(../../fonts/codicon.ttf);
+	}
 
 	@media(max-height: 56.25rem) {
 		:global(.empty_editor_window .logo) {

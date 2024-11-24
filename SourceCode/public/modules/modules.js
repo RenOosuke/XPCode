@@ -3,6 +3,9 @@ const SETTING_VARIABLES = {
     VARIABLES_EXPLORER_X_OFFSET: 'variables.explorer.x_offset'
 }
 
+const ACTIVE_ELEMENT_CHANGED = 'active_element_changed';
+const RERENDER_OUTLINE = 'rerender_outline';
+
 window.timeA = new Date().getTime();
 
 window.voidFunction = () => {return};
@@ -30,6 +33,16 @@ window.range = function (start, end) {
 
 window.child_process = require('child_process');
 
+let ignoreTodos = false;
+let ToDoList = new Set([]);
+
+window.TODO = (todoMessage) => {
+    if(!ignoreTodos) {
+        console.log(`|====================== To Do: ${todoMessage} ===============================|`);
+    }
+
+    ToDoList.add(todoMessage);
+}
 // console.log(child_process.exec('cmd', function(err, stdout, stderr){
 //     console.l(stdout);
 // }));
@@ -147,7 +160,7 @@ window.spreader = (...objs) =>  {
     const mergedObj = {};
 
     if(objs.length>2) {
-        return spread(spread(objs.splice(0, 2)), objs);
+        return spreader(spreader(objs.splice(0, 2)), objs);
     } else {
             let [obj1, obj2] = objs;
         // Manually copying properties
@@ -244,7 +257,8 @@ window.spreader = (...objs) =>  {
                 '--file-search-hover-bg': '#2a2d2e',
                 '--file-search-sections-labels-color': '#3794ff',
                 '--file-search-subtext-color': '#999999',
-                '--file-search-marker-color': '#2aaaff'
+                '--file-search-marker-color': '#2aaaff',
+                '--timeline-tip-color': '#717171'
             };
     
             let colorVariables = Object.keys(colorVariablesMapping);
@@ -255,15 +269,31 @@ window.spreader = (...objs) =>  {
         },
     
         setGrayedOut: () => {
-            let bool = file_explorer.grayedOut;
-    
-            let folderTab = jQuery('.explorer-tab-header.folder')[0];
-    
-            if(folderTab) {
-                if(bool) {
-                    folderTab.classList.add('grayed-out')
-                } else {
-                    folderTab.classList.remove('grayed-out')
+            {
+                let bool = file_explorer.grayedOut;
+        
+                let folderTab = jQuery('.explorer-tab-header.folder')[0];
+        
+                if(folderTab) {
+                    if(bool) {
+                        folderTab.classList.add('grayed-out')
+                    } else {
+                        folderTab.classList.remove('grayed-out')
+                    }
+                }
+            }
+
+            {
+                let bool = outline.grayedOut;
+
+                let outlineTab = jQuery('.explorer-tab-header.outline')[0];
+        
+                if(outlineTab) {
+                    if(bool) {
+                        outlineTab.classList.add('grayed-out')
+                    } else {
+                        outlineTab.classList.remove('grayed-out')
+                    }
                 }
             }
         },

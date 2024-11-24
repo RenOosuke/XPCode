@@ -11,7 +11,8 @@
     let tabOutlined = false;
     let tabWindowOutlined = false;
     let disableExpansion = false;
-    
+    // let isDraggingTab = false;
+
     let initialOffset = 0;
 
     const handleTabClick = (ev) => {
@@ -85,20 +86,28 @@
 
             let classPath = elementUtils.getClassList(target).join(' '); 
             let isTargetAFile = classPath.includes('single-folder-item');
-
+            let isTargetATimelineFile = classPath.includes('single_outline_item');
             let isNotExplorerTab = !classPath.includes('explorer-tab '); 
             let isExploirerTabHeader = classPath.includes('explorer-tab-header ');
             let isSameTab = classPath.includes(`tabname-${translatedTabName}`)
             
-            if(isNotExplorerTab || isExploirerTabHeader || isTargetAFile || !isSameTab) {
+            if(isNotExplorerTab || isExploirerTabHeader || isTargetAFile || isTargetATimelineFile || !isSameTab) {
                 tabWindowOutlined = false;
                 document.removeEventListener('keydown', selectAllPerKeyboard);
 
-                if(file_explorer.selectedItems.length>0 && !isTargetAFile) {
+                if((translatedTabName == routeTranslation.folder && !isSameTab) || (!isTargetAFile)) {
                     file_explorer.grayedOut = true;
                     themeUtils.setGrayedOut();
                 } else {
                     file_explorer.grayedOut = false;
+                    themeUtils.setGrayedOut();
+                }
+
+                if( (translatedTabName == routeTranslation.outline && !isSameTab) || (!isTargetATimelineFile)) {
+                    outline.grayedOut = true;
+                    themeUtils.setGrayedOut();
+                } else {
+                    outline.grayedOut = false;
                     themeUtils.setGrayedOut();
                 }
             }
@@ -246,8 +255,24 @@
         max-height: 1.45rem;
     }
 
+    /* .explorer-tab.tabname-folders {
+        max-height: min(95vh, var(--folders-y-offset));
+    }
+
+    .explorer-tab.tabname-outline {
+        max-height: min(95vh, var(--outline-y-offset));
+    }
+
+    .explorer-tab.tabname-timeline {
+        max-height: min(95vh, var(--timeline-y-offset));
+    }
+
+    .explorer-tab.tabname-npm_scripts {
+        max-height: min(95vh, var(--npm_scripts-y-offset));
+    } */
+
     .explorer-tab.expanded {
-        max-height: 95vh;
+        /* max-height: 95vh; */
         min-height: 5rem;
     }
 

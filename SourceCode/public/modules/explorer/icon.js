@@ -398,7 +398,14 @@
         "_zip_light": { "fontCharacter": "\\E0A8", "fontColor": "#b8383d" },
         "_zip": { "fontCharacter": "\\E0A8", "fontColor": "#cc3e44" },
         "_zip_1_light": { "fontCharacter": "\\E0A8", "fontColor": "#627379" },
-        "_zip_1": { "fontCharacter": "\\E0A8", "fontColor": "#6d8086" }
+        "_zip_1": { "fontCharacter": "\\E0A8", "fontColor": "#6d8086" },
+        "_outline_variable": {"fontCharacter": "\\EA88", "fontColor": "#75beff"},
+        "_outline_property": {"fontCharacter": "\\EB65", "fontColor": "#cccccc"},
+        "_outline_function": {"fontCharacter": "\\EA8C", "fontColor": "#b180d7"},
+        "_outline_method": {"fontCharacter": "\\EA8C", "fontColor": "#b180d7"},
+        "_outline_module": {"fontCharacter": "\\EA8B", "fontColor": "#cccccc"},
+        "_outline_string": {"fontCharacter": "\\EB8D", "fontColor": "#cccccc"},
+        "_outline_class": {"fontCharacter": "\\EB5B", "fontColor": "#ee9d28"},
       };
 
       const fileExtensions =  {
@@ -771,12 +778,16 @@
         return iconKey || defaultIcon
       }
       
+      function getIconForParsedOutline(tokenType) {
+        return iconDefinitions[`_outline_${tokenType}`];
+      }
       // Example usage
       // const filePath = '/path/to/file/readme.md';
       // const iconInfo = getIconForPath(filePath);
       
       window.iconManager = {
-        getIconForPath
+        getIconForPath,
+        getIconForParsedOutline
       };
 
       (() => {

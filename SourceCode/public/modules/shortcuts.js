@@ -89,11 +89,20 @@
             }
         }
     })()
+
+    let _rerenderOutline = () => {
+        document.dispatchEvent(new CustomEvent(RERENDER_OUTLINE));
+    }
+
         // document.dispatchEvent(new CustomEvent('file_explorer_element_selected', {detail: shouldExpand}));
     
     let _getVisibleElements = () => {
-        return jQuery('.header-part:visible').toArray()
+        return jQuery('.current-directory .header-part:visible').toArray()
     };
+
+    let _getVisibleOutlineElements = () => {
+        return jQuery(`.current_outline .single_outline_item:visible`).toArray()
+    }
     
     let explorerTabLevelEvent = (tab, functionName) => {
         document.dispatchEvent(new CustomEvent(`keyboard_shortcut.${tab}`, {detail: {
@@ -173,6 +182,7 @@
 
     window.shortcuts = {
         getVisibleElements: _getVisibleElements,
+        getVisibleOutlineElements: _getVisibleOutlineElements,
         pause: () => {
             _shortcutsPaused = true;
         },
@@ -182,6 +192,7 @@
         },
 
         rerenderSelected: _rerenderSelectedItems,
+        rerenderOutline: _rerenderOutline,
         getKeysAreRefreshed: () => {
             return _keysGotRefreshed;
         },
@@ -320,6 +331,39 @@
                 }
 
                 _rerenderSelectedItems(shouldExpand);
+            }
+        }
+
+        if((outline.hoveredItem.get() != undefined) && !outline.grayedOut) {
+            
+            if(arrowKeyOptions[ev.key]) {
+                console.log('WALKING OVER OUTLINE TAB');
+                
+                let visibleItems = _getVisibleOutlineElements();
+                let oldHoveredItem = outline.hoveredItem.get();
+                let indexOfHoveredItem = visibleItems.findIndex(el => el.getAttribute('_start') == oldHoveredItem)
+
+                let newIndex = arrowKeyOptions[ev.key](indexOfHoveredItem, visibleItems.length-1);
+                let newElementValue = visibleItems[newIndex].getAttribute('_start');
+                
+                outline.hoveredItem.set(newElementValue) 
+                _rerenderOutline();
+            }
+
+            if(selectionCancelOptions[ev.key]) {
+                outline.hoveredItem.set(undefined);
+                outline.selectedItem.set(undefined);
+                _rerenderOutline();
+            }
+
+            if(ev.key == " " && !(outline.selectedItem.get() == outline.hoveredItem.get())) {
+                let _hoveredItem = outline.hoveredItem.get();
+                
+                if(outline.expansion[_hoveredItem]) {
+                    outline.expansion[_hoveredItem]();
+                }
+
+                _rerenderOutline();
             }
         }
     })

@@ -417,6 +417,13 @@ window.file_explorer = {
         let fileExplorerEl = jQuery('.explorer-tabs')[0];
       
         file_explorer.tabSizing.maxHeight = fileExplorerEl.getBoundingClientRect().height;
+        
+        newOpen.forEach((tab) => {
+          file_explorer.tabSizing.resize({
+            name: tab.name,
+            distance: 0,
+          })
+        })
       },
 
       resize: (() => {
@@ -538,7 +545,11 @@ window.file_explorer = {
     openItem: (full_path) => {
       file_explorer.recentlyOpened.unshift(full_path);
       file_explorer.recentlyOpened.removeDublicates();
-    }
+      file_explorer.activeItem = full_path;
+      
+      document.dispatchEvent(new CustomEvent(ACTIVE_ELEMENT_CHANGED));
+    },
+    activeItem: undefined
   };
 
   // const watcher = chokidar.watch(launchArguments, {
