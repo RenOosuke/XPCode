@@ -3,6 +3,8 @@
     "version": "1.0.0",
     "main": "/public/index.html",
     "dependencies": {
+      "esprima": "^4.0.1",
+      "dt-python-parser": "^0.9.0"
     },
     "DEV": false,
     "window": {
