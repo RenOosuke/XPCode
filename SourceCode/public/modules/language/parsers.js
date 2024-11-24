@@ -41,5 +41,14 @@ window.parsers = {
                 }
             });
         })
+    },
+    json: () => {
+        return new Promise((res, rej) => {
+            const jsonParser = (fileContent) => {
+                return JSON.parse(fileContent);
+            }
+
+            res(jsonParser);
+        })
     }
 }

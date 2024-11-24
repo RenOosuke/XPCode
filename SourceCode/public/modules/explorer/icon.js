@@ -406,6 +406,8 @@
         "_outline_module": {"fontCharacter": "\\EA8B", "fontColor": "#cccccc"},
         "_outline_string": {"fontCharacter": "\\EB8D", "fontColor": "#cccccc"},
         "_outline_class": {"fontCharacter": "\\EB5B", "fontColor": "#ee9d28"},
+        "_outline_boolean": {"fontCharacter": "\\EA8F", "fontColor": "#cccccc"},
+        "_outline_number": {"fontCharacter": "\\EA90", "fontColor": "#cccccc"},
       };
 
       const fileExtensions =  {

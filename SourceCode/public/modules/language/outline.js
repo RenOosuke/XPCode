@@ -3,7 +3,11 @@ const PARSER_CONSTS = {
     FUNCTION: "function",
     CLASS: "class",
     PROPERTY: "property",
-    METHOD: "method"
+    METHOD: "method",
+    NUMBER: "number",
+    STRING: "string",
+    BOOLEAN: "boolean",
+    MODULE: "module"
 };
 
 {
@@ -311,6 +315,62 @@ const PARSER_CONSTS = {
         return outlineItems;
     }
 
+    const parseJSON = (jsonObj) => {
+        let uniqueJSONStart = 0;
+
+        const walkChildrenRecursively = (obj) => {
+            let items = [];
+
+            uniqueJSONStart++;
+
+            let keys = Object.keys(obj);
+            keys.forEach((key) => {
+                uniqueJSONStart++;
+
+                let subItemContext = {
+                    start: uniqueJSONStart,
+                    name: key
+                };
+
+                let subitems = [];
+
+                if(typeof obj[key] == "number") {
+                    subItemContext.type = PARSER_CONSTS.NUMBER
+                };
+
+                if(typeof obj[key] == "string") {
+                    subItemContext.type = PARSER_CONSTS.STRING
+                }
+
+                if(typeof obj[key] == "boolean") {
+                    subItemContext.type = PARSER_CONSTS.BOOLEAN
+                }
+
+                if(subItemContext.type) {
+                    subItemContext.value = obj[key];
+                }
+
+                if(Object.keys(obj[key]).length > 0 && !subItemContext.type) {
+                    subitems = walkChildrenRecursively(obj[key]);
+                }
+
+                if(subitems.length > 0) {
+                    subItemContext.items = subitems
+                }
+
+                if(!subItemContext.type) {
+                    subItemContext.type = PARSER_CONSTS.MODULE
+                }
+
+                items.push(subItemContext);
+            })
+
+            return items
+        };
+
+        return  walkChildrenRecursively(jsonObj)
+    }
+
     window.outline = (() => {
         let activeConfigs = {
 
@@ -356,6 +416,11 @@ const PARSER_CONSTS = {
                                 tokens = (new parser).getAllTokens(fileContent);
                                 outlineElements = parsePython(tokens);
                             break;
+                            case 'json':
+                                parsedContent = parser(fileContent);
+
+                                outlineElements = parseJSON(parsedContent)
+                            break
                         }
 
                     } catch (err) {
@@ -388,7 +453,9 @@ const PARSER_CONSTS = {
 
             let language = getLanguage(full_path);
 
-            let _outline = undefined;
+            let _outline = new Promise((res, rej) => {
+                res([]);
+            });
 
             if (parsers[language]) {
                 let fileContent = fs.readFileSync(full_path, 'utf-8');

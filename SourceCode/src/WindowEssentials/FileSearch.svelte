@@ -190,10 +190,11 @@
         }
 
         if(ev.key == "Enter") {
-            let combinedArr = [...filteredAllFiles, ...filteredRecentFiles];
+            let combinedArr = [...filteredRecentFiles, ... filteredAllFiles];
 
             if(selectedIndex < combinedArr.length) {
                 let selectedFile = combinedArr[selectedIndex];
+
                 handleRowClick({}, selectedFile);
             }
         }
@@ -208,6 +209,7 @@
 
         return absolutePath;
     }
+
     const handleRecentsRemove = (ev, file) => {
         console.log(ev, file);
         
@@ -234,12 +236,18 @@
 
     const handleRowClick = (ev, file) => {
         let absolutePath = getAbsolutePath(file);
+        console.log(absolutePath);
         file_explorer.openItem(absolutePath)
         endSearching();
     }
 
     onMount(() => {
         alert("Stuff to implement here: \n 1) unsaved files showing \n 2) opening of files \n 3) open file in split view");
+
+        // file_explorer
+        file_explorer.grayedOut = true;
+        outline.grayedOut = true;
+        themeUtils.setGrayedOut();
 
         let shadow = jQuery(".context-menu-shadow")[0];
         

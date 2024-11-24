@@ -94,6 +94,12 @@
             <div class="item_name">
                 {_name}
             </div>
+
+            {#if outlineItem.value}
+                <div class="value">
+                    {outlineItem.value}
+                </div>
+            {/if}
         </div>
     </div>
 
@@ -181,7 +187,7 @@
         margin-right: .3rem;
     }
 
-    .item_name {
+    .item_name, .value {
         line-height: 1.2;
         font-size: 0.8rem;
         display: flex;
@@ -190,6 +196,11 @@
         padding-bottom: 0.05rem;
     }
 
+    .value {
+        opacity: .7;
+        margin-left: .5rem;
+    }
+    
     .parent-colapsed {
         display: none;
     }

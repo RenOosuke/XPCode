@@ -207,6 +207,7 @@
     border: solid .5px var(--secondary-border-color);
     color: var(--base-text-color);
     box-shadow: rgba(0, 0, 0, 0.36) 0px 2px 8px 0px;
+    z-index: 10000;
   }
   .context-menu-placeholder .menu-item,
   .context-submenu .menu-item,
