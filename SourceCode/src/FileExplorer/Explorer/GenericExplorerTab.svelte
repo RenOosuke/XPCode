@@ -136,8 +136,6 @@
     let translatedTabName = routeTranslation[tabName];
 
     const handleResizing = (newDistance) => {
-        console.log(newDistance);
-
         file_explorer.tabSizing.resize({
             name: translatedTabName,
             distance: newDistance
@@ -175,7 +173,6 @@
             let translatedEventTabName = translationObject[eventTab];
 
             if(tabName == translatedEventTabName) {
-                // console.log(ev.detail)
                 isDisabled = !isDisabled
             }
         })

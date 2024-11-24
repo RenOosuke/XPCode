@@ -12,7 +12,7 @@
 
             activeElementPresent = !!currentActiveItem;
             
-            console.log('Timeline items not yet implemented!');
+            TODO('Timeline items not yet implemented!');
         });
     })
 </script>

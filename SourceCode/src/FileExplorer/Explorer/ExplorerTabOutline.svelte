@@ -14,25 +14,25 @@
     onMount(() => {
         document.addEventListener(ACTIVE_ELEMENT_CHANGED, () => {
             file_explorer.tabSizing.update();
+            
+            currentActiveItem = file_explorer.activeItem;
 
-            setTimeout(() => {
-                currentActiveItem = file_explorer.activeItem;
-    
-                activeElementPresent = !!currentActiveItem;
-    
-                if(activeElementPresent) {
-                    outlineItems = outline.getOutline(currentActiveItem) || [];
-                    fileName = path.basename(currentActiveItem);
-                    console.log(outlineItems);
-                } else {
-                    outlineItems = [];
-                    fileName = '';
-                }
-    
-                hasOutline = outlineItems.length > 0;
-    
-                TODO('Outline item whilst unsaved!');
-            }, 50)
+            activeElementPresent = !!currentActiveItem;
+
+            if(activeElementPresent) {
+                outline.getOutline(currentActiveItem).then(_outlineItems => {
+                    outlineItems = _outlineItems || [];
+                    hasOutline = outlineItems.length > 0;
+                });
+
+                fileName = path.basename(currentActiveItem);
+            } else {
+                outlineItems = [];
+                fileName = '';
+                hasOutline = false;
+            }
+
+            TODO('Outline item whilst unsaved!');
         });
 
         document.addEventListener(RERENDER_OUTLINE, () => {
