@@ -1,9 +1,12 @@
+const SETTINGS_SORT_PATH = "explorer_tabs.outline.sort";
+
 {
     /** modules.js */
     const GENERAL_SHORTCUTS = 'shortcuts.general';
     const SETTINGS_PATH = `${GENERAL_SHORTCUTS}.settings`;
     const SHORTCUTS_PATH = `${GENERAL_SHORTCUTS}.shortcuts`;
     const COLOR_THEME_PATH = `${GENERAL_SHORTCUTS}.color_theme`;
+     
     let _parentDir = path.resolve('public/data');
     let pathToSettings = path.resolve('public/data/settings.json');
     let defaultSettings = {
@@ -22,6 +25,9 @@
                 debug: {
 
                 }
+            },
+            outline: {
+                sort: "sort_outline_by_position"
             }
         },
 
@@ -140,6 +146,7 @@
                     { label: "Settings", name: "settings", shortcut: shortcuts.combinationFromSettings(SETTINGS_PATH)},
                     { label: "Keyboard Shortcuts", name: "keyboard_shortcuts", shortcut: shortcuts.combinationFromSettings(SHORTCUTS_PATH)},
                     { label: "Snippets", name: "snippets"},
+
                     { label: "Tasks", name: "tasks" },
                     { label: "Themes", name: "themes", options: [
                         {
@@ -189,4 +196,10 @@
     })
 
     themeUtils.endInitialLoad();
+
+    if (typeof window !== 'undefined') {
+        window.addEventListener('beforeunload', () => {
+            settings.update();
+        });
+    }
 }

@@ -1,4 +1,5 @@
 <script>
+    import { L } from "../../src-noconflict/ace";
   import ExplorerTabFolder from "./Explorer/ExplorerTabFolder.svelte";
   import ExplorerTabNpmScripts from "./Explorer/ExplorerTabNPMScripts.svelte";
   import ExplorerTabOpenEditors from "./Explorer/ExplorerTabOpenEditors.svelte";
@@ -59,11 +60,68 @@ import GenericExplorerTab from "./Explorer/GenericExplorerTab.svelte";
         outline: [
             {
                 icon: 'collapse-all',
-                title: 'Collapse All'
+                title: 'Collapse All',
+                click: () => {
+                    let expandedItems = Object.keys(outline.expanded);
+                    let hasExpanded = Object.values(outline.expanded).find(a => a);
+
+                    expandedItems.forEach((key) => {
+                        outline.expansion[key](undefined, !hasExpanded);
+                    })
+                }
             },
             {
                 icon: 'more',
-                title: 'More Actions...'
+                title: 'More Actions...',
+                click: (ev) => {
+                    let x = ev.x;
+                    let y = ev.y;
+
+                    let selectedSort = settings.section.get(SETTINGS_SORT_PATH);
+                    let sortByPosition = "sort_outline_by_position";
+                    let sortByName = "sort_outline_by_name";
+                    let sortByCategory = "sort_outline_by_category";
+
+                    let genericClick = (sortName) => () => {
+                        settings.section.set(SETTINGS_SORT_PATH, `"${sortName}"`);
+                        
+                        document.dispatchEvent(new CustomEvent(ACTIVE_ELEMENT_CHANGED, {
+                            detail: sortName
+                        }));
+                    };
+
+                    /** @type {singleMenuItem[]}*/
+                    let config = 
+                    [
+                        {
+                            label: 'Sort By: Position',
+                            name: sortByPosition,
+                            icon_prefix: true,
+                            toggled: sortByPosition == selectedSort,
+                            click: genericClick(sortByPosition)
+                        },
+                        {
+                            label: 'Sort By: Name',
+                            name: 'sort_outline_by_name',
+                            icon_prefix: true,
+                            toggled: sortByName == selectedSort,
+                            click: genericClick(sortByName)
+                        },
+                        {
+                            label: 'Sort By: Category',
+                            name: 'sort_outline_by_category',
+                            icon_prefix: true,
+                            toggled: sortByCategory == selectedSort,
+                            click: genericClick(sortByCategory)
+                        },
+                    ];
+
+                    menu({
+                        options: config,
+                        x,
+                        y
+                    });
+                }
             },
         ],
         timeline: [

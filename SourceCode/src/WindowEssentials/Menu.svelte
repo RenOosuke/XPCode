@@ -90,7 +90,7 @@
         <div class="splitter"></div>
       {:else}
         <div
-          class="menu-item{(option || {}).disabled ? ' disabled' : ''} {option.icon_prefix ? 'shorter' : ''}"
+          class="menu-item{(option || {}).disabled ? ' disabled' : ''} {option.icon_prefix ? 'has-prefix' : ''} {option.icon_prefix ? 'shorter' : ''}"
           on:click={(ev) => handleMenuOptionClick(ev, option)}
         >
           {#if option.icon_prefix}
@@ -341,5 +341,9 @@
   .shortcut {
     width: fit-content;
     margin-right: 1.5rem;
+  }
+
+  .has-prefix {
+    display: block !important;
   }
 </style>

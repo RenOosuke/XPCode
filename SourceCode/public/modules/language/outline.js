@@ -493,7 +493,10 @@ const PARSER_CONSTS = {
             grayedOut: true,
             selectedItem: _selectedItem,
             itemEvents: {},
-            expansion: {}
+            expansion: {},
+            expanded: {
+
+            }
         }
     })()
 }

@@ -1,6 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import ResizeableBorder from "../../WindowEssentials/ResizeableBorder.svelte";
+    import { preventDefault, stopPropagation } from "../../../src-noconflict/ace";
 
     let isExpanded = false;
     export let tabName;
@@ -200,7 +201,7 @@
         <div class="right-side">
             {#each tabButtons as singleTabButton}
                 <div class="single-tab-button-placeholder {singleTabButton.icon}-icon" data-title-top="{singleTabButton.title}">
-                    <diV class="single-tab-button" style="-webkit-mask: var(--{singleTabButton.icon}-icon);-webkit-mask-size: 1rem;">
+                    <diV class="single-tab-button" style="-webkit-mask: var(--{singleTabButton.icon}-icon);-webkit-mask-size: 1rem;" on:click={(ev) => {ev.preventDefault(); ev.stopPropagation(); if(singleTabButton.click) {singleTabButton.click(ev)}}}>
 
                     </diV>
                 </div>

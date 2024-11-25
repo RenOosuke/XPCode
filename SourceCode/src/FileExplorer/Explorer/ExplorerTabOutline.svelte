@@ -12,24 +12,73 @@
     let hoveredStart = undefined;
 
     onMount(() => {
-        document.addEventListener(ACTIVE_ELEMENT_CHANGED, () => {
+        document.addEventListener(ACTIVE_ELEMENT_CHANGED, (ev) => {
             file_explorer.tabSizing.update();
             
             currentActiveItem = file_explorer.activeItem;
 
             activeElementPresent = !!currentActiveItem;
 
-            if(activeElementPresent) {
-                outline.getOutline(currentActiveItem).then(_outlineItems => {
-                    outlineItems = _outlineItems || [];
-                    hasOutline = outlineItems.length > 0;
-                });
+            let categoryOrder = {
+                class: 0,
+                function: 1,
+                property: 2,
+                variable: 3,
+                method: 4,
+                property: 5,
+                module: 6,
+                string: 7,
+                number: 8,
+                boolean: 9,
+            };
 
-                fileName = path.basename(currentActiveItem);
+            let sortingFunctions = {
+                sort_outline_by_position: (itemA, itemB) => {
+                    return itemA.start - itemB.start;
+                },
+
+                sort_outline_by_name: (itemA, itemB) => {
+                    return itemA.name.localeCompare(itemB.name)
+                },
+
+                sort_outline_by_category: (itemA, itemB) => {
+                    return categoryOrder[itemA.type] - categoryOrder[itemB.type];
+                }
+            }
+
+            const resortOutlineItems = (sortName) => {
+                let sortedOutlineItems = JSON.parse(JSON.stringify(outlineItems));
+                let sortingFunction = sortingFunctions[sortName];
+
+                let recursiveSort = (item) => {
+                    if(item.items) {
+                        item.items.forEach(recursiveSort);
+                        item.items.sort(sortingFunction);
+                    };
+                }
+
+                sortedOutlineItems.forEach(recursiveSort)
+                sortedOutlineItems.sort(sortingFunction);
+
+                outlineItems = sortedOutlineItems;
+            }
+
+            if(ev.detail) {
+                resortOutlineItems(ev.detail);
             } else {
-                outlineItems = [];
-                fileName = '';
-                hasOutline = false;
+                if(activeElementPresent) {
+                    outline.getOutline(currentActiveItem).then(_outlineItems => {
+                        outlineItems = _outlineItems || [];
+                        hasOutline = outlineItems.length > 0;
+                        resortOutlineItems(settings.section.get(SETTINGS_SORT_PATH));
+                    });
+    
+                    fileName = path.basename(currentActiveItem);
+                } else {
+                    outlineItems = [];
+                    fileName = '';
+                    hasOutline = false;
+                }
             }
 
             TODO('Outline item whilst unsaved!');
@@ -38,6 +87,7 @@
         document.addEventListener(RERENDER_OUTLINE, () => {
             selectedStart = outline.selectedItem.get();
             hoveredStart = outline.hoveredItem.get();
+            // if(out)
         });
     })
 </script>

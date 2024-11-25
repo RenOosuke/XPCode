@@ -18,13 +18,19 @@
         }
     }
 
-    const handleArrowClick = (ev) => {
+    const handleArrowClick = (ev, expandedValue) => {
         if(ev) {
             ev.preventDefault();
             ev.stopPropagation();
         }
 
-        isExpanded = !isExpanded;
+        if(expandedValue !== undefined) {
+            isExpanded = expandedValue;
+        } else {
+            isExpanded = !isExpanded;
+        }
+
+        outline.expanded[outlineItem.start] = isExpanded;
         outline.hoveredItem.set(outlineItem.start);
         shortcuts.rerenderOutline()
     }
@@ -37,6 +43,8 @@
 
         if(outlineItem.items) {
             isExpanded = !isExpanded;
+
+            outline.expanded[outlineItem.start] = isExpanded;
         }
 
         outline.hoveredItem.set(outlineItem.start);
@@ -52,6 +60,7 @@
     onMount(() => {
         if(outlineItem.items) {
             outline.expansion[outlineItem.start] = handleArrowClick;
+            outline.expanded[outlineItem.start] = false;
         } else {
             outline.expansion[outlineItem.start] = handleExpansionToggle;
         }

@@ -290,7 +290,9 @@
         }
 
         if(file_explorer.hoveredItem != undefined && !file_explorer.grayedOut){
+            TODO("Navigating with keyboard on a bigger list of items should scroll to the newly hovered item if out of sight.")
             if(arrowKeyOptions[ev.key]) {
+                ev.preventDefault();
                 let visibleItems = _getVisibleElements();
                 let oldHoveredItem = file_explorer.hoveredItem;
                 let indexOfHoveredItem = visibleItems.findIndex(el => el.getAttribute('full_path') === oldHoveredItem)
@@ -335,10 +337,10 @@
         }
 
         if((outline.hoveredItem.get() != undefined) && !outline.grayedOut) {
+            TODO("Navigating with keyboard on a bigger list of items should scroll to the newly hovered item if out of sight.")
             
             if(arrowKeyOptions[ev.key]) {
-                console.log('WALKING OVER OUTLINE TAB');
-                
+                ev.preventDefault();
                 let visibleItems = _getVisibleOutlineElements();
                 let oldHoveredItem = outline.hoveredItem.get();
                 let indexOfHoveredItem = visibleItems.findIndex(el => el.getAttribute('_start') == oldHoveredItem)
