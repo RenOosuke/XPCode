@@ -9,6 +9,8 @@ const fs = require('fs');
 const path = require('path');
 const child_process = require('child_process');
 const decompress = require('decompress');
+const openFolderWhenDone = true;
+const shouldCleanUpBuildBeforeHand = true;
 
 const NWVersions = {
     '0.15.4': {
@@ -130,8 +132,31 @@ const checkForNWCache = async () => {
     }
 } 
 
+const openFolder = () => {
+    child_process.exec(`explorer /select, ${projectExePath}`)
+};
+
+const cleanUpBuild = () => {
+    let content = fs.readdirSync(buildAppPath, {
+        withFileTypes: true
+    });
+
+    content.forEach(dir => {
+        let _path = path.join(dir.parentPath, dir.name);
+
+        if(dir.isDirectory()) {
+            fs.rmSync(_path, { recursive: true, force: true });
+        } else {
+            fs.unlinkSync(_path);
+        }
+    })
+}
+
+
 (async ()=> {
+    cleanUpBuild();
     copyProjectFiles();
     installNPMPackages();
     await checkForNWCache();
+    openFolder();
 })()
