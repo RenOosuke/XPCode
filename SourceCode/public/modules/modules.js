@@ -3,6 +3,7 @@ const SETTING_VARIABLES = {
     VARIABLES_EXPLORER_X_OFFSET: 'variables.explorer.x_offset'
 }
 
+
 const ACTIVE_ELEMENT_CHANGED = 'active_element_changed';
 const RERENDER_OUTLINE = 'rerender_outline';
 
@@ -12,6 +13,24 @@ window.voidFunction = () => {return};
 window.DEV = nw.App.manifest.DEV;
 
 window.fs = require("fs");
+window.os = require('os');
+
+const originalRealpathSync = fs.realpathSync;
+
+if(parseInt(os.release()) < 10) {
+    fs.realpathSync = function (p, options) {
+        try {
+            return path.resolve(p);
+        } catch (e) {
+            if (e.code === 'ENOSYS') {
+                // Fallback to `path.resolve` if `realpathSync` is unsupported
+                console.log("Have to try to fix it somehow");
+            }
+            throw e;
+        }
+    };
+}
+
 window.path = require('path');
 
 testDirectory = path.resolve('../TestDirectory')
