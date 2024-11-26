@@ -41,7 +41,10 @@
     let recentDirectoryMenuItems = (settings.section.get("temporary.recent.folders").filter(dir => dir != launchArguments || isTesting).map(dir => {
             return {
               label: dir,
-              name: "reopen_directory"
+              name: "reopen_directory",
+              click: () => {
+                nw.App.relaunchWithArgs(dir, true);
+              }
             }
     }));
 
@@ -100,7 +103,7 @@
         name: "open_folder",
         click: () => {
           file_explorer.fileDialogues.openFolder().then((newDirectory) => {
-            nw.App.relaunchWithArgs(newDirectory);
+            nw.App.relaunchWithArgs(newDirectory, true);
           }).catch()
         }
       },

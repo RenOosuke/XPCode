@@ -367,45 +367,39 @@ window.VSCode = {
     }
 }
 
-nw.App.relaunchWithArgs = function (newDirectory) {
+nw.App.relaunchWithArgs = function (newDirectory, shouldQuit) {
     // const appPath = nw.App.argv[0] || process.execPath; // Path to the app executable
     // const args = newArgs.join(' '); // Combine new arguments into a single string
-    // let newLaunchArguments = [...nw.App.fullArgv];
+    let newLaunchArguments = [...nw.App.fullArgv];
 
-    // if(launchArgumentExists) {
-    //   newLaunchArguments[newLaunchArguments.length-1] = newDirectory;
-    // } else {
-    //   newLaunchArguments.push(newDirectory);
-    // }
+    let XPSafeNewDirectory = `"${newDirectory}"`;
 
-    // let nwPath = nw.process.execPath;
-    // // Relaunch the app with new arguments ${newLaunchArguments.join(" ")}
-    // const commandToExecute = `"${nwPath}" . `;
-    // console.log(commandToExecute);
-
-    // child_process.exec(commandToExecute, (err, stdout, stderr) => {
-    //     if (err) {
-    //         console.error('Failed to relaunch the app:', err);
-    //     }
-
-    //     console.log({
-    //         err,
-    //         stdout,
-    //         stderr
-    //     })
-    // });
-    
-
-    let configForNewWindow = {
-        "frame": false,
-        "show": true,
-        "width": 500,
-        "height": 500,
-        "min_height": 300,
-        "min_width": 460
+    if(launchArgumentExists) {
+      newLaunchArguments[newLaunchArguments.length-1] = XPSafeNewDirectory;
+    } else {
+      newLaunchArguments.push(XPSafeNewDirectory);
     }
-    // Close the current app
-    // nw.App.quit();
+
+    let XPSafeNWPath = `"${nw.process.execPath}"`;
+    // // Relaunch the app with new arguments 
+    const commandToExecute = `${XPSafeNWPath} . ${newLaunchArguments.join(" ")}`;
+    console.log(commandToExecute);
+
+    child_process.exec(commandToExecute, (err, stdout, stderr) => {
+        if (err) {
+            console.error('Failed to relaunch the app:', err);
+        }
+
+        console.log({
+            err,
+            stdout,
+            stderr
+        })
+    });
+    
+    if(shouldQuit) {
+        nw.App.quit();
+    }
 }
 
 // var readline = require('readline');
