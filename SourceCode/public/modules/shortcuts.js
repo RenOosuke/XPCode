@@ -13,7 +13,10 @@
         COPY: 'copy',
         CUT: 'cut',
         PASTE: 'paste',
-        SEARCH_BY_FILE_NAME: 'search_by_file_name'
+        SEARCH_BY_FILE_NAME: 'search_by_file_name',
+        ZOOM_IN: "zoom_in",
+        ZOOM_OUT: "zoom_out",
+        ZOOM_IN_ALTERNATIVE: "zoom_in_alternative"
     }
     // let keyTranslation = {
     //     'Ctrl',
@@ -168,6 +171,15 @@
                     case ACTIONS.SEARCH_BY_FILE_NAME:
                         fileSearch();
                     break;
+
+                    case ACTIONS.ZOOM_IN:
+                    case ACTIONS.ZOOM_IN_ALTERNATIVE:
+                        nw.Window.get().zoomLevel += 1;
+                        break;
+                        
+                    case ACTIONS.ZOOM_OUT:
+                        nw.Window.get().zoomLevel += -1;
+                        break;
                 }
             }
         } catch (bug) {

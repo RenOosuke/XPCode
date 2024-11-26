@@ -47,7 +47,10 @@ const SETTINGS_SORT_PATH = "explorer_tabs.outline.sort";
                 command_palette: "Ctrl__Shift__p",
                 settings: "Ctrl__,",
                 shortcuts: "Ctrl__k__s",
-                color_theme: "Ctrl__k__t"
+                color_theme: "Ctrl__k__t",
+                zoom_in: "Ctrl__+",
+                zoom_out: "Ctrl__-",
+                zoom_in_alternative: "Ctrl__=",
             },
             sidebar: {
 
