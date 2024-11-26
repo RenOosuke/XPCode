@@ -28,7 +28,7 @@ const SETTINGS_SORT_PATH = "explorer_tabs.outline.sort";
             },
             outline: {
                 sort: "sort_outline_by_position"
-            }
+            },
         },
 
         shortcuts: {
@@ -57,6 +57,13 @@ const SETTINGS_SORT_PATH = "explorer_tabs.outline.sort";
         variables: {
             explorer: {
                 x_offset: '0px'
+            }
+        },
+
+        temporary: {
+            recent: {
+                folders: [],
+                files: [],
             }
         }
     }

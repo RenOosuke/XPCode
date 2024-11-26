@@ -6,7 +6,7 @@ window.parsers = {
     },
     py: () => {
         return new Promise((res, rej) => {
-            let execPath = path.resolve('public\\modules\\executables\\python_version_check.exe')
+            let execPath = path.resolve(`${EXECUTABLES_PATH}\\python_version_check.exe`)
             child_process.exec(`"${execPath}"`, (err, stdout, stderr) => {
                 let dt_python_parser = require('dt-python-parser')
                 let versions = {

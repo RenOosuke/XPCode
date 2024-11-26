@@ -6,7 +6,7 @@
             END: `___end___\u000d`,
         };
 
-        let clipboardPath = path.resolve('public\\modules\\executables\\clipboard_helper.exe');
+        let clipboardPath = path.resolve(`${EXECUTABLES_PATH}\\clipboard_helper.exe`); //clipboard_helper
 
         const parsePaths = (arr) => arr.join('::');
 

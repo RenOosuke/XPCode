@@ -1,23 +1,12 @@
 /** modules.js */
-const SETTING_VARIABLES = {
-    VARIABLES_EXPLORER_X_OFFSET: 'variables.explorer.x_offset'
-}
-
-
-const ACTIVE_ELEMENT_CHANGED = 'active_element_changed';
-const RERENDER_OUTLINE = 'rerender_outline';
-
 window.timeA = new Date().getTime();
 
 window.voidFunction = () => {return};
 window.DEV = nw.App.manifest.DEV;
 
 window.fs = require("fs");
-window.os = require('os');
 
-const originalRealpathSync = fs.realpathSync;
-
-if(parseInt(os.release()) < 10) {
+if(parseInt(require("os").release()) < 10) {
     fs.realpathSync = function (p, options) {
         try {
             return path.resolve(p);
@@ -31,26 +20,9 @@ if(parseInt(os.release()) < 10) {
     };
 }
 
-window.path = require('path');
-
-testDirectory = path.resolve('../TestDirectory')
-
-window.launchArguments = !DEV ? (nw.App.fullArgv[0]) : (fs.existsSync(testDirectory) ? testDirectory : nw.__dirname); // nw.App.fullArgv;
-
-window.directory = path.basename(launchArguments);
-console.log('Launch arguments - ', launchArguments);
-
-window._i = function (template, values) {
-    return template.replace(/\$\{(\d+)\}/g, function(match, index) {
-        return typeof values[index] !== 'undefined' ? values[index] : match;
-    });
-}
-
 window.range = function (start, end) {
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
 }
-
-window.child_process = require('child_process');
 
 let ignoreTodos = false;
 let ToDoList = new Set([]);
@@ -62,22 +34,17 @@ window.TODO = (todoMessage) => {
 
     ToDoList.add(todoMessage);
 }
-// console.log(child_process.exec('cmd', function(err, stdout, stderr){
-//     console.l(stdout);
-// }));
 
-// child_process.exec('start cmd /K', function(err, stdout, stderr) {
-//     console.log(stdout);
-// })
+window.child_process = require('child_process');
 
-console.log(window.session);
+
 window.setTheme = function(themeName) {
     var foldersElement =  $('#explorer')[0];
     var oldClasses = [];
 
     // foldersElement.className = foldersElement.className.split(' ').filter(function(clsname) {return clsname.indexOf('ace')<0}).join(' ') + '  ace-' + themeName;
 
-    vscode.setTheme(_i("ace/theme/${0}", [themeName]));
+    vscode.setTheme(`ace/theme/${themeName}`);
 }
 
 function closeIt()
@@ -398,6 +365,47 @@ window.VSCode = {
     xpcode: {
 
     }
+}
+
+nw.App.relaunchWithArgs = function (newDirectory) {
+    // const appPath = nw.App.argv[0] || process.execPath; // Path to the app executable
+    // const args = newArgs.join(' '); // Combine new arguments into a single string
+    // let newLaunchArguments = [...nw.App.fullArgv];
+
+    // if(launchArgumentExists) {
+    //   newLaunchArguments[newLaunchArguments.length-1] = newDirectory;
+    // } else {
+    //   newLaunchArguments.push(newDirectory);
+    // }
+
+    // let nwPath = nw.process.execPath;
+    // // Relaunch the app with new arguments ${newLaunchArguments.join(" ")}
+    // const commandToExecute = `"${nwPath}" . `;
+    // console.log(commandToExecute);
+
+    // child_process.exec(commandToExecute, (err, stdout, stderr) => {
+    //     if (err) {
+    //         console.error('Failed to relaunch the app:', err);
+    //     }
+
+    //     console.log({
+    //         err,
+    //         stdout,
+    //         stderr
+    //     })
+    // });
+    
+
+    let configForNewWindow = {
+        "frame": false,
+        "show": true,
+        "width": 500,
+        "height": 500,
+        "min_height": 300,
+        "min_width": 460
+    }
+    // Close the current app
+    // nw.App.quit();
 }
 
 // var readline = require('readline');

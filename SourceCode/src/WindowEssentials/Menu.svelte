@@ -214,7 +214,7 @@
   .context-submenu-lvl2 .menu-item {
     position: relative;
     cursor: pointer;
-    width: 20rem;
+    width: auto;
     margin-left: 0.25rem;
     margin-right: 0.25rem;
     padding-left: 1.75rem;
@@ -224,6 +224,9 @@
     border-radius: 0.25rem;
     display: flex;
     justify-content: space-between;
+    min-width: 20rem;
+    padding-right: 1rem;
+    white-space: nowrap;
   }
   .context-menu-placeholder .menu-item.prefix,
   .context-submenu .menu-item.prefix
@@ -340,7 +343,7 @@
 
   .shortcut {
     width: fit-content;
-    margin-right: 1.5rem;
+    margin-right: .5rem;
   }
 
   .has-prefix {

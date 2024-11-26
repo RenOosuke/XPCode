@@ -549,7 +549,46 @@ window.file_explorer = {
       
       document.dispatchEvent(new CustomEvent(ACTIVE_ELEMENT_CHANGED));
     },
-    activeItem: undefined
+    activeItem: undefined,
+    fileDialogues: {
+     openFile: (filePickerConfig /** @type {filePickerConfig} */) => {
+      return new Promise((res, rej) => {
+        let pathToFilePicker = path.resolve(`${EXECUTABLES_PATH}\\OpenFileDialog.exe`);
+        let multiselect = filePickerConfig.multiselect ? " multiselect" : "";
+        child_process.exec(`"${pathToFilePicker}"`, [`${filePickerConfig.title}`, `${filePickerConfig.fileType}|*${filePickerConfig.extension}`, multiselect], (err, stdout, stderr) => {
+
+          if(err && err.length>0) {
+            alert(err);
+          };
+          
+          if(stderr && stderr.length>0) {
+            alert(err);
+          }
+
+          if(stdout.length > 0) {
+            res(stdout);
+          } else {
+            rej("");
+          };
+        });
+      })
+      },
+      openFolder: () => {
+        return new Promise((res, rej) => {
+          const pathToFolderBrowser = path.resolve(`${EXECUTABLES_PATH}\\FolderBrowser.exe`);
+          child_process.exec(`"${pathToFolderBrowser}"`, (err, stdout, stderr) => {
+            let selectedFolderPrefix = "Selected folder: ";
+            let indexOfSelectedFolderMessage = stdout.indexOf(selectedFolderPrefix);
+
+            if(indexOfSelectedFolderMessage == 0) {
+              res(stdout.slice(selectedFolderPrefix.length).trim());
+            } else {
+              rej(stdout);
+            }
+          });
+        })
+      }
+    }
   };
 
   // const watcher = chokidar.watch(launchArguments, {

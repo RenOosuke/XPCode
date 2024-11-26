@@ -37,6 +37,37 @@
   ];
 
   const menusByTab =() => {
+    const isTesting = true;
+    let recentDirectoryMenuItems = (settings.section.get("temporary.recent.folders").filter(dir => dir != launchArguments || isTesting).map(dir => {
+            return {
+              label: dir,
+              name: "reopen_directory"
+            }
+    }));
+
+    let recentDirectoryMenuItemsSplitter = [];
+
+    if(recentDirectoryMenuItems.length > 0) {
+      recentDirectoryMenuItemsSplitter.push({
+        separator: true
+      })
+    }
+
+    let recentFileMenuItems = (settings.section.get("temporary.recent.files").filter(dir => dir != launchArguments || isTesting).map(dir => {
+            return {
+              label: dir,
+              name: "reopen_file"
+            }
+    }));
+
+    let recentFileMenuItemsSplitter = [];
+
+    if(recentFileMenuItems.length > 0) {
+      recentFileMenuItemsSplitter.push({
+        separator: true
+      })
+    }
+
     /**
      * @type {{[any]: singleMenuItem[]}}
      */
@@ -67,6 +98,11 @@
       {
         label: "Open Folder...",
         name: "open_folder",
+        click: () => {
+          file_explorer.fileDialogues.openFolder().then((newDirectory) => {
+            nw.App.relaunchWithArgs(newDirectory);
+          }).catch()
+        }
       },
       {
         label: "Open Workspace from File...",
@@ -83,18 +119,10 @@
           {
             separator: true,
           },
-          {}
-          ,
-          // TODO
-          /** INSERT TABS WITH PREVIOUSLY OPENED DIRECTORIES HERE*/ {
-            separator: true,
-          },
-          {}
-          ,
-          // TODO
-          /** INSERT TABS WITH PREVIOUSLY OPENED FILES HERE*/ {
-            separator: true,
-          },
+          ...recentDirectoryMenuItems,
+          ...recentDirectoryMenuItemsSplitter,
+          ...recentFileMenuItems,
+          ...recentFileMenuItemsSplitter,
           {
             label: "More...",
             name: "more",
@@ -172,6 +200,9 @@
       {
         label: "Exit",
         name: "exit",
+        click: () => {
+          nw.App.quit();
+        }
       },
     ],
 

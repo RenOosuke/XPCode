@@ -71,7 +71,12 @@ type file_explorer = {
    itemEvents: {},
    allFiles: singleFileDetails[],
    openItem: (full_path: string) => void;
-   activeItem: PathLike | undefined
+   activeItem: PathLike | undefined,
+   openFilePicker: (filePickerConfig: filePickerConfig) => Promise<string>,
+   fileDialogues: {
+    openFile: (filePickerConfig: any) => Promise<any>;
+    openFolder: () => Promise<any>;
+    }
 }
 
 declare var file_explorer: file_explorer;
