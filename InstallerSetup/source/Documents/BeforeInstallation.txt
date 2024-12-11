@@ -1,0 +1,4 @@
+XPCode is a reverse engineering attempt of recreating VSCode for older versions of Windows, starting with Windows XP. 
+
+Browse, code, edit, delete, manage files, display intellisense and debug in multiple languages, 
+supporting outlines, active directory manager and more.

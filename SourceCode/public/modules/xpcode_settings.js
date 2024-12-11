@@ -180,10 +180,7 @@ const SETTINGS_SORT_PATH = "explorer_tabs.outline.sort";
 
     window.settings = _settings;
 
-    window.addEventListener('beforeunload', () => {
-        settings.update();
-        alert('Updated settings!');
-    });
+    processessCleanQueue.push(settings.update)
 
     let CSSPropertiesToReadOnStart = [
         'side-tab-offset',
@@ -206,10 +203,4 @@ const SETTINGS_SORT_PATH = "explorer_tabs.outline.sort";
     })
 
     themeUtils.endInitialLoad();
-
-    if (typeof window !== 'undefined') {
-        window.addEventListener('beforeunload', () => {
-            settings.update();
-        });
-    }
 }

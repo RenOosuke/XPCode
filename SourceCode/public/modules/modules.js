@@ -58,89 +58,89 @@ function closeIt()
     }
 }
 
-window.onbeforeunload = closeIt;
+// window.onbeforeunload = closeIt;
 
-window.cmds = (function () {
-    var _cmds = [];
-    window.terminals = [];
+// window.cmds = (function () {
+//     var _cmds = [];
+//     window.terminals = [];
 
-    function _add (cliType) {
-        var commandToSpawn;
-        var commandName;
-        var currentLocation = path.dirname((window.folderDirectory ||  window.location.pathname.slice(1)));
-        var isFirstOut = true;
+//     function _add (cliType) {
+//         var commandToSpawn;
+//         var commandName;
+//         var currentLocation = path.dirname((window.folderDirectory ||  window.location.pathname.slice(1)));
+//         var isFirstOut = true;
 
-        switch(cliType) {
-            case 'cmd':
-                commandToSpawn = 'cmd.exe';
-                commandName = 'Command Prompt';
-                break;
-            case 'pws':
-                commandToSpawn = 'powershell.exe';
-                commandName = 'powershell';
-                break;
-            default:
-                commandToSpawn = 'cmd.exe';
-                commandName = 'Command Prompt';
-        }
-        var newCmd = child_process.spawn(commandToSpawn, [], {
-            detached: true,
-            stdio: ['pipe', 'pipe', 'pipe']
-          });
+//         switch(cliType) {
+//             case 'cmd':
+//                 commandToSpawn = 'cmd.exe';
+//                 commandName = 'Command Prompt';
+//                 break;
+//             case 'pws':
+//                 commandToSpawn = 'powershell.exe';
+//                 commandName = 'powershell';
+//                 break;
+//             default:
+//                 commandToSpawn = 'cmd.exe';
+//                 commandName = 'Command Prompt';
+//         }
+//         var newCmd = child_process.spawn(commandToSpawn, [], {
+//             detached: true,
+//             stdio: ['pipe', 'pipe', 'pipe']
+//           });
         
-        _cmds.push(newCmd)
+//         _cmds.push(newCmd)
 
-        var newCmdLogs = {
-            logs: []
-        };
+//         var newCmdLogs = {
+//             logs: []
+//         };
 
-        var _logs = newCmdLogs.logs; 
-        var functionToUpdateCmd = (window.cmdUpdate || function(){console.log(newCmdLogs)});
-        // var lastStdOut = (_logs[_logs.length-1] || '') + '> ' + msg; _logs[_logs.length-1] = lastStdOut
-        var _write = function (msg) {console.log('WRITE GOT CALLED========='); newCmd.stdin.write(msg + '\n'); functionToUpdateCmd()}
+//         var _logs = newCmdLogs.logs; 
+//         var functionToUpdateCmd = (window.cmdUpdate || function(){console.log(newCmdLogs)});
+//         // var lastStdOut = (_logs[_logs.length-1] || '') + '> ' + msg; _logs[_logs.length-1] = lastStdOut
+//         var _write = function (msg) {console.log('WRITE GOT CALLED========='); newCmd.stdin.write(msg + '\n'); functionToUpdateCmd()}
 
-        newCmd.stdout.on('data', function (data) {
-            _logs.push(data.toString());
+//         newCmd.stdout.on('data', function (data) {
+//             _logs.push(data.toString());
 
-            // if(isFirstOut) {
-            //     _logs.push(currentLocation);
-            //     isFirstOut = false;
-            // }
+//             // if(isFirstOut) {
+//             //     _logs.push(currentLocation);
+//             //     isFirstOut = false;
+//             // }
 
-            functionToUpdateCmd();
-        });
+//             functionToUpdateCmd();
+//         });
           
-        newCmd.stderr.on('data', function (data) {
-            _logs.push(data.toString());
+//         newCmd.stderr.on('data', function (data) {
+//             _logs.push(data.toString());
             
-            functionToUpdateCmd()
-        });
+//             functionToUpdateCmd()
+//         });
 
-        newCmdLogs.write = _write;
-        window.terminals.push(newCmdLogs);
-    }
+//         newCmdLogs.write = _write;
+//         window.terminals.push(newCmdLogs);
+//     }
 
-    function _remove (index) {
-        _cmds[index].kill();
-        _cmds.splice(index, 1);
-    }
+//     function _remove (index) {
+//         _cmds[index].kill();
+//         _cmds.splice(index, 1);
+//     }
 
-    function _cleanAll () {
-        _cmds.forEach(function(_cmd) {
-            try {
-                _cmd.kill();
-            } catch (e) {
-                console.log(e);
-            }
-        })
-    }
+//     function _cleanAll () {
+//         _cmds.forEach(function(_cmd) {
+//             try {
+//                 _cmd.kill();
+//             } catch (e) {
+//                 console.log(e);
+//             }
+//         })
+//     }
 
-    return {
-        remove: _remove,
-        add: _add,
-        cleanAll: _cleanAll
-    }
-})()
+//     return {
+//         remove: _remove,
+//         add: _add,
+//         cleanAll: _cleanAll
+//     }
+// })()
 
 window.spreader = (...objs) =>  {
     const mergedObj = {};
@@ -382,7 +382,7 @@ nw.App.relaunchWithArgs = function (newDirectory, shouldQuit) {
 
     let XPSafeNWPath = `"${nw.process.execPath}"`;
     // // Relaunch the app with new arguments 
-    const commandToExecute = `${XPSafeNWPath} . ${newLaunchArguments.join(" ")}`;
+    const commandToExecute = `${XPSafeNWPath} . --window-size=900,900 ${newLaunchArguments.join(" ")}`;
     console.log(commandToExecute);
 
     child_process.exec(commandToExecute, (err, stdout, stderr) => {
@@ -402,42 +402,10 @@ nw.App.relaunchWithArgs = function (newDirectory, shouldQuit) {
     }
 }
 
-// var readline = require('readline');
-// var spawn = child_process.spawn;
+window.processessCleanQueue = [];
 
-// var rl = readline.createInterface({
-//   input: process.stdin,
-//   output: process.stdout
-// });
-
-// var shell = process.platform === 'cmd.exe';
-// var shellArgs = process.platform === 'win32' ? [] : ['-c', ''];
-
-// var child = spawn(shell, shellArgs, {
-//   stdio: 'pipe'
-// });
-
-// child.stdout.on('data', function (data) {
-// //   process.stdout.write(data.toString());
-//   console.log(data, 'stdout');
-// });
-
-// child.stderr.on('data', function (data) {
-// //   process.stderr.write(data.toString());
-//   console.log(data, 'stderr');
-
-// });
-
-// child.on('close', function (code) {
-//   console.log('Shell closed with code ' + code);
-//   process.exit(code);
-// });
-
-// rl.on('line', function (input) {
-//   child.stdin.write(input + '\n');
-// });
-
-// rl.on('SIGINT', function () {
-//   child.kill('SIGINT');
-//   rl.close();
-// });
+window.addEventListener('beforeunload', () => {
+    processessCleanQueue.forEach(cleanUpFunction => {
+        cleanUpFunction();
+    })
+});

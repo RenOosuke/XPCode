@@ -12,7 +12,8 @@
       "frame": false,
       "show": true,
       "width": 500,
-      "height": 500
+      "height": 500,
+      "icon": "/images/default/favicon.png"
     }
   }
   

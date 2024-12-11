@@ -103,7 +103,7 @@
         name: "open_folder",
         click: () => {
           file_explorer.fileDialogues.openFolder().then((newDirectory) => {
-            nw.App.relaunchWithArgs(newDirectory, true);
+            nw.App.relaunchWithArgs(newDirectory, false);
           }).catch()
         }
       },

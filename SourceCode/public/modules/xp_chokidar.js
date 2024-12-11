@@ -80,7 +80,7 @@
             }
 
             if (typeof window !== 'undefined') {
-                window.addEventListener('beforeunload', stopWatching);
+                processessCleanQueue.push(stopWatching)
             }
 
             return watcherProcess;

@@ -201,7 +201,7 @@ const PARSER_CONSTS = {
                     let callee = item.expression.callee
                     let subitems = [];
 
-                    let arguments = item.expression.arguments.map((arg) => {
+                    let _arguments = item.expression.arguments.map((arg) => {
                         let argValue;
 
                         if(arg.type== "Literal") {
@@ -218,7 +218,7 @@ const PARSER_CONSTS = {
                         return argValue 
                     }).join(",")
 
-                    itemContext.name = `${callee.object.name}.${callee.property.name}(${arguments})`;
+                    itemContext.name = `${callee.object.name}.${callee.property.name}(${_arguments})`;
                     itemContext.type = PARSER_CONSTS.FUNCTION;
 
                     if(subitems.length > 0) {

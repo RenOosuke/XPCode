@@ -11,6 +11,7 @@ const child_process = require('child_process');
 const decompress = require('decompress');
 const openFolderWhenDone = true;
 const shouldCleanUpBuildBeforeHand = true;
+const shouldCompileBinaries = true;
 
 const NWVersions = {
     '0.15.4': {
@@ -152,11 +153,94 @@ const cleanUpBuild = () => {
     })
 }
 
+const prebuildBinaries = () => {
+const { JSDOM } = require('jsdom');
 
+// Paths to necessary files and tools
+const indexHtmlFilePath = `${nwPackagePath}/public/index.html`; // Path to your HTML file
+const importerHtmlFilePath = `${nwPackagePath}/public/importer.html`; // Path to your HTML file
+
+const outputJsFile = path.resolve(`${nwPackagePath}/public/combined.js`); // Combined JS file
+const outputJsFilES5 = path.resolve(`${nwPackagePath}/public/combined-es5.js`); // Combined JS file
+const outputBinFile = path.resolve(`${nwPackagePath}/public/compiled.bin`); // Combined JS file
+const nwjcPath = `${NWCacheFolderPath}/${NWVersions[versionNumber]['sdk'][platform].name}/nwjc.exe` //'path/to/nwjc.exe'; // Path to nwjc.exe
+console.log("NWJC", nwjcPath);
+
+(async () => {
+    try {
+        // Step 1: Read and parse the HTML file
+        const indexHtmlContent = fs.readFileSync(indexHtmlFilePath, 'utf8');
+        const indexDom = new JSDOM(indexHtmlContent);
+        const indexDocument = indexDom.window.document;
+
+        const importerHtmlContent = fs.readFileSync(importerHtmlFilePath, 'utf8');
+        const importerDom = new JSDOM(importerHtmlContent);
+        const importerDocument = importerDom.window.document;
+
+        // Step 2: Extract all JavaScript paths
+        const indexElements = Array.from(indexDocument.querySelectorAll('script[src]'));
+        let jsPaths = indexElements.map(script => script.src);
+        const importerElements = Array.from(importerDocument.querySelectorAll('script[src]'));
+        jsPaths = [...importerElements.map(script => script.src), ...jsPaths];
+
+        // Remove the importer.html
+        const importerHTMLElement = indexDocument.querySelectorAll("link[rel='import']")[0];
+        importerHTMLElement.remove();
+
+        if (jsPaths.length === 0) {
+            console.log('No JavaScript files found.');
+            return;
+        }
+
+        console.log('JavaScript files found:', jsPaths);
+
+        // Step 3: Read and combine all JavaScript files
+        let combinedJsContent = '';
+        jsPaths.forEach(jsPath => {
+            const absolutePath = path.resolve(`${path.dirname(indexHtmlFilePath)}/${jsPath}`);
+            console.log(absolutePath);
+            if (fs.existsSync(absolutePath)) {
+                combinedJsContent += fs.readFileSync(absolutePath, 'utf8') + '\n';
+            } else {
+                console.warn(`Warning: File not found - ${absolutePath}`);
+            }
+        });
+
+        // Write the combined JavaScript file
+        fs.writeFileSync(outputJsFile, combinedJsContent, 'utf8');
+        console.log(`Combined JavaScript written to: ${outputJsFile}`);
+
+
+        // Can't compile bins as they seem to crash the application when loaded, we can at least gather up everything in a single.js
+        // child_process.execFileSync(nwjcPath, [outputJsFile, outputBinFile]);
+
+        // Step 5: Modify the HTML file
+        indexElements.forEach(script => script.remove()); // Remove all existing <script> tags
+
+        // Add new <script> tag to load the compiled binary
+        const newScript = indexDocument.createElement('script');
+        newScript.type = 'text/javascript';
+        newScript.src = 'combined.js';
+
+        // Can't use .bin as it crashes the application when loaded
+        // newScript.text = `nw.Window.get().evalNWBin(undefined, 'public/compiled.bin');`
+        indexDocument.body.appendChild(newScript);
+
+        // Write the modified HTML back to the file
+        fs.writeFileSync(indexHtmlFilePath, indexDom.serialize(), 'utf8');
+        console.log(`Updated HTML written to: ${indexHtmlFilePath}`);
+
+    } catch (error) {
+        console.error('An error occurred:', error);
+    }
+})();
+
+}
 (async ()=> {
     cleanUpBuild();
     copyProjectFiles();
     installNPMPackages();
     await checkForNWCache();
+    shouldCompileBinaries && prebuildBinaries()
     openFolder();
 })()

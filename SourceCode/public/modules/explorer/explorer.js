@@ -529,8 +529,8 @@ window.file_explorer = {
         push: (..._arguments) => {
           _files.push(..._arguments)
         },
-        unshift: (...arguments) => {
-          _files.unshift(...arguments);
+        unshift: (..._arguments) => {
+          _files.unshift(..._arguments);
         },
         remove: (file) => {
           let fileIndex = _files.findIndex(_file => _file == file);
