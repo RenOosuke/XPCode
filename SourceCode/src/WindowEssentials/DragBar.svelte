@@ -29,7 +29,7 @@ import DragBarLeft from "../DragBar/DragBarLeft.svelte";
     }
 
     .draggable_area {
-      width: -webkit-fill-available;
+      /* width: -webkit-fill-available; */
     }
 
     @media (max-width: 74rem) {

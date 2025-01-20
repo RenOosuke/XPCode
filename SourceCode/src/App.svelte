@@ -11,7 +11,7 @@
 	const { require } = window.nw;
 	
 	window.XPCodeDir = nw.__dirname;
-	let _images = path.join(XPCodeDir, 'images');
+	let _images = path.resolve('images');
 	let _icons = path.join(_images, 'icons');
 
 	window.paths = {

@@ -3,3 +3,6 @@
 
 .DS_Store
 /appname.txt
+
+/public/modules
+!/public/modules/executables/*

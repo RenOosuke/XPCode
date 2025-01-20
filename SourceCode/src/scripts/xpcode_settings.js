@@ -72,7 +72,7 @@ const SETTINGS_SORT_PATH = "explorer_tabs.outline.sort";
     }
 
     if(!fs.existsSync(_parentDir)) {
-        mkdirSync(_parentDir);
+        fs.mkdirSync(_parentDir);
     };
 
     if(!fs.existsSync(pathToSettings)) {

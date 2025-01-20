@@ -1,4 +1,6 @@
 window.path = require('path');
+window.nw = require("nw.gui");
+
 const OS_RELEASE = require('os').release();
 const OS_VERSION = parseInt(OS_RELEASE);
 const SETTING_VARIABLES = {

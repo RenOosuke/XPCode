@@ -1,4 +1,4 @@
-testDirectory = path.resolve('../TestDirectory')
+let testDirectory = path.resolve('../TestDirectory')
 
 function UUID() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
