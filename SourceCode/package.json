@@ -1,1 +1,44 @@
-{"name":"xpcode-d3532ef9-07dc-42f3-ab01-619191c826a7","version":"1.0.0","main":"/public/index.html","scripts":{"build":"rollup -c","dev":"rollup -c -w","start":"..\\NW_Cache\\nwjs-sdk-v0.15.4-win-ia32\\nw.exe . --disable-gpu","start2":"..\\NW_Cache\\nwjs-sdk-v0.93.0-win-x64\\nw.exe . --disable-gpu"},"devDependencies":{"@babel/cli":"^7.25.9","@babel/preset-env":"^7.26.0","@rollup/plugin-commonjs":"^12.0.0","@rollup/plugin-node-resolve":"^8.0.0","rollup":"^2.3.4","rollup-plugin-svelte":"^5.0.3","rollup-plugin-terser":"^5.1.2","svelte":"3.29.4"},"dependencies":{"decompress":"^4.2.1","dt-python-parser":"^0.9.0","esprima":"^4.0.1","gulp":"^4.0.2","jsdom":"^25.0.1","nedb":"^1.8.0","npm":"^10.9.1","open-file-explorer":"^1.0.2","parallelshell":"^3.0.2","sirv-cli":"^0.4.4"},"window":{"toolbar":true,"frame":false,"show":true,"width":500,"height":500,"min_height":300,"min_width":460},"DEV":true,"single-instance":false}
+{
+  "name": "xpcode-e7b6d96f-53e7-4317-b4ef-5f232133bc0b",
+  "version": "1.0.0",
+  "main": "/public/index.html",
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "start_0_15_4": "..\\NW_Cache\\nwjs-sdk-v0.15.4-win-ia32\\xpcode.exe . --disable-gpu --user-data-dir=./NWProfile",
+    "start_0_12_3": "..\\NW_Cache\\nwjs-v0.12.3-win-ia32\\xpcode.exe . --disable-gpu --user-data-dir=./NWProfile",
+    "watch_js_modules": "nodemon --watch ./src/scripts --exec node CompileBabel.js"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.25.9",
+    "@babel/preset-env": "^7.26.0",
+    "@rollup/plugin-commonjs": "^12.0.0",
+    "@rollup/plugin-node-resolve": "^8.0.0",
+    "dotenv": "^16.4.7",
+    "rollup": "^2.3.4",
+    "rollup-plugin-svelte": "^5.0.3",
+    "rollup-plugin-terser": "^5.1.2",
+    "svelte": "^3.29.4",
+    "jsdom": "^25.0.1"
+  },
+  "dependencies": {
+    "decompress": "^4.2.1",
+    "gulp": "^4.0.2",
+    "parallelshell": "^3.0.2",
+    "sirv-cli": "^0.4.4",
+    "dt-python-parser": "^0.9.0",
+    "esprima": "^4.0.1",
+    "nedb": "^1.8.0"
+  },
+  "window": {
+    "toolbar": true,
+    "frame": false,
+    "show": true,
+    "width": 500,
+    "height": 500,
+    "min_height": 300,
+    "min_width": 460
+  },
+  "DEV": true,
+  "single-instance": false
+}

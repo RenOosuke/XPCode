@@ -175,6 +175,9 @@ const SETTINGS_SORT_PATH = "explorer_tabs.outline.sort";
                     ]}
                 ]
             }
+        },
+        log: () => {
+            console.log(_currentSettings);
         }
     }
 

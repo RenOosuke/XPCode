@@ -1,0 +1,11 @@
+.single_menu_option {
+    color: #000000;
+}
+
+.single_menu_option:hover{
+    background-color: #316ac5;
+}
+
+.separator_line {
+    background: #ceccc3;
+}

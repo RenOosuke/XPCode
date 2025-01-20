@@ -25,7 +25,8 @@ window.directory = path.basename(launchArguments);
     let isDirectory = fs.statSync(launchArguments).isDirectory();
 
     if(isDirectory && launchArgumentExists) {
-        let recentDirectories = settings.section.get("temporary.recent.folders");
+        let changedField = "temporary.recent.folders";
+        let recentDirectories = settings.section.get(changedField);
         
         let uniqueRecentDirectories = new Set(recentDirectories);
         uniqueRecentDirectories.add(launchArguments);
@@ -33,10 +34,13 @@ window.directory = path.basename(launchArguments);
         recentDirectories.splice(0, recentDirectories.length);
         recentDirectories.push(...directoriesArr)
         settings.update();
+        signals.write.settingChanged("temporary");
     } 
     
     if(!isDirectory && launchArgumentExists) {
-        let recentFiles = settings.section.get("temporary.recent.files");
+        let changedField = "temporary.recent.files"
+        
+        let recentFiles = settings.section.get(changedField);
         
         let uniqueRecentFiles = new Set(recentFiles);
         uniqueRecentFiles.add(launchArguments);
@@ -44,5 +48,6 @@ window.directory = path.basename(launchArguments);
         recentFiles.splice(0, recentFiles.length);
         recentFiles.push(...filesArr)
         settings.update();
+        signals.write.settingChanged("temporary");
     };
 }

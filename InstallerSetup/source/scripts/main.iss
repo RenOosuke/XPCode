@@ -6,6 +6,7 @@
 #define MyAppPublisher "Oosuke Ren"
 #define MyAppURL "https://github.com/RenOosuke"
 #define MyAppExeName "xpcode.exe"
+#define CLSID "{0865980F-3A31-4FCC-B55D-7844C83029F6}"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -59,7 +60,8 @@ Name: "ukrainian"; MessagesFile: "compiler:Languages\Ukrainian.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
+Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; OnlyBelowVersion: 0,6.1
+Name: "contextmenu"; Description: "Add 'Open with XPCode' to context menu"; GroupDescription: "Additional options";
 
 [Files]
 Source: "..\Dependencies\vcruntime140.dll"; DestDir: "{sys}"; Flags: onlyifdoesntexist
@@ -84,7 +86,42 @@ Type: filesandordirs; Name: "{app}"
 Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueName: "Path"; \
     ValueType: expandsz; ValueData: "{code:GetUpdatedPath|{olddata}}"
 
+; Add {app} directory as a system variable XPCODE
+Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueName: "XPCODE"; \
+    ValueType: expandsz; ValueData: "{app}"
+
+; Context menu handler
+
+[Files]
+Source: "..\Dependencies\ContextMenuHandler.dll"; DestDir: "{app}"; Check: ContextMenuCheck; Flags: ignoreversion
+Source: "..\Dependencies\xpcode.ico"; DestDir: "{app}"; Check: ContextMenuCheck; Flags: ignoreversion
+
+[UninstallRun]
+Filename: "reg.exe"; Parameters: "delete HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment /v XPCODE /f"; Flags: runhidden
+Filename: "{sys}\regsvr32.exe"; Parameters: "/u /s ""{app}\ContextMenuHandler.dll"""; Check: ContextMenuCheck; Flags: runhidden
+
+[Run]
+Filename: "{sys}\regsvr32.exe"; Parameters: "/s ""{app}\ContextMenuHandler.dll"""; Check: ContextMenuCheck; Flags: runhidden
+
 [Code]
+var
+  ContextMenuChecked: Boolean;
+
+function ContextMenuCheck(): Boolean;
+begin
+  // Return the current state of the checkbox
+  Result := ContextMenuChecked;
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if CurStep = ssInstall then
+  begin
+    // Update the ContextMenuChecked variable after tasks are initialized
+    ContextMenuChecked := IsTaskSelected('contextmenu');
+  end;
+end;
+
 function GetUpdatedPath(OldValue: string): string;
 var
   AppBinPath: string;
@@ -94,7 +131,7 @@ begin
     Result := OldValue + ';' + AppBinPath
   else
     Result := OldValue;
-end;   
+end;
 
 function RemoveSubstring(InputString, Substring: string): string;
 var
@@ -132,4 +169,41 @@ begin
   end;
 end;
 
+var
+  WM_SETTINGCHANGE: LongWord;
+  SMTO_ABORTIFHUNG: LongWord;
 
+procedure NotifyEnvironmentChange(
+  hWnd: LongWord;
+  Msg: LongWord;
+  wParam: LongWord;
+  lParam: PChar; // Changed to PChar for compatibility
+  fuFlags: LongWord;
+  uTimeout: LongWord;
+  lpdwResult: LongWord
+); external 'SendMessageTimeoutW@user32.dll stdcall';
+
+procedure ApplyEnvironmentChanges;
+var
+  Environment: PChar;
+begin
+  Environment := 'Environment'; // Assign string directly to PChar
+  NotifyEnvironmentChange(
+    $FFFF, // HWND_BROADCAST
+    WM_SETTINGCHANGE,
+    0,
+    Environment, // Pass Environment directly (as PChar)
+    SMTO_ABORTIFHUNG,
+    5000,
+    0 // Pass 0 if lpdwResult is not needed
+  );
+end;
+
+procedure InitializeWizard;
+begin
+  // Initialize global variables
+  ContextMenuChecked := False;
+
+  WM_SETTINGCHANGE := $1A;
+  SMTO_ABORTIFHUNG := $2;
+end;

@@ -5817,6 +5817,6 @@ type fs = {
   ): BigIntStats;
 
   fstatSync(fd: number, options?: StatOptions): Stats | BigIntStats;
-} & readFileSyncDoc;
+} & readFileSyncDoc & FileHandle;
 
 declare var fs: fs & readFileSyncDoc;
