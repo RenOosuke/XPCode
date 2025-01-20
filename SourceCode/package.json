@@ -6,7 +6,7 @@
     "build": "rollup -c",
     "dev": "rollup -c -w",
     "start_0_15_4": "..\\NW_Cache\\nwjs-sdk-v0.15.4-win-ia32\\xpcode.exe . --disable-gpu --user-data-dir=./NWProfile",
-    "start_0_12_3": "..\\NW_Cache\\nwjs-v0.12.3-win-ia32\\xpcode.exe . --disable-gpu --user-data-dir=./NWProfile",
+    "start_0_12_3": "..\\NW_Cache\\nwjs-v0.12.3-win-ia32\\nw.exe . --disable-gpu --user-data-dir=./NWProfile",
     "watch_js_modules": "nodemon --watch ./src/scripts --exec node CompileBabel.js"
   },
   "devDependencies": {
