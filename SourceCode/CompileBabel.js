@@ -1,3 +1,4 @@
+require("dotenv").config();
 let nwJSVersion = '' || process.env.NWJS_VERSION;
 
 // For easy calculation of the current version being used
