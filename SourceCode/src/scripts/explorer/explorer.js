@@ -9,11 +9,11 @@ let updatesHappened = 0;
 const treeChangeEvent = (directoryEl, create) => {
   let parentDir = path.dirname(directoryEl.full_path);
   let directoriesInPath = parentDir.split('\\').length;
-  let directoriesInLaunchPath = launchArguments.split('\\').length;
+  let directoriesInLaunchPath = workspaceDirectory.split('\\').length;
   let level = directoriesInPath - directoriesInLaunchPath;
   let index = directoryEl.index;
 
-  if(directoryEl.full_path !== launchArguments) {
+  if(directoryEl.full_path !== workspaceDirectory) {
     if(index == undefined || index == null || index == -1){
       index = file_explorer.folders[parentDir].children.findIndex(child => child.full_path === directoryEl.full_path)
     }
@@ -345,7 +345,7 @@ window.file_explorer = {
           label: "Copy Relative Path",
           name: "copy_relative_path",
           click: () => {
-              fsUtils.copyToClipboard(path.relative(launchArguments, full_path));
+              fsUtils.copyToClipboard(path.relative(workspaceDirectory, full_path));
           }
       },
       {
@@ -591,7 +591,7 @@ window.file_explorer = {
     }
   };
 
-  // const watcher = chokidar.watch(launchArguments, {
+  // const watcher = chokidar.watch(workspaceDirectory, {
   //   ignored: /(^|[\/\\])\../, // ignore dotfiles
   //   persistent: true
   // });
@@ -609,6 +609,6 @@ window.file_explorer = {
   
   xp_chokidar.on('File modified', path => console.log(`File ${path} has been changed`));
   // xp_chokidar.on("Finished logging existing paths",)
-  xp_chokidar.watch(launchArguments)
+  xp_chokidar.watch(workspaceDirectory)
   
   // watcher.on('change', path => console.log(`File ${path} has been changed`));

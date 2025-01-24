@@ -176,15 +176,33 @@ window.spreader = (...objs) =>  {
             let iconsPath = path.join(paths.icons, mode);
             return iconsPath.split('\\').join('/');
         },
-        changeTheme: () => {
-    
+        changeTheme: (themeName) => {
+            let themesFolderPath = path.resolve("../themes/");
+            let themeFolderPath = path.join(themesFolderPath, themeName);
+            let configFilePath = path.join(themeFolderPath, 'config.json');
+            let configFile = readJSON(configFilePath);
+
+            console.log(configFile);
+
             let inactiveColor = themeUtils.isDark ? " rgb(133, 133, 133)" : "black";
             let activeColor = themeUtils.isDark ? "white" : "black";
     
             const root = document.documentElement;
-            root.style.setProperty("--sidebar-inactive-icon", inactiveColor);
-            root.style.setProperty("--sidebar-active-icon", activeColor);
+
+            let themeFile = `
+                .var-sidebar-inactive-icon {
+                    background-color: ${inactiveColor};
+                }
+                    
+                .var-sidebar-active-icon {
+                    background-color: ${activeColor};
+                }
+            `;
             
+            // root.style.setProperty("--sidebar-inactive-icon", inactiveColor);
+            // root.style.setProperty("--sidebar-active-icon", activeColor);
+            
+
             let iconsPath = themeUtils.iconsPath();
     
             let iconNames = [
@@ -215,43 +233,76 @@ window.spreader = (...objs) =>  {
             ];
     
             iconNames.forEach((iconName) => {
-                root.style.setProperty(`--${iconName}-icon`, `url('${iconsPath}/${iconName}.svg') no-repeat center`)
+                themeFile += `
+                    .var-${iconName}-icon {
+                        -webkit-mask: url('${iconsPath}/${iconName}.svg') no-repeat center;
+                    }
+                `
             });
+
+            let backgroundColors = {
+                'primary-dark-bg': '#181818',
+                'primary-light-bg': '#1f1f1f',
+                'primary-light2-bg': '#adaeae',
+                'primary-light3-bg': '#444444',
+                'directory-rename-bg': '#313131',
+            }
+
+            Object.keys(backgroundColors).forEach((varName) => {
+                themeFile += `
+                    .var-${varName} {
+                        background-color: ${backgroundColors[varName]};
+                    }
+                `
+            });
+
+            themeFile += `
+             .window_control  .icon:not(.inactive), .dragbar_center .icon:not(.inactive){
+                background-color: ${inactiveColor};
+             }
+
+             .sidebar .icon_placeholder.pressed .upper_icon, .sidebar .icon_placeholder:hover .upper_icon, .sidebar .icon_placeholder:hover .bottom_icon{
+                background-color: ${activeColor};
+             }
+
+             .sidebar .upper_icon, .sidebar  .bottom_icon{
+                background-color: ${inactiveColor};
+             }
+            `
     
+            jQuery(".theme_file")[0].innerText = themeFile;
+
             let colorVariablesMapping = {
-                '--primary-dark-bg': '#181818',
-                '--primary-light-bg': '#1f1f1f',
-                '--primary-light2-bg': '#adaeae',
-                '--primary-light3-bg': '#444444',
-                '--directory-rename-bg': '#313131',
-                '--outline-color': '#0078d4',
-                '--base-text-color': '#cccccc',
-                '--base-text-color-80': '#cccccccc',
-                '--base-text-color-60': '#cccccc99',
-                '--base-text-color-40': '#cccccc66',
-                '--base-border-color': '#2b2b2b',
-                '--secondary-border-color': '#454545',
-                '--icon-hover-bg': '#2d2e2e',
-                '--tooltip-bg': '#202020',
-                '--item-select-bg': '#04395e',
-                '--gray-out-selection': '#37373d',
-                '--error-border-color': '#bd1100',
-                '--tree-line': '#313131',
-                '--focused-tree-line': '#585858',
-                '--file-hover-unselected': 'rgba(60, 66, 68, 0.35)',
-                '--file-search-bg': '#222222',
-                '--file-search-hover-bg': '#2a2d2e',
-                '--file-search-sections-labels-color': '#3794ff',
-                '--file-search-subtext-color': '#999999',
-                '--file-search-marker-color': '#2aaaff',
-                '--timeline-tip-color': '#717171'
+                'outline-color': '#0078d4',
+                'base-text-color': '#cccccc',
+                'base-text-color-80': '#cccccccc',
+                'base-text-color-60': '#cccccc99',
+                'base-text-color-40': '#cccccc66',
+                'base-border-color': '#2b2b2b',
+                'secondary-border-color': '#454545',
+                'icon-hover-bg': '#2d2e2e',
+                'tooltip-bg': '#202020',
+                'item-select-bg': '#04395e',
+                'gray-out-selection': '#37373d',
+                'error-border-color': '#bd1100',
+                'tree-line': '#313131',
+                'focused-tree-line': '#585858',
+                'file-hover-unselected': 'rgba(60, 66, 68, 0.35)',
+                'file-search-bg': '#222222',
+                'file-search-hover-bg': '#2a2d2e',
+                'file-search-sections-labels-color': '#3794ff',
+                'file-search-subtext-color': '#999999',
+                'file-search-marker-color': '#2aaaff',
+                'timeline-tip-color': '#717171'
             };
-    
+            
             let colorVariables = Object.keys(colorVariablesMapping);
-    
+            
             colorVariables.forEach((varName) => {
                 root.style.setProperty(varName, colorVariablesMapping[varName]);
             })
+
+            console.log(themeFile);
         },
     
         setGrayedOut: () => {
@@ -334,30 +385,6 @@ window.spreader = (...objs) =>  {
     }
 }
 
-const nwWindow = nw.Window.get();
-
-window.screenControls = {
-    nwWindow: nwWindow,
-    isFullScreen: () => {
-        return nwWindow.height >= window.screen.availHeight && nwWindow.width >= window.screen.availWidth;
-    },
-}
-
-let windowSizeEvents = [
-    'restore',
-    'maximize',
-    'resize'
-];
-
-windowSizeEvents.forEach((evName) => {
-    // IN ORDER FOR THIS TO BREAK, BECAUSE OF A NW BUG, YOU SHOULDN'T REFRESH USING F5, BUT RIGHT CLICK => `Reload App`
-    nwWindow.on(evName, () => {
-        let newEv = new Event('nw_custom_resize');
-
-        document.dispatchEvent(newEv);
-    })
-})
-
 window.VSCode = {
     original: {
         
@@ -371,18 +398,23 @@ nw.App.relaunchWithArgs = function (newDirectory, shouldQuit) {
     // const appPath = nw.App.argv[0] || process.execPath; // Path to the app executable
     // const args = newArgs.join(' '); // Combine new arguments into a single string
     let newLaunchArguments = [...nw.App.fullArgv];
+    newLaunchArguments.filter((_arg) => {
+        _arg !== workspaceDirectory
+    });
 
-    let XPSafeNewDirectory = `"${newDirectory}"`;
-
-    if(launchArgumentExists) {
-      newLaunchArguments[newLaunchArguments.length-1] = XPSafeNewDirectory;
-    } else {
-      newLaunchArguments.push(XPSafeNewDirectory);
+    if(newDirectory) {
+        let XPSafeNewDirectory = `"${newDirectory}"`;
+    
+        if(directoryExists) {
+          newLaunchArguments = newLaunchArguments.filter((_arg) => _arg !== workspaceDirectory);
+        } 
+        
+        newLaunchArguments.push(XPSafeNewDirectory);
     }
 
-    let XPSafeNWPath = `"${nw.process.execPath}"`;
+    let XPSafeNWPath = `"${(nw.process || process).execPath}"`;
     // // Relaunch the app with new arguments 
-    const commandToExecute = `${XPSafeNWPath} . --window-size=900,900 ${newLaunchArguments.join(" ")}`;
+    const commandToExecute = `${XPSafeNWPath} . ${newLaunchArguments.join(" ")}`;
     console.log(commandToExecute);
 
     child_process.exec(commandToExecute, (err, stdout, stderr) => {
@@ -395,17 +427,12 @@ nw.App.relaunchWithArgs = function (newDirectory, shouldQuit) {
             stdout,
             stderr
         })
+
+        if(shouldQuit) {
+            nw.App.quit();
+        }
     });
     
-    if(shouldQuit) {
-        nw.App.quit();
-    }
 }
 
 window.processessCleanQueue = [];
-
-window.addEventListener('beforeunload', () => {
-    processessCleanQueue.forEach(cleanUpFunction => {
-        cleanUpFunction();
-    })
-});

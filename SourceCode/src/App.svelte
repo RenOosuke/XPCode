@@ -3,7 +3,7 @@
   import DragBar from "./WindowEssentials/DragBar.svelte";
   import WindowBody from "./WindowEssentials/WindowBody.svelte";
   import InfoFooter from "./WindowEssentials/InfoFooter.svelte";
-	import Menu from "./WindowEssentials/Menu.svelte";
+	import Menu from "./WindowEssentials/WrappedMenu.svelte";
     import FileSearch from "./WindowEssentials/FileSearch.svelte";
 
 	const nw = window.nw;
@@ -68,7 +68,7 @@
 			});
 		};
 		
-		themeUtils.changeTheme();
+		themeUtils.changeTheme('Classic');
 	})
 </script>
 

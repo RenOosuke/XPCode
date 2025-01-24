@@ -38,7 +38,7 @@
 
   const menusByTab =() => {
     const isTesting = true;
-    let recentDirectoryMenuItems = (settings.section.get("temporary.recent.folders").filter(dir => dir != launchArguments || isTesting).map(dir => {
+    let recentDirectoryMenuItems = (settings.section.get("temporary.recent.folders").filter(dir => dir != workspaceDirectory || isTesting).map(dir => {
             return {
               label: dir,
               name: "reopen_directory",
@@ -56,7 +56,7 @@
       })
     }
 
-    let recentFileMenuItems = (settings.section.get("temporary.recent.files").filter(dir => dir != launchArguments || isTesting).map(dir => {
+    let recentFileMenuItems = (settings.section.get("temporary.recent.files").filter(dir => dir != workspaceDirectory || isTesting).map(dir => {
             return {
               label: dir,
               name: "reopen_file"
@@ -1111,7 +1111,7 @@
   {/each}
 
   <div
-    class="context_menu_cake_menu"
+    class="context_menu_cake_menu var-sidebar-active-icon"
     style="-webkit-mask: url('{`${iconsPath}/cake.svg`}') no-repeat center; {maskSize}"
   ></div>
 </div>
@@ -1122,6 +1122,7 @@
     margin-top: auto;
     margin-bottom: auto;
     margin-left: 0.7rem;
+    flex: 0 0 auto; /* Prevents shrinking or growing */
   }
 
   .logo_placeholder img {
@@ -1149,7 +1150,6 @@
   }
 
   .context_menu_cake_menu {
-    background-color: var(--sidebar-active-icon);
     width: 1rem;
     height: 1rem;
     margin-top: auto;

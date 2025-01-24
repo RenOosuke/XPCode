@@ -42,7 +42,7 @@
         const listenForBlur = (clickedEv) => {
             let target = clickedEv.target;
 
-            let classPath = elementUtils.getClassList(target).join(' '); 
+            let classPath = ElementUtils.getClassList(target).join(' '); 
 
             if(!classPath.includes('explorer-tab-header ') || !classPath.includes(`${tabName} `)) {
                 tabOutlined = false;
@@ -85,7 +85,7 @@
         const listenForBlur = (clickedEv) => {
             let target = clickedEv.target;
 
-            let classPath = elementUtils.getClassList(target).join(' '); 
+            let classPath = ElementUtils.getClassList(target).join(' '); 
             let isTargetAFile = classPath.includes('single-folder-item');
             let isTargetATimelineFile = classPath.includes('single_outline_item');
             let isNotExplorerTab = !classPath.includes('explorer-tab '); 

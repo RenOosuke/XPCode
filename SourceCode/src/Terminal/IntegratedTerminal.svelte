@@ -2,7 +2,6 @@
     import ResizeableBorder from "../WindowEssentials/ResizeableBorder.svelte";
 
     // TEMP_HARDCODE
-    const backgroundColor = 'var(--primary-dark-bg)';
     const color = '#cccccc';
     const borderColor = '#2b2b2b';
 
@@ -16,7 +15,7 @@
 </script>
 
 
-<div class="integrated_terminal" style="background: {backgroundColor}; color: {color}; border-color: {borderColor};">
+<div class="integrated_terminal var-primary-dark-bg" style="color: {color}; border-color: {borderColor};">
     <ResizeableBorder borders={{
         top: true
     }} {handleResizing}></ResizeableBorder>

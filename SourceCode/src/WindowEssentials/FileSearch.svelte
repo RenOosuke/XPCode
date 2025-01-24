@@ -203,7 +203,7 @@
     const getAbsolutePath = (file) => {
         let fileName = file.name;
         let relativePath = file.relative_path;
-        let relativeName = path.join(launchArguments, (relativePath || ''), fileName);
+        let relativeName = path.join(workspaceDirectory, (relativePath || ''), fileName);
         let absolutePath = path.resolve(relativeName);
         absolutePath = absolutePath.replace(/<\\?blue>/g, '');
 
@@ -257,7 +257,7 @@
 
         let recent_files = file_explorer.recentlyOpened.get(); 
         recentFiles = recent_files.map(_file => {
-            let relative_path = path.relative(launchArguments, _file);
+            let relative_path = path.relative(workspaceDirectory, _file);
             let dataToReturn = 
             {
                 icon: iconManager.getIconForPath(_file),
@@ -275,7 +275,7 @@
         recentFilesLength = filteredRecentFiles.length;
 
         allFiles = file_explorer.allFiles.map((_file) => {
-            let relative_path = path.relative(launchArguments, _file.full_path);
+            let relative_path = path.relative(workspaceDirectory, _file.full_path);
             let dataToReturn = 
             {
                 icon: iconManager.getIconForPath(_file.full_path),

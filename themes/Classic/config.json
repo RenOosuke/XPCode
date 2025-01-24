@@ -1,0 +1,13 @@
+{
+    "backgroundColors": {
+        "primary-dark-bg": "#181818",
+        "primary-light-bg": "#1f1f1f",
+        "primary-light2-bg": "#adaeae",
+        "primary-light3-bg": "#444444",
+        "directory-rename-bg": "#313131"
+    },
+
+    "isDark": true,
+    "inactiveColor":  "rgb(133, 133, 133)",
+    "activeColor": "white"
+}

@@ -1,76 +1,241 @@
-# SvelteAndNWJSForWindowsXP
-This is a template for creating easily software for Windows XP with NW.js 15.4 (Latest possible version of NWjs that can successfully start on XP, which isn't the publicly known - 14.7). And Sveltekit (because it's pretty lightweight, easy to prototype and use and doesn't take up a loo of drive memory).
+# **Svelte & NW\.js for Windows XP**
 
-## Prerequisites. 
+This repository provides a **template** for creating **Windows XP-compatible** software using **NW\.js 15.4** (the last XP-supported version) and **SvelteKit** for a lightweight and efficient UI framework.
 
-1. If you're building for windows XP, in order to evade as many issues as possible, you need to install NVM with Node v6.2.2 
-(The internal Node.js for NW 0.15.4). That way if you write incompatible code you'll catch it earliest possible.
+---
 
-2. Folder pattern: 
+## **🔧 Prerequisites**
 
---- Main Folder
-    --- FolderContaining this repository
-    |
-    |
-    --- NW_Cache (place inside NW.js 0.15.4 sdk and normal)
-    |
-    |
-    --- BuiltApp (Generated from BuildApp.js)
-        --- WhateverYourAppIsCalled (Configured in BuildApp.js)
-        |    --- package.nw (nw.exe automatically opens the content of this folder as if it's a project)
-        |       --- package.json
-        |       --- node_modules
-        |       --- fonts
-        |       --- images
-        |       --- public
-        |           --- index.html
-        |           --- favicon.png
-        |           --- build
-        |               --- bundle.css
-        |               --- bundle.css.map
-        |               --- bundle.js
-        |               --- bundle.js.map
-        |
-            ... content of the nw(version).zip
+### **1️⃣ Node.js & NVM Setup**
 
+- Install **NVM** and **Node.js v6.2.2** (matching NW\.js 0.15.4’s internal Node.js version).
+- This ensures that incompatible code is **detected early**.
 
-### When you want to write components - modify them in the src folder, when you want to use pure .js scripts, write them in /public folder and then include them in index.html
+### **2️⃣ Folder Structure**
 
-I'll be looking in the future into a way to use scss with the project.
+```
+BuiltApp/
+└── XPlor/
+    ├── locales/
+    ├── package.nw/
+    │   ├── fonts/
+    │   ├── images/
+    │   ├── public/
+    │   │   ├── build/
+    │   │   ├── data/
+    │   │   ├── ignore/
+    │   │   ├── images/
+    │   │   ├── scripts_compiled/
+NW_Cache/
+├── nwjs-sdk-v0.15.4-win-ia32/
+│   ├── locales/
+│   ├── pnacl/
+├── nwjs-sdk-v0.93.0-win-x64/
+│   ├── locales/
+│   ├── swiftshader/
+├── nwjs-v0.12.3-win-ia32/
+│   ├── locales/
+├── NWTemp/
+│   ├── nwjs-sdk-v0.15.4-win-ia32/
+│   │   ├── locales/
+│   │   ├── pnacl/
+│   ├── nwjs-v0.12.3-win-ia32/
+│   │   ├── locales/
+│   ├── nwjs-v0.15.4-win-ia32/
+│       ├── locales/
+├── package.nw/
+│   ├── public/
+│   │   ├── scripts/
+│   │       ├── executables/
+SourceCode/   <== 🗂 This Repository
+├── rollup.config.js
+├── package.json
+├── CompileBabel.js
+├── BuildApp.js
+├── .env
+├── .gitignore
+├── BuildAppTools/
+│   ├── npmInstall.cmd
+├── fonts/
+├── images/
+├── lib/
+│   ├── dts/
+│   │   ├── jquery/
+├── node_modules/
+├── public/
+│   ├── index.html
+│   ├── package.json
+│   ├── global.css
+│   ├── devTools.js
+│   ├── build/
+│   │   ├── bundle.js
+│   │   ├── bundle.css
+│   ├── scripts_compiled/
+│   │   ├── executables/
+│   │   ├── main/
+│   │   ├── modules/
+├── src/
+│   ├── main.js
+│   ├── App.svelte
+│   ├── components/
+│   ├── scripts/
+│   │   ├── main/
+│   │   ├── modules/
 
-When starting to work with the project:
+```
 
-~ npm run dev
+---
 
-Now whenever you make a change in src, it'll automatically get built inside of public/build/bundle.js
+## **🚀 Development Workflow**
 
-so all you need to do is refresh the app.
+### **1️⃣ Start Development Mode**
 
-When you're at a stage you're satisfied at for a user faced application -> 
+```sh
+npm run dev
+```
 
-run BuildApp.js but first configure it.
+- This compiles `src/` into `public/build/bundle.js`
+- Refresh the app to see changes.
 
-You'll find your app in MainFolder/BuiltApp/${YourProjectName}/${YourProjectName}.exe
+### **2️⃣ Building for Release**
 
+```sh
+node BuildApp.js
+```
 
+- Modify `BuildApp.js` before running.
+- Output location:
+  ```
+  BuiltApp/{YourProjectName}/{YourProjectName}.exe
+  ```
 
+---
 
-If you're building the application yoursef you have to add xpcode.exe (it's a starter that parser relative paths as starting arguments for nw.exe) 
+## **📦 Running Multiple Instances**
 
-A) in the BuiltApp/XPCode every time
-B) in the version folder inside of NWCache (only once)
--------------
+Include **multipleInstances.js** in **index.html**:
 
-If you want to take everything a step further and protect your code -> go inside the package.nw folder 
+```html
+<script src="multipleInstances.js"></script>
+```
 
-RightClick => Select All, put them inside a .zip
+**Why?**
 
-once done rename the zip to "package.nw" (change the extension too)
+- NW\.js prevents multiple instances of the same package.json **by default**.
+- This script generates a **UUID-based** app name per run.
 
-then from cmd 
+**⚠ Issue:** NW\.js fills `%LOCALAPPDATA%` with `{AppName}-{RandomNumber}` folders.\
+**Solution:** Use the following launch parameter:
 
-copy /b NAMEOFYOURPROJECT.exe+package.nw NAMEYOUWANT.exe
+```sh
+--user-data-dir=./NWProfile
+```
 
-then voila, you can now delete your package.nw and your source code is hidden inside of the executable.
+- This **anchors all profiles** into `NWProfile/`, avoiding clutter.
 
-!!! Keep in mind that every time you're starting the application NW will be unzipping the project so it'll definitely slow down the starting duration based on the size and count of the files.
+---
+
+## **🔒 Packing & Hiding Source Code**
+
+To **hide your source code** inside the executable:
+
+1. Navigate to `package.nw`
+2. **Select all files → Zip them**
+3. \**Rename **`package.zip`**** → \***`package.nw`**
+4. **Merge into the executable**:
+   ```sh
+   copy /b YourProject.exe+package.nw FinalExecutable.exe
+   ```
+5. **Done!** Your code is now **embedded** in the EXE.
+
+> **⚠ Warning:** NW\.js **extracts the package on launch**, so this **slows down startup**\
+> depending on **file count and size**.
+
+---
+
+## **⚠ Important Notes About NW\.js & Windows XP**
+
+Any NW\.js version **higher than 0.12.3** has an issue on **Windows XP**:
+
+- If you use `child_process`, `http`, or `https`, and there is **no internet**, the application will **crash**.
+- **For offline applications, use NW\.js 0.12.3**.
+- **For online applications, use NW\.js 0.15.4**.
+
+---
+
+## **🛠 Built-in Utilities**
+
+| File                       | Description                                      |
+| -------------------------- | ------------------------------------------------ |
+| **`element.js`**           | Utility functions for HTML element calculations. |
+| **`multipleInstances.js`** | Enables **multiple NW\.js instances** at once.   |
+
+---
+
+## **🛠 Developer Instructions**
+
+### **📌 Setting Up NW\.js Versions**.
+
+1. Open **`package.json`**, add available **NW\.js versions**.
+2. Set the **desired version** in **`.env`** (set `APPLICATION_NAME` here).
+3. Run:
+   ```sh
+   npm run dev
+   ```
+
+### **📌 JavaScript Modules**
+
+If you're using **custom .js scripts**:
+
+#### **1️⃣ Write Your Scripts**
+
+- Place them inside:
+  ```
+  src/scripts/**/*
+  ```
+
+#### **2️⃣ Watch & Compile JS**
+
+```sh
+npm run watch_js_modules
+```
+
+#### **3️⃣ File Output**
+
+- **For NW\.js `0.15.4` and earlier** → **Transpiled with Babel**\
+  → Stored in `public/scripts_compiled/**/*`
+- **For NW\.js `0.16+`** → **Only copied**, no transpilation.
+
+#### **4️⃣ Include Scripts**
+
+```html
+<script src="public/scripts_compiled/my_script.js"></script>
+```
+
+---
+
+## **📦 Creating a Portable Build**
+
+1. Modify `public/package.json`
+2. Adjust & run:
+   ```sh
+   node BuildApp.js
+   ```
+3. Final **portable version** in:
+   ```
+   BuiltApp/{YourProjectName}/
+   ```
+4. **Optional:** Create an **installer** in the **root directory**.
+   - Configure `.env` with `APPLICATION_NAME`
+   - Use `Inno Setup` or similar to package everything.
+   - For reference, check the XPCode repository.
+
+---
+
+## **📢 Future Improvements**
+
+- **SCSS support**
+- **Enhanced build automation**
+- **Better XP compatibility**
+
+## [See also](/SourcesAndDocs.md)

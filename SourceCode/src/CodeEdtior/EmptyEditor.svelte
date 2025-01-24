@@ -2,7 +2,6 @@
   import { onMount } from "svelte";
 
     // TEMP_HARDCODE
-    const backgroundColor = 'var(--primary-light-bg)';
     const color = '#cccccc';
     const borderColor = '#2b2b2b';
     
@@ -48,7 +47,7 @@
 </script>
 
 
-<div class="empty_editor_window" style="background: {backgroundColor}; color: {color}; border-color: {borderColor};">
+<div class="empty_editor_window var-primary-light-bg" style="color: {color}; border-color: {borderColor};">
     <div class="centered">
         <!-- <div class="logo">
 

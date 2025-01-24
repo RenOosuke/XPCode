@@ -112,7 +112,7 @@
     
                 </div>
     
-                <div style="-webkit-mask: var(--{icon}-icon);" class="upper_icon"></div>
+                <div class="upper_icon var-{icon}-icon"></div>
             </div>
         {/each}
     </div>
@@ -120,7 +120,7 @@
     <div class="lower_icons">
         {#each bottom_icons as icon, i}
             <div class="icon_placeholder" on:click={(ev) => settingsContextMenu(ev)}>    
-                <div style="-webkit-mask: var(--{icon}-icon);  -webkit-mask-size: 1.5rem;" class="bottom_icon">
+                <div style="-webkit-mask-size: 1.5rem;" class="bottom_icon var-{icon}-icon">
 
                 </div>
             </div>
@@ -150,7 +150,7 @@
         display: flex;
         margin-bottom: .3rem;
         position: relative;
-        padding: .5rem 0rem;
+        padding: .5rem .7rem;
     }
 
     .icon_placeholder.pressed .pressed_line{
@@ -178,20 +178,12 @@
         -webkit-mask-size: contain;
     }
 
-    .icon_placeholder.pressed .upper_icon, .icon_placeholder:hover .upper_icon, .icon_placeholder:hover .bottom_icon{
-        background-color: var(--sidebar-active-icon);
-    }
-
     .icon_placeholder.remote_button {
         height: 1.5rem;
         padding: 0 !important;
         margin: 0;
         background-color: #0078d4;
 
-    }
-
-    .upper_icon, .bottom_icon{
-        background-color: var(--sidebar-inactive-icon);
     }
 
     .upper_icon, .bottom_icon{

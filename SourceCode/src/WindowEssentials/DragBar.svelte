@@ -25,11 +25,11 @@ import DragBarLeft from "../DragBar/DragBarLeft.svelte";
         background-color: blue;
         border-bottom: solid 1px;
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
     }
 
     .draggable_area {
-      /* width: -webkit-fill-available; */
+      width: -webkit-fill-available;
     }
 
     @media (max-width: 74rem) {

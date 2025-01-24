@@ -15,5 +15,6 @@
         width: 100%;
         height: 2rem;
         border-top: solid 1px;
+        z-index: 100;
     }
 </style>

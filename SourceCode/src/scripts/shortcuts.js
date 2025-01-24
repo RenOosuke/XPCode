@@ -41,7 +41,7 @@
                 // file_explorer.itemEvents[]
                 let parentDir = path.dirname(selectedItem);
 
-                if(parentDir != launchArguments) {
+                if(parentDir != workspaceDirectory) {
                     file_explorer.itemEvents[parentDir].childSelected(false);
                 }
             })
@@ -52,7 +52,7 @@
 
                 let parentDir = path.dirname(selectedItem);
 
-                if(parentDir != launchArguments) {
+                if(parentDir != workspaceDirectory) {
                     file_explorer.itemEvents[parentDir].childSelected(true);
                 }
             })

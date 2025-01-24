@@ -176,3 +176,16 @@ blue {
 .explorer-tab.tabname-npm_scripts .tab-body{
 	height: calc(var(--npm_scripts-y-offset) - 1.4rem);
 } */
+
+/** TEMPORARYYYYYYY */
+.single_menu_option {
+    color: #000000;
+}
+
+.single_menu_option:hover{
+    background-color: #316ac5;
+}
+
+.separator_line {
+    background: #ceccc3;
+}

@@ -1,5 +1,5 @@
-window.path = require('path');
-window.nw = require("nw.gui");
+const path = require('path');
+const nw = require("nw.gui");
 
 const OS_RELEASE = require('os').release();
 const OS_VERSION = parseInt(OS_RELEASE);

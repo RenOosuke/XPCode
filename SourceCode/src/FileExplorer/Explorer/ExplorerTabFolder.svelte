@@ -11,7 +11,7 @@
     const rerenderEvent = (directoryEl) => {
         let directoriesInPath = directoryEl.full_path.split("\\").length;
         let directoriesInLaunchPath =
-            launchArguments.full_path.split("\\").length;
+            workspaceDirectory.full_path.split("\\").length;
         let level = directoriesInPath - directoriesInLaunchPath;
         console.log(level);
     };
@@ -33,7 +33,7 @@
                         ...folderItems.slice(0, firstFileIndex),
                         {
                             name: "",
-                            full_path: path.resolve(`${launchArguments}\\New File`),
+                            full_path: path.resolve(`${workspaceDirectory}\\New File`),
                             isFolder: false,
                             isStaging: true,
                             new: true,
@@ -54,7 +54,7 @@
                         {
                             name: "",
                             full_path: path.resolve(
-                                `${launchArguments}\\New Folder`,
+                                `${workspaceDirectory}\\New Folder`,
                             ),
                             isFolder: true,
                             isStaging: true,
@@ -106,7 +106,7 @@
                 name: "paste",
                 disabled: !isPasteEnabled,
                 click: () => {
-                    let itemsToSelect = [launchArguments]
+                    let itemsToSelect = [workspaceDirectory]
 
                     clipboardHelper.sendCommand('paste', {
                         file_explorer: true,
@@ -161,10 +161,10 @@
     const scan = () => {
         lastRescanned = new Date();
 
-        if (path.extname(launchArguments)) {
+        if (path.extname(workspaceDirectory)) {
         } else {
             let sortedItems = file_explorer.sortDirectories(
-                (file_explorer.folders[launchArguments] || { children: [] })
+                (file_explorer.folders[workspaceDirectory] || { children: [] })
                     .children,
             );
             folderItems = sortedItems;
@@ -185,7 +185,7 @@
         let treeChangeEvent = (ev) => {
             let eventDetails = ev;
 
-            if (eventDetails.parentDir === launchArguments) {
+            if (eventDetails.parentDir === workspaceDirectory) {
                 if (eventDetails.create) {
                     let elementToPush = eventDetails.element;
 
@@ -205,7 +205,7 @@
             }
         };
 
-        file_explorer.itemEvents[launchArguments] = {
+        file_explorer.itemEvents[workspaceDirectory] = {
             childrenRerender: treeChangeEvent
         }
 
