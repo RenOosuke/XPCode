@@ -18,6 +18,9 @@
 		images: _images,
 		icons: _icons,
 	}
+
+	let windowIsBlurred = false;
+
 	onMount(() => {
 		// var editor = ace.edit("editor");
 		// window.vscode = editor;
@@ -69,6 +72,14 @@
 		};
 		
 		themeUtils.changeTheme('Classic');
+
+		nwWindow.on('blur', () => {
+			windowIsBlurred = true;
+        })
+
+		nwWindow.on('focus', () => {
+			windowIsBlurred = false;
+        })
 	})
 </script>
 
@@ -76,7 +87,7 @@
 	<div class="menu_placeholder">
 
 	</div>
-	<div class="window">
+	<div class="window {windowIsBlurred ? "window-blurred" : ""}">
 		<DragBar></DragBar>
 		<WindowBody></WindowBody>
 		<InfoFooter></InfoFooter>

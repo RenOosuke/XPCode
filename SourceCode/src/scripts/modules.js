@@ -246,6 +246,7 @@ window.spreader = (...objs) =>  {
                 'primary-light2-bg': '#adaeae',
                 'primary-light3-bg': '#444444',
                 'directory-rename-bg': '#313131',
+                'window-blurred-dragbar-bg': '#1f1f1f'
             }
 
             Object.keys(backgroundColors).forEach((varName) => {
@@ -267,6 +268,15 @@ window.spreader = (...objs) =>  {
 
              .sidebar .upper_icon, .sidebar  .bottom_icon{
                 background-color: ${inactiveColor};
+             }
+
+             .window-blurred .dragbar {
+                background-color: ${backgroundColors["window-blurred-dragbar-bg"]} !important;
+                color: #9d9d9d !important;
+             }
+
+             .window-blurred .dragbar .context_menu_button_placeholder {
+                color: #9d9d9d !important;
              }
             `
     
@@ -398,9 +408,16 @@ nw.App.relaunchWithArgs = function (newDirectory, shouldQuit) {
     // const appPath = nw.App.argv[0] || process.execPath; // Path to the app executable
     // const args = newArgs.join(' '); // Combine new arguments into a single string
     let newLaunchArguments = [...nw.App.fullArgv];
-    newLaunchArguments.filter((_arg) => {
-        _arg !== workspaceDirectory
+
+    newLaunchArguments = newLaunchArguments.filter((_arg) => {
+        return _arg !== workspaceDirectory
+        && _arg.indexOf('--height') < 0
+        && _arg.indexOf('--width') < 0
+        && _arg.indexOf('--y') < 0
+        && _arg.indexOf('--x') < 0
     });
+
+    newLaunchArguments.push(...[`--height=${nwWindow.height}`, `--width=${nwWindow.width}`, `--y=${nwWindow.y}`, `--x=${nwWindow.x}`]);
 
     if(newDirectory) {
         let XPSafeNewDirectory = `"${newDirectory}"`;
@@ -417,22 +434,17 @@ nw.App.relaunchWithArgs = function (newDirectory, shouldQuit) {
     const commandToExecute = `${XPSafeNWPath} . ${newLaunchArguments.join(" ")}`;
     console.log(commandToExecute);
 
-    child_process.exec(commandToExecute, (err, stdout, stderr) => {
-        if (err) {
-            console.error('Failed to relaunch the app:', err);
-        }
+    // let child_app = child_process.spawn(commandToExecute, {} ,() => {});
+    // let child_app = child_process.spawnSync(XPSafeNWPath, ['.', ...newLaunchArguments], {detached: true, stdio: 'ignore', windowsHide: false});
+    child_process.exec(commandToExecute, {stdio: 'ignore', detached: true}, (err, stdout, stderr)  => {
 
-        console.log({
-            err,
-            stdout,
-            stderr
-        })
+    });
 
+    setTimeout(() => {
         if(shouldQuit) {
             nw.App.quit();
         }
-    });
-    
+    }, 30)
 }
 
 window.processessCleanQueue = [];
