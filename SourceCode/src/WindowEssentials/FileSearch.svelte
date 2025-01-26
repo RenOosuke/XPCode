@@ -175,21 +175,23 @@
     }
 
     const listenForArrowKeys = (ev) => {
-        if(ev.key == "ArrowDown") {
+        const translatedKey = KEYS_MAP[ev.keyCode];
+
+        if(translatedKey == "ArrowDown") {
             let maxLength = filteredAllFiles.length + filteredRecentFiles.length;
             selectedIndex = Math.min(maxLength-1, selectedIndex+1);
         }
 
-        if(ev.key == "ArrowUp") {
+        if(translatedKey == "ArrowUp") {
             let minIndex = 0;
             selectedIndex = Math.max(minIndex, selectedIndex-1);
         }
 
-        if(ev.key == "Escape") {
+        if(translatedKey == "Escape") {
             endSearching();
         }
 
-        if(ev.key == "Enter") {
+        if(translatedKey == "Enter") {
             let combinedArr = [...filteredRecentFiles, ... filteredAllFiles];
 
             if(selectedIndex < combinedArr.length) {
@@ -300,31 +302,31 @@
 </script>
 
 <div class="context-menu-shadow" id="unselectable">
-    <div class="file_search_window">
-        <input class="file_search_box" placeholder="Search files by name (append : to go to line or @ to go to symbol)" bind:value={searchValue} on:input={handleSearchChange}/>
+    <div class="file_search_window var-file-search-bg var-directory-rename-bg">
+        <input class="file_search_box var-base-text-color var-directory-rename-bg" placeholder="Search files by name (append : to go to line or @ to go to symbol)" bind:value={searchValue} on:input={handleSearchChange}/>
 
         <div class="files_scrollable_area">
 
 
             <div class="recent_files">
                 {#each filteredRecentFiles as file, recentFileIndex}
-                    <div class="single_file_row {selectedIndex == recentFileIndex ? 'selected' : ''}" on:click={(ev) => handleRowClick(ev, file)}>
+                    <div class="single_file_row var-file-search-hover-bg {selectedIndex == recentFileIndex ? 'selected var-item-select-bg' : ''}" on:click={(ev) => handleRowClick(ev, file)}>
                         <div class="left_side">
                             <div class="file_icon_placeholder {file.icon}"></div>
                             <div class="file_name">{@html file.name}</div>
                             
                             {#if file.relative_path}
-                                <div class="relative_path">{@html file.relative_path}</div>
+                                <div class="relative_path var-file-search-subtext-color">{@html file.relative_path}</div>
                             {/if}
                         </div>
     
                         <div class="right_side">
                             <div class="button_placeholder">
-                                <button class="side_view" style="-webkit-mask: var(--split-horizontal-icon);-webkit-mask-size: 1rem;"></button>
+                                <button class="side_view var-split-horizontal-icon" style="-webkit-mask-size: 1rem;"></button>
                             </div>
     
                             <div class="button_placeholder" on:click={(ev) => handleRecentsRemove(ev, file)}>
-                                <button class="remove"style="-webkit-mask: var(--close-icon);-webkit-mask-size: 1rem;"></button>
+                                <button class="remove var-close-icon"style="-webkit-mask-size: 1rem;"></button>
                             </div>
                         </div>
                     </div>
@@ -332,7 +334,7 @@
             </div>
 
             {#if recentFilesLength > 0 && showAllFiles}
-                <div class="splitting-line">
+                <div class="splitting-line var-directory-rename-bg">
 
                 </div>
             {/if}
@@ -340,19 +342,19 @@
             <div class="all_files">
                 {#if showAllFiles}
                     {#each filteredAllFiles as file, filteredFilesIndex}
-                        <div class="single_file_row {selectedIndex == filteredFilesIndex + recentFilesLength ? 'selected' : ''}"  on:click={(ev) => handleRowClick(ev, file)}>
+                        <div class="single_file_row var-file-search-hover-bg {selectedIndex == filteredFilesIndex + recentFilesLength ? 'selected var-item-select-bg' : ''}"  on:click={(ev) => handleRowClick(ev, file)}>
                             <div class="left_side">
                                 <div class="file_icon_placeholder {file.icon}"></div>
-                                <div class="file_name">{@html file.name}</div>
+                                <div class="file_name var-base-text-color">{@html file.name}</div>
                                 
                                 {#if file.relative_path}
-                                    <div class="relative_path">{@html file.relative_path}</div>
+                                    <div class="relative_path var-file-search-subtext-color">{@html file.relative_path}</div>
                                 {/if}
                             </div>
     
                             <div class="right_side">
                                 <div class="button_placeholder">
-                                    <button class="side_view" style="-webkit-mask: var(--split-horizontal-icon);-webkit-mask-size: 1rem;"></button>
+                                    <button class="side_view var-split-horizontal-icon" style="-webkit-mask-size: 1rem;"></button>
                                 </div>
                             </div>
                         </div>
@@ -361,7 +363,7 @@
             </div>
 
             {#if noMatchingResults}
-                <div class="no_matching_results">
+                <div class="no_matching_results var-item-select-bg var-base-text-color">
                     No matching results
                 </div>                
             {/if}
@@ -385,8 +387,7 @@
     padding: .5rem .7rem .5rem .4rem;
     box-shadow: rgba(0, 0, 0, 0.36) 0px 0px 8px 2px;
     border-radius: .3rem;
-    border: solid 1px var(--directory-rename-bg);
-    background-color: var(--file-search-bg);
+    border: solid 1px;
     width: 20%;
     min-width: 30rem;
     margin-top: .5rem;
@@ -403,11 +404,8 @@
 
   .file_search_box {
     outline: none;
-    border: solid 1px var(--outline-color); 
-    background-color: var(--directory-rename-bg);
     height: 1.5rem;
     width: 100%;
-    color: var(--base-text-color);
     font-size: .85rem;
     margin-bottom: .25rem;
   }
@@ -420,7 +418,6 @@
   }
 
   .single_file_row:hover {
-    background-color: var(--file-search-hover-bg);
     cursor: pointer;
   }
 
@@ -449,7 +446,6 @@
     }
 
     .file_name {
-        color: var(--base-text-color);
         line-height: 1.2;
         font-size: 0.8rem;
         /* display: flex; */
@@ -462,7 +458,6 @@
 
     .relative_path {
         margin-left: .6rem;
-        color: var(--file-search-subtext-color);
         font-size: .75rem;
         margin-top: auto;
         margin-bottom: auto;
@@ -499,11 +494,6 @@
   .splitting-line {
     width: 100%;
     height: 1px;
-    background-color: var(--directory-rename-bg);
-  }
-
-  .single_file_row.selected {
-    background-color: var(--item-select-bg);
   }
 
   .single_file_row.selected .button_placeholder {
@@ -511,8 +501,6 @@
   }
 
   .no_matching_results {
-    background-color: var(--item-select-bg);
-    color: var(--base-text-color);
     border-radius: .2rem;
     cursor: pointer;
     font-size: .85rem;

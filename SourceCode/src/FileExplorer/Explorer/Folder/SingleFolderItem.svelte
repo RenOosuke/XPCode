@@ -468,7 +468,7 @@
 >
     <div
         class="header-part {isHovered ? ' _hovered' : ''}{isSelected
-            ? ' _selected'
+            ? ' var-item-select-bg'
             : ''}{isCut ? ' is-cut' : ''}"
         style="padding-left: {1 + level * 0.7}rem;"
         on:click={handleExpansionToggle}
@@ -477,17 +477,11 @@
         {full_path}
     >
         <div class="left-side">
-            <!-- {#if level>0}
-                <div class="tree-line">
-
-                </div>
-            {/if} -->
-
             {#if isFolder}
                 <div class="arrow-placeholder">
                     <div
                         style="-webkit-mask-size: 1rem;"
-                        class="arrow-icon"
+                        class="arrow-icon var-chevron-right-icon var-sidebar-inactive-icon"
                     ></div>
                 </div>
             {:else}
@@ -496,7 +490,7 @@
 
             {#if isStaging}
                 <input
-                    class="staging-directory-name"
+                    class="staging-directory-name var-base-text-color var-directory-rename-bg"
                     placeholder=""
                     use:initialFormFocus
                     on:blur={handleNamingBlur}
@@ -530,7 +524,7 @@
 
     {#if isFolder && isExpanded}
         <div
-            class="tree-line {shouldFocusTreeLine ? 'tree_focused' : ''}"
+            class="tree-line var-tree-line {shouldFocusTreeLine ? 'tree_focused var-focused-tree-line' : ''}"
             style="left: {1.65 + level * 0.7}rem;"
         ></div>
     {/if}
@@ -538,20 +532,11 @@
 
 <style>
     .arrow-icon {
-        background-color: var(--sidebar-inactive-icon);
         height: 1rem;
         width: 1rem;
         margin-right: 0.2rem;
         margin-top: auto;
         margin-bottom: auto;
-    }
-
-    .arrow-icon {
-        -webkit-mask: var(--chevron-right-icon);
-    }
-
-    .expanded > .header-part > .left-side > .arrow-placeholder > .arrow-icon {
-        -webkit-mask: var(--chevron-down-icon);
     }
 
     .header-part {
@@ -562,15 +547,6 @@
         cursor: pointer !important;
         border: solid 1px transparent;
         position: relative;
-    }
-
-    .header-part:focus {
-        outline-color: var(--outline-color);
-    }
-
-    .header-part:hover:not(._hovered):not(._selected) {
-        background-color: var(--file-hover-unselected);
-        cursor: pointer;
     }
 
     .left-side {
@@ -617,13 +593,9 @@
         border: 0;
         background: none;
         margin: 0;
-        background-color: var(--directory-rename-bg);
-        color: var(--base-text-color);
     }
 
-    .staging-directory-name:focus {
-        outline-color: var(--outline-color);
-    }
+
     /* .single-folder-item {
         display: flex;
         flex-direction: column;
@@ -633,36 +605,12 @@
         position: relative;
     }
 
-    ._hovered {
-        border: solid 1px var(--outline-color);
-    }
-
-    ._selected {
-        background-color: var(--item-select-bg);
-    }
-
-    :global(
-            .explorer-tab-header.folder.grayed-out
-                + .current-directory
-                ._selected
-        ) {
-        background-color: var(--gray-out-selection) !important;
-    }
-
     :global(
             .explorer-tab-header.folder.grayed-out
                 + .current-directory
                 ._hovered
         ) {
         border: solid 1px transparent !important;
-    }
-
-    .hasError input {
-        border: solid 1px var(--error-border-color) !important;
-    }
-
-    .staging-true ._selected {
-        background-color: var(--gray-out-selection) !important;
     }
 
     .staging-true ._hovered {
@@ -682,10 +630,6 @@
         /* transform: translate(0%, -15%); */
     }
 
-    .staging-true input:focus {
-        outline: none;
-        border: solid 1px var(--outline-color);
-    }
 
     .staging-false .is-cut .directory-name,
     .staging-false .is-cut .file-icon-placeholder {
@@ -696,8 +640,6 @@
         height: calc(100% - 1.4rem);
         /* height: calc(100% + .2rem); */
         width: 1px;
-        background-color: var(--tree-line);
-        /* border-left: 1px solid var(--tree-line); */
         position: absolute;
         z-index: 1000;
         top: 1.4rem;
@@ -706,6 +648,6 @@
     }
 
     .tree-line.tree_focused {
-        border-left: solid 1px var(--focused-tree-line) !important;
+        border-left: solid 1px !important;
     }
 </style>

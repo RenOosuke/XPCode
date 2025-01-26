@@ -4,10 +4,51 @@
         "primary-light-bg": "#1f1f1f",
         "primary-light2-bg": "#adaeae",
         "primary-light3-bg": "#444444",
-        "directory-rename-bg": "#313131"
+        "directory-rename-bg": "#313131",
+        "window-blurred-dragbar-bg": "#1f1f1f",
+        "item-select-bg": "#04395e",
+        "sidebar-inactive-icon": "rgb(133, 133, 133)",
+        "sidebar-active-icon": "white",
+        "tree-line": "#313131",
+        "file-search-bg": "#222222"
     },
 
+    "simpleHovers": {
+        "background": {
+            "icon-hover-bg": "#2d2e2e",
+            "file-search-hover-bg": "#2a2d2e"
+        },
+
+        "color": {
+        }
+    },
+    
     "isDark": true,
     "inactiveColor":  "rgb(133, 133, 133)",
-    "activeColor": "white"
+    "activeColor": "white",
+    
+    "custom": {
+        "gray-out-selection": "#37373d",
+        "outline-color": "#0078d4",
+        "file-search-marker-color": "#2aaaff",
+        "file-hover-unselected": "rgba(60, 66, 68, 0.35)",
+        "tooltip-bg": "#202020"
+    },
+    
+    "textColors": {
+        "base-text-color": "#cccccc",
+        "timeline-tip-color": "#717171",
+        "file-search-subtext-color": "#999999",
+        "file-search-sections-labels-color": "#3794ff",
+        "base-text-color-80": "#cccccccc",
+        "base-text-color-60": "#cccccc99",
+        "base-text-color-40": "#cccccc66"
+    },
+
+    "borderColors": {
+        "base-border-color": "#2b2b2b",
+        "error-border-color": "#bd1100",
+        "focused-tree-line": "#585858",
+        "secondary-border-color": "#454545"
+    }
 }

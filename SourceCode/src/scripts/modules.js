@@ -181,30 +181,23 @@ window.spreader = (...objs) =>  {
             let themeFolderPath = path.join(themesFolderPath, themeName);
             let configFilePath = path.join(themeFolderPath, 'config.json');
             let configFile = readJSON(configFilePath);
+            let themeFilePath = path.join(themeFolderPath, 'theme.css');
+            let themeContent =  fs.readFileSync(themeFilePath, 'utf-8');
 
-            console.log(configFile);
-
-            let inactiveColor = themeUtils.isDark ? " rgb(133, 133, 133)" : "black";
-            let activeColor = themeUtils.isDark ? "white" : "black";
-    
-            const root = document.documentElement;
-
-            let themeFile = `
-                .var-sidebar-inactive-icon {
-                    background-color: ${inactiveColor};
+            themeUtils.isDark = configFile.isDark
+            
+            let iconsPath = themeUtils.iconsPath();
+            
+            themeContent += `
+                .expanded .arrow-icon {
+                    -webkit-mask: url('${iconsPath}/chevron-down.svg') no-repeat center;
                 }
                     
-                .var-sidebar-active-icon {
-                    background-color: ${activeColor};
+                .expanded > .header-part > .left-side > .arrow-placeholder > .arrow-icon {
+                    -webkit-mask: url('${iconsPath}/chevron-down.svg') no-repeat center;
                 }
-            `;
+            `
             
-            // root.style.setProperty("--sidebar-inactive-icon", inactiveColor);
-            // root.style.setProperty("--sidebar-active-icon", activeColor);
-            
-
-            let iconsPath = themeUtils.iconsPath();
-    
             let iconNames = [
                 'files',
                 'search',
@@ -233,86 +226,14 @@ window.spreader = (...objs) =>  {
             ];
     
             iconNames.forEach((iconName) => {
-                themeFile += `
+                themeContent += `
                     .var-${iconName}-icon {
                         -webkit-mask: url('${iconsPath}/${iconName}.svg') no-repeat center;
                     }
                 `
             });
-
-            let backgroundColors = {
-                'primary-dark-bg': '#181818',
-                'primary-light-bg': '#1f1f1f',
-                'primary-light2-bg': '#adaeae',
-                'primary-light3-bg': '#444444',
-                'directory-rename-bg': '#313131',
-                'window-blurred-dragbar-bg': '#1f1f1f'
-            }
-
-            Object.keys(backgroundColors).forEach((varName) => {
-                themeFile += `
-                    .var-${varName} {
-                        background-color: ${backgroundColors[varName]};
-                    }
-                `
-            });
-
-            themeFile += `
-             .window_control  .icon:not(.inactive), .dragbar_center .icon:not(.inactive){
-                background-color: ${inactiveColor};
-             }
-
-             .sidebar .icon_placeholder.pressed .upper_icon, .sidebar .icon_placeholder:hover .upper_icon, .sidebar .icon_placeholder:hover .bottom_icon{
-                background-color: ${activeColor};
-             }
-
-             .sidebar .upper_icon, .sidebar  .bottom_icon{
-                background-color: ${inactiveColor};
-             }
-
-             .window-blurred .dragbar {
-                background-color: ${backgroundColors["window-blurred-dragbar-bg"]} !important;
-                color: #9d9d9d !important;
-             }
-
-             .window-blurred .dragbar .context_menu_button_placeholder {
-                color: #9d9d9d !important;
-             }
-            `
     
-            jQuery(".theme_file")[0].innerText = themeFile;
-
-            let colorVariablesMapping = {
-                'outline-color': '#0078d4',
-                'base-text-color': '#cccccc',
-                'base-text-color-80': '#cccccccc',
-                'base-text-color-60': '#cccccc99',
-                'base-text-color-40': '#cccccc66',
-                'base-border-color': '#2b2b2b',
-                'secondary-border-color': '#454545',
-                'icon-hover-bg': '#2d2e2e',
-                'tooltip-bg': '#202020',
-                'item-select-bg': '#04395e',
-                'gray-out-selection': '#37373d',
-                'error-border-color': '#bd1100',
-                'tree-line': '#313131',
-                'focused-tree-line': '#585858',
-                'file-hover-unselected': 'rgba(60, 66, 68, 0.35)',
-                'file-search-bg': '#222222',
-                'file-search-hover-bg': '#2a2d2e',
-                'file-search-sections-labels-color': '#3794ff',
-                'file-search-subtext-color': '#999999',
-                'file-search-marker-color': '#2aaaff',
-                'timeline-tip-color': '#717171'
-            };
-            
-            let colorVariables = Object.keys(colorVariablesMapping);
-            
-            colorVariables.forEach((varName) => {
-                root.style.setProperty(varName, colorVariablesMapping[varName]);
-            })
-
-            console.log(themeFile);
+            jQuery(".theme_file")[0].innerText = themeContent;
         },
     
         setGrayedOut: () => {
@@ -342,11 +263,6 @@ window.spreader = (...objs) =>  {
                         outlineTab.classList.remove('grayed-out')
                     }
                 }
-            }
-        },
-        variables: {
-            bg: {
-                primaryDark: 'var(--primary-dark-bg)'
             }
         },
         settingToPropertyTranslator: (key) => {
@@ -432,7 +348,6 @@ nw.App.relaunchWithArgs = function (newDirectory, shouldQuit) {
     let XPSafeNWPath = `"${(nw.process || process).execPath}"`;
     // // Relaunch the app with new arguments 
     const commandToExecute = `${XPSafeNWPath} . ${newLaunchArguments.join(" ")}`;
-    console.log(commandToExecute);
 
     // let child_app = child_process.spawn(commandToExecute, {} ,() => {});
     // let child_app = child_process.spawnSync(XPSafeNWPath, ['.', ...newLaunchArguments], {detached: true, stdio: 'ignore', windowsHide: false});

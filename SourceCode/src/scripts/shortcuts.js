@@ -266,7 +266,9 @@
     }
 
     let arrowKeyOptions = {
+        Up: (index, maxItems) => Math.max(0, index-1),
         ArrowUp: (index, maxItems) => Math.max(0, index-1),
+        Down: (index, maxItems) => Math.min(maxItems, index+1),
         ArrowDown: (index, maxItems) => Math.min(maxItems, index+1)
     }
 
@@ -281,21 +283,23 @@
 
     let selectionCancelOptions = {
         'Escape': true,
-        'Tab': true
+        'Tab': true,
     }
 
     document.addEventListener('keydown', (ev) => {
-        if(pivotKeys[ev.key] && !_shortcutsPaused && _keysGotRefreshed) {
-            if(!_activeKeys.includes(ev.key)) {
-                _activeKeys.push(ev.key)
+        const translatedKey = KEYS_MAP[ev.keyCode];
+
+        if(pivotKeys[translatedKey] && !_shortcutsPaused && _keysGotRefreshed) {
+            if(!_activeKeys.includes(translatedKey)) {
+                _activeKeys.push(translatedKey)
             }
 
             checkForKeyCombinations();
         }
 
         else if(_activeKeys.length > 0 && pivotKeys[_activeKeys[0]] && !_shortcutsPaused && _keysGotRefreshed) {
-            if(!_activeKeys.includes(ev.key)) {
-                _activeKeys.push(ev.key)
+            if(!_activeKeys.includes(translatedKey)) {
+                _activeKeys.push(translatedKey)
             }
 
             checkForKeyCombinations();
@@ -303,12 +307,15 @@
 
         if(file_explorer.hoveredItem != undefined && !file_explorer.grayedOut){
             TODO("Navigating with keyboard on a bigger list of items should scroll to the newly hovered item if out of sight.")
-            if(arrowKeyOptions[ev.key]) {
+            // ev.key (switched because NWJS 0.12.3 uses the older events)
+            const translatedKey = KEYS_MAP[ev.keyCode];
+
+            if(arrowKeyOptions[translatedKey]) {
                 ev.preventDefault();
                 let visibleItems = _getVisibleElements();
                 let oldHoveredItem = file_explorer.hoveredItem;
                 let indexOfHoveredItem = visibleItems.findIndex(el => el.getAttribute('full_path') === oldHoveredItem)
-                let newIndex = arrowKeyOptions[ev.key](indexOfHoveredItem, visibleItems.length-1);
+                let newIndex = arrowKeyOptions[translatedKey](indexOfHoveredItem, visibleItems.length-1);
                 let newElementPath = visibleItems[newIndex].getAttribute('full_path');
     
                 if(ev.shiftKey) {
@@ -326,13 +333,13 @@
                 _rerenderSelectedItems();
             }
 
-            if(selectionCancelOptions[ev.key]) {
+            if(selectionCancelOptions[translatedKey]) {
                 file_explorer.hoveredItem = undefined;
                 file_explorer.selectedItems = [];
                 _rerenderSelectedItems();
             }
 
-            if(ev.key == " " && !file_explorer.selectedItems.includes(file_explorer.hoveredItem)) {
+            if(translatedKey == "Spacebar" && !file_explorer.selectedItems.includes(file_explorer.hoveredItem)) {
                 let shouldExpand = false;
                 let _hoveredItem = file_explorer.hoveredItem;
                 
@@ -350,27 +357,28 @@
 
         if((outline.hoveredItem.get() != undefined) && !outline.grayedOut) {
             TODO("Navigating with keyboard on a bigger list of items should scroll to the newly hovered item if out of sight.")
+            const translatedKey = KEYS_MAP[ev.keyCode];
             
-            if(arrowKeyOptions[ev.key]) {
+            if(arrowKeyOptions[translatedKey]) { // ev.key (switched because NWJS 0.12.3 uses the older events)
                 ev.preventDefault();
                 let visibleItems = _getVisibleOutlineElements();
                 let oldHoveredItem = outline.hoveredItem.get();
                 let indexOfHoveredItem = visibleItems.findIndex(el => el.getAttribute('_start') == oldHoveredItem)
 
-                let newIndex = arrowKeyOptions[ev.key](indexOfHoveredItem, visibleItems.length-1);
+                let newIndex = arrowKeyOptions[translatedKey](indexOfHoveredItem, visibleItems.length-1);
                 let newElementValue = visibleItems[newIndex].getAttribute('_start');
                 
                 outline.hoveredItem.set(newElementValue) 
                 _rerenderOutline();
             }
 
-            if(selectionCancelOptions[ev.key]) {
+            if(selectionCancelOptions[translatedKey]) {
                 outline.hoveredItem.set(undefined);
                 outline.selectedItem.set(undefined);
                 _rerenderOutline();
             }
 
-            if(ev.key == " " && !(outline.selectedItem.get() == outline.hoveredItem.get())) {
+            if(translatedKey == "Spacebar" && !(outline.selectedItem.get() == outline.hoveredItem.get())) {
                 let _hoveredItem = outline.hoveredItem.get();
                 
                 if(outline.expansion[_hoveredItem]) {
@@ -383,8 +391,10 @@
     })
 
     document.addEventListener('keyup', (ev) => {
-        if(_activeKeys.includes(ev.key)) {
-            _activeKeys = _activeKeys.filter(a => a!= ev.key)
+        const translatedKey = KEYS_MAP[ev.keyCode];
+
+        if(_activeKeys.includes(translatedKey)) {
+            _activeKeys = _activeKeys.filter(a => a!= translatedKey)
             
             if(_activeKeys.length == 0) {
                 _keysGotRefreshed = true

@@ -72,7 +72,6 @@ button:focus {
 }
 
 [data-title-top]:after, [data-title-left]:after, [data-title-right]:after, [data-title-bottom]:after  {
-	background-color: var(--tooltip-bg);
 	color: #111;
 	font-size: 150%;
 	position: absolute;
@@ -85,8 +84,6 @@ button:focus {
 	z-index: 99999;
 	visibility: hidden;
 	padding: 1rem;
-	border: solid var(--secondary-border-color) 1px;
-	color: var(--base-text-color);
 }
 
 [data-title-top]:after {
@@ -121,7 +118,6 @@ body:not(.dragging) #unselectable {
 .recent_files .single_file_row:first-of-type .right_side::before {
     content: "recently opened";
     display: block;
-    color: var(--file-search-sections-labels-color);
 	font-size: .9rem;
 	margin-right: .2rem;
 }
@@ -129,13 +125,11 @@ body:not(.dragging) #unselectable {
 .all_files .single_file_row:first-of-type .right_side::before {
 	content: "file results";
     display: block;
-    color: var(--file-search-sections-labels-color);
 	font-size: .9rem;
 	margin-right: .2rem;
 }
 
 blue {
-	color: var(--file-search-marker-color); /* Set text color to blue */
 	display: run-in; /* Ensure it remains inline with other text */
 	font-size: inherit; /* Match the size of the surrounding text */
 	font-weight: inherit; /* Match the weight of the surrounding text */

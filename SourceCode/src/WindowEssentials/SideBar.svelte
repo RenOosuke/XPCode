@@ -150,7 +150,7 @@
         display: flex;
         margin-bottom: .3rem;
         position: relative;
-        padding: .5rem .7rem;
+        padding: .5rem 0.4rem .5rem .9rem;
     }
 
     .icon_placeholder.pressed .pressed_line{

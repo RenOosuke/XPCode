@@ -152,7 +152,15 @@ const ElementUtils = {
     generateId: (stringValue = 'popup') => {
         let popupId = `_${Math.random(0, 1)*10000000}_${stringValue}_${+(new Date())}`.replace(".", '_');
         return popupId;
-    }
+    },
+
+    getClassList: (element) => {
+        if(!element.parentElement) {
+            return [];
+        }
+
+        return [...ElementUtils.getClassList(element.parentElement), element.className];
+    },
     
     // areOverlappingByComputed(el1, el2) {
     //     if(!el1) {

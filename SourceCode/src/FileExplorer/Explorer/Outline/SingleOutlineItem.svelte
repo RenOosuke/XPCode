@@ -77,7 +77,7 @@
 >
     <div
         class="header-part {hoveredStart == outlineItem.start ? ' _hovered' : ''}{selectedStart == outlineItem.start
-            ? ' _selected'
+            ? ' var-item-select-bg'
             : ''}"
         style="padding-left: {.3 + level * 0.7}rem;"
         on:click={handleExpansionToggle}
@@ -89,7 +89,7 @@
             <div class="arrow-placeholder" on:click={handleArrowClick}>
                 <div
                 style="-webkit-mask-size: 1rem;"
-                class="arrow-icon"
+                class="arrow-icon var-chevron-right-icon var-sidebar-inactive-icon"
                 ></div>
             </div>
             {:else}
@@ -127,7 +127,7 @@
 
     {#if outlineItem.items && isExpanded}
         <div
-            class="tree-line {shouldFocusTreeLine ? 'tree_focused' : ''}"
+            class="tree-line var-tree-line {shouldFocusTreeLine ? 'tree_focused var-focused-tree-line' : ''}"
             style="left: {.95 + level * 0.7}rem;"
         ></div>
     {/if}
@@ -135,20 +135,11 @@
 
 <style>
     .arrow-icon {
-        background-color: var(--sidebar-inactive-icon);
         height: 1rem;
         width: 1rem;
         margin-right: 0.2rem;
         margin-top: auto;
         margin-bottom: auto;
-    }
-
-    .arrow-icon {
-        -webkit-mask: var(--chevron-right-icon);
-    }
-
-    .expanded > .header-part > .left-side > .arrow-placeholder > .arrow-icon {
-        -webkit-mask: var(--chevron-down-icon);
     }
 
     .header-part {
@@ -161,12 +152,7 @@
         position: relative;
     }
 
-    .header-part:focus {
-        outline-color: var(--outline-color);
-    }
-
-    .header-part:hover:not(._hovered):not(._selected) {
-        background-color: var(--file-hover-unselected);
+    .header-part:hover:not(._hovered):not(.var-item-select-bg) {
         cursor: pointer;
     }
 
@@ -218,22 +204,6 @@
         position: relative;
     }
 
-    ._hovered {
-        border: solid 1px var(--outline-color);
-    }
-
-    ._selected {
-        background-color: var(--item-select-bg);
-    }
-
-    :global(
-            .explorer-tab-header.outline.grayed-out
-                + .current_outline
-                ._selected
-        ) {
-        background-color: var(--gray-out-selection) !important;
-    }
-
     :global(
             .explorer-tab-header.outline.grayed-out
                 + .current_outline
@@ -246,8 +216,6 @@
         height: calc(100% - 1.4rem);
         /* height: calc(100% + .2rem); */
         width: 1px;
-        background-color: var(--tree-line);
-        /* border-left: 1px solid var(--tree-line); */
         position: absolute;
         z-index: 1000;
         top: 1.4rem;
@@ -256,7 +224,7 @@
     }
 
     .tree-line.tree_focused {
-        border-left: solid 1px var(--focused-tree-line) !important;
+        border-left: solid 1px !important;
     }
 
     .empty-arrow {

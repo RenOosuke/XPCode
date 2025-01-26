@@ -417,7 +417,7 @@ const PARSER_CONSTS = {
                                 outlineElements = parsePython(tokens);
                             break;
                             case 'json':
-                                parsedContent = parser(fileContent);
+                                let parsedContent = parser(fileContent);
 
                                 outlineElements = parseJSON(parsedContent)
                             break

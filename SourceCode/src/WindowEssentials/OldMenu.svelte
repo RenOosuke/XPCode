@@ -81,7 +81,7 @@
 
 <div class="context-menu-shadow" id="unselectable">
   <div
-    class="context-menu-placeholder dark var-primary-dark-bg"
+    class="context-menu-placeholder var-base-text-color dark var-primary-dark-bg"
     style="{x ? `left: ${x}px;` : ''} {y ? `top: ${y}px;` : ''}; transform: translate({transformX}, {transformY});"
     id="context-menu"
   >
@@ -102,8 +102,8 @@
           {#if option.options && isLeftSide}
             <div class="arrow-placeholder">
               <div
-                class="arrow-left"
-                style="-webkit-mask: var(--chevron-right-icon);  -webkit-mask-size: 1.5rem;"
+                class="arrow-left var-chevron-right-icon"
+                style="-webkit-mask-size: 1.5rem;"
               ></div>
             </div>
           {/if}
@@ -119,14 +119,14 @@
           {#if option.options && !isLeftSide}
             <div class="arrow-placeholder right-side">
               <div
-                class="arrow-right"
-                style="-webkit-mask: var(--chevron-right-icon);  -webkit-mask-size: 1.5rem;"
+                class="arrow-right var-chevron-right-icon"
+                style="-webkit-mask-size: 1.5rem;"
               ></div>
             </div>
           {/if}
 
           {#if option.options}
-            <div class="context-submenu var-primary-dark-bg {isLeftSide ? 'left' : ''}" style="transform: translate({level2TransformX}, {level2TransformY});">
+            <div class="context-submenu var-base-text-color var-primary-dark-bg {isLeftSide ? 'left' : ''}" style="transform: translate({level2TransformX}, {level2TransformY});">
               {#each option.options as submenu}
                 {#if submenu.separator}
                   <div class="splitter"></div>
@@ -146,12 +146,12 @@
                     {#if submenu.options}
                       <div class="arrow-placeholder right-side">
                         <div
-                          class="arrow-right"
-                          style="-webkit-mask: var(--chevron-right-icon);  -webkit-mask-size: 1.5rem;"
+                          class="arrow-right var-chevron-right-icon"
+                          style="-webkit-mask-size: 1.5rem;"
                         ></div>
                       </div>
 
-                      <div class="context-submenu-lvl2 var-primary-dark-bg">
+                      <div class="context-submenu-lvl2 var-primary-dark-bg var-base-text-color">
                         {#each submenu.options as submenu_lvl2}
                           {#if submenu_lvl2.separator}
                             <div class="splitter"></div>
@@ -204,7 +204,6 @@
     position: absolute;
     font-size: 0.8rem;
     border: solid .5px var(--secondary-border-color);
-    color: var(--base-text-color);
     box-shadow: rgba(0, 0, 0, 0.36) 0px 2px 8px 0px;
     z-index: 10000;
   }

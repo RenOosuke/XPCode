@@ -27,12 +27,12 @@
                     </div>
                 {/each}
             {:else}
-            <div class="no_history">
+            <div class="no_history var-timeline-tip-color">
                 Local History will track recent changes as you save them unless the file has been excluded or is too large.
             </div>
         {/if}
     {:else}
-        <div class="no_item">
+        <div class="no_item var-timeline-tip-color">
             The active editor cannot provide timeline information.
         </div>
     {/if}
@@ -45,7 +45,6 @@
         padding-right: 1.2rem;
         padding-top: 1rem;
         padding-bottom: 1rem;
-        color: var(--timeline-tip-color);
     }
 
 

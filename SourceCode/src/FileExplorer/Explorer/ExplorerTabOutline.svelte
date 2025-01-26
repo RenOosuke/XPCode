@@ -102,12 +102,12 @@
                     {/each}
                 </div>
             {:else}
-            <div class="no_history">
+            <div class="no_history var-timeline-tip-color">
                 No symbols found in document "{fileName}"
             </div>
         {/if}
     {:else}
-        <div class="no_item">
+        <div class="no_item var-timeline-tip-color">
             The active editor cannot provide outline information.
         </div>
     {/if}
@@ -120,7 +120,6 @@
         padding-right: 1.2rem;
         padding-top: 1rem;
         padding-bottom: 1rem;
-        color: var(--timeline-tip-color);
     }
 
 

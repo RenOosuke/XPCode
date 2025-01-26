@@ -146,9 +146,4 @@
         transition-property: background-color;
         transition-timing-function: ease-out;
     }
-    
-    .resize-border:hover {
-        background-color: var(--outline-color);
-    }
-
 </style>

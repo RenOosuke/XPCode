@@ -504,8 +504,8 @@
 
     {#if activeTab !== 'search'}
         <div class="tab_settings">
-            <div class="icon-placeholder-more" on:click={handleMoreIconClick}>
-                <div class="header-icon more" style="-webkit-mask: var(--more-icon); -webkit-mask-size: 1rem;"></div>
+            <div class="icon-placeholder-more var-icon-hover-bg" on:click={handleMoreIconClick}>
+                <div class="header-icon more var-more-icon var-sidebar-inactive-icon" style="-webkit-mask-size: 1rem;"></div>
             </div>
         </div>
     {:else}
@@ -530,7 +530,6 @@
     .more {
         height: 1rem;
         width: 1rem;
-        background-color: var(--sidebar-inactive-icon);
     }
 
     .icon-placeholder-more {
@@ -539,7 +538,6 @@
     }
 
     .icon-placeholder-more:hover{
-        background-color: var(--icon-hover-bg);
         cursor: pointer;
     }
 </style>

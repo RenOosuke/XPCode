@@ -72,5 +72,7 @@
     .directory_name {
         margin: 0;
         margin-left: .3rem;
+        margin-top: auto;
+        margin-bottom: auto;
     }
 </style>

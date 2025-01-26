@@ -1,0 +1,207 @@
+
+        .window_control  .icon:not(.inactive), .dragbar_center .icon:not(.inactive){
+           background-color: rgb(133, 133, 133);
+        }
+    
+        .sidebar .icon_placeholder.pressed .upper_icon, .sidebar .icon_placeholder:hover .upper_icon, .sidebar .icon_placeholder:hover .bottom_icon{
+           background-color: white;
+        }
+    
+        .sidebar .upper_icon, .sidebar  .bottom_icon{
+           background-color: rgb(133, 133, 133);
+        }
+
+        .window-blurred .dragbar {
+            background-color: #1f1f1f !important;
+            color: #9d9d9d !important;
+        }
+
+        .window-blurred .dragbar .context_menu_button_placeholder {
+            color: #9d9d9d !important;
+        }
+
+        .explorer-tab-header.folder.grayed-out + .current-directory .var-item-select-bg {
+            background-color: #37373d !important;
+        }
+
+        .explorer-tab-header.outline.grayed-out + .current_outline .var-item-select-bg {
+            background-color: #37373d !important;
+        }
+
+        .staging-true .var-item-select-bg {
+            background-color: #37373d !important;
+        }
+
+        .single-tab-button {
+            background-color: #cccccc;
+        }
+            
+        .recent_files .single_file_row:first-of-type .right_side::before {
+            color: #3794ff;
+        }
+            
+        .all_files .single_file_row:first-of-type .right_side::before {
+            color: #3794ff;
+        }
+
+        .file_search_window {
+            border-color: #313131;
+        }
+    
+        .var-primary-dark-bg {
+            background-color: #181818;
+        }
+        
+        .var-primary-light-bg {
+            background-color: #1f1f1f;
+        }
+        
+        .var-primary-light2-bg {
+            background-color: #adaeae;
+        }
+        
+        .var-primary-light3-bg {
+            background-color: #444444;
+        }
+        
+        .var-directory-rename-bg {
+            background-color: #313131;
+        }
+        
+        .var-window-blurred-dragbar-bg {
+            background-color: #1f1f1f;
+        }
+        
+        .var-item-select-bg {
+            background-color: #04395e;
+        }
+        
+        .var-sidebar-inactive-icon {
+            background-color: rgb(133, 133, 133);
+        }
+        
+        .var-sidebar-active-icon {
+            background-color: white;
+        }
+        
+        .var-tree-line {
+            background-color: #313131;
+        }
+        
+        .var-file-search-bg {
+            background-color: #222222;
+        }
+        
+        .var-base-text-color {
+            color: #cccccc;
+        }
+        
+        .var-timeline-tip-color {
+            color: #717171;
+        }
+        
+        .var-file-search-subtext-color {
+            color: #999999;
+        }
+        
+        .var-file-search-sections-labels-color {
+            color: #3794ff;
+        }
+        
+        .var-base-text-color-80 {
+            color: #cccccccc;
+        }
+        
+        .var-base-text-color-60 {
+            color: #cccccc99;
+        }
+        
+        .var-base-text-color-40 {
+            color: #cccccc66;
+        }
+        
+        .var-base-border-color {
+            border-color: #2b2b2b;
+        }
+        
+        .var-error-border-color {
+            border-color: #bd1100;
+        }
+        
+        .var-focused-tree-line {
+            border-color: #585858;
+        }
+        
+        .var-secondary-border-color {
+            border-color: #454545;
+        }
+        
+        .var-icon-hover-bg:hover {
+            background-color: #2d2e2e;
+        }
+        
+        .var-file-search-hover-bg:hover {
+            background-color: #2a2d2e;
+        }
+        
+        .resize-border:hover {
+            background-color: #0078d4;
+        }
+
+       .header-part:focus {
+            outline-color: #0078d4;
+        }
+
+        .explorer-tab.window-outlined>:not(.explorer-tab-header) {
+            outline: #0078d4 1px solid;
+        }
+
+        .explorer-tab-header.outlined {
+            outline: #0078d4 1px solid;
+        }
+
+        .staging-directory-name:focus {
+            outline-color: #0078d4;
+        }
+
+        ._hovered {
+            border: solid 1px #0078d4 !important;
+        }
+
+        
+        .staging-true input:focus {
+            outline: none;
+            border: solid 1px #0078d4;
+        }
+
+        .header-part:focus {
+            outline-color: #0078d4;
+        }
+
+        .file_search_box {
+            border: solid 1px #0078d4; 
+        }
+
+        .resize-border:hover {
+            background-color: #0078d4;
+        }
+        
+        blue {
+            color: #2aaaff;
+        }
+    
+    .header-part:hover:not(._hovered):not(.var-item-select-bg) {
+        background-color: rgba(60, 66, 68, 0.35);
+        cursor: pointer;
+    }
+
+    .hasError input {
+        border: solid 1px #bd1100 !important;
+    }
+
+    [data-title-top]:after, [data-title-left]:after, [data-title-right]:after, [data-title-bottom]:after  {
+        background-color: #202020;
+        border: solid #454545 1px;
+        color: #cccccc;
+    }
+    

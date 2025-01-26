@@ -54,7 +54,7 @@
 
     const outlineTab = () => {
         const selectAllPerKeyboard = (ev) => {
-            if(ev.key == "a" && ev.ctrlKey) {
+            if(KEYS_MAP[ev.keyCode] == "a" && ev.ctrlKey) {
                 ev.preventDefault()
                 ev.stopPropagation();
 
@@ -180,7 +180,7 @@
     })
 </script>
 
-<div class="explorer-tab tabname-{translatedTabName} {isExpanded ? 'expanded' : ''} {tabWindowOutlined ? 'window-outlined' : ''} {isDisabled ? 'tabDisabled' : ''}" on:click={outlineTab}>
+<div class="explorer-tab tabname-{translatedTabName} {isExpanded ? 'expanded var-base-border-color' : ''} {tabWindowOutlined ? 'window-outlined' : ''} {isDisabled ? 'tabDisabled' : ''}" on:click={outlineTab}>
     <div class="explorer-tab-header {tabName} {tabOutlined ? 'outlined' : ''}" on:click={handleTabClick}>
         <ResizeableBorder borders={{
             // top: true,
@@ -189,7 +189,7 @@
 
         <div class="left-side">
             <div class="arrow-placeholder">
-                <div style="-webkit-mask-size: 1rem;" class="arrow-icon">
+                <div style="-webkit-mask-size: 1rem;" class="arrow-icon var-chevron-right-icon var-sidebar-inactive-icon">
                 </div>
             </div>
     
@@ -200,8 +200,8 @@
 
         <div class="right-side">
             {#each tabButtons as singleTabButton}
-                <div class="single-tab-button-placeholder {singleTabButton.icon}-icon" data-title-top="{singleTabButton.title}">
-                    <diV class="single-tab-button" style="-webkit-mask: var(--{singleTabButton.icon}-icon);-webkit-mask-size: 1rem;" on:click={(ev) => {ev.preventDefault(); ev.stopPropagation(); if(singleTabButton.click) {singleTabButton.click(ev)}}}>
+                <div class="single-tab-button-placeholder var-icon-hover-bg {singleTabButton.icon}-icon" data-title-top="{singleTabButton.title}">
+                    <diV class="single-tab-button var-{singleTabButton.icon}-icon" style="-webkit-mask-size: 1rem;" on:click={(ev) => {ev.preventDefault(); ev.stopPropagation(); if(singleTabButton.click) {singleTabButton.click(ev)}}}>
 
                     </diV>
                 </div>
@@ -220,7 +220,6 @@
     }
 
     .arrow-icon {
-        background-color: var(--sidebar-inactive-icon);
         height: 1rem;
         width: 1rem;
         margin-right: .2rem;
@@ -274,14 +273,6 @@
         min-height: 5rem;
     }
 
-    :global(.explorer-tab.window-outlined>:not(.explorer-tab-header)) {
-        outline: var(--outline-color) 1px solid;
-
-        /* outline-color: var(--outline-color);
-        outline-width: 1px;
-        outline-offset: -1px; */
-    }
-
     :global(.tab-body) {
         margin-top: .1rem;
         padding-top: .1rem;
@@ -291,9 +282,7 @@
         overflow-y: auto;
     }
 
-    .explorer-tab-header.outlined {
-        outline: var(--outline-color) 1px solid;
-    }
+
 
     .explorer-tab:last-child .explorer-tab-header {
         border-bottom-color: transparent;
@@ -302,15 +291,7 @@
     .explorer-tab-header {
 
     }
-
-    .arrow-icon {
-        -webkit-mask: var(--chevron-right-icon);
-    }
     
-    .expanded .arrow-icon {
-        -webkit-mask: var(--chevron-down-icon);
-    }
-
     .expanded .explorer-tab-header {
         border-bottom-color: transparent;
     }
@@ -336,14 +317,12 @@
         flex-direction: column;
         border-style: solid;
         border-width: 1px;
-        border-color: var(--base-border-color);
         border-top-color: transparent;
         border-left-color: transparent;
         border-right-color: transparent;
     }
 
     .single-tab-button {
-        background-color: var(--base-text-color);
         height: 100%;
         width: 100%;
     }
@@ -360,7 +339,6 @@
     }
 
     .single-tab-button-placeholder:hover {
-        background-color: var(--icon-hover-bg);
         border-radius: .2rem;
     }
 
@@ -382,10 +360,6 @@
         display: none;
     }
 
-    /* .tabname-open_editors.expanded {
-        height: var(--open_editors-y-offset);
-    } */
-     
     .tabname-folders.expanded {
         min-height: var(--folders-y-offset);
     }
