@@ -1,0 +1,6 @@
+LIBRARY ContextMenuHandler
+EXPORTS
+    DllCanUnloadNow
+    DllGetClassObject
+    DllRegisterServer
+    DllUnregisterServer
