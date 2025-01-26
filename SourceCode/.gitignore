@@ -7,3 +7,4 @@
 /public/modules
 /public/modules/executables/
 !/public/modules/executables/OpenFileDialog.exe
+/public/data
