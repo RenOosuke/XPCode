@@ -16,6 +16,6 @@ import SideBar from "./SideBar.svelte";
 <style>
     .window-body {
         display: flex;
-        height: calc(100% - 4.5rem);
+        height: calc(100% - 4rem);
     }
 </style>

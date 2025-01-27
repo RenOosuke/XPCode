@@ -21,7 +21,7 @@ import DragBarLeft from "../DragBar/DragBarLeft.svelte";
 
 <style>
     .dragbar {
-        height: 2.75rem;
+        height: 2rem;
         background-color: blue;
         border-bottom: solid 1px;
         display: flex;

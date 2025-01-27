@@ -17,7 +17,7 @@
 
         let minSize = rem * .4;
 
-        let calculatedHeight = Math.max((initialOffset + (rem * 30)), minSize);
+        let calculatedHeight = Math.max((initialOffset + (rem * 22)), minSize);
 
         if(calculatedHeight < (10 * rem)) {
             if(calculatedHeight < (2*rem)) {
@@ -69,7 +69,7 @@
 <style>
     .integrated_terminal {
         width: 100%;
-        height: 30rem;
+        height: 22rem;
         border-top: solid 1px;
         position: relative;
     }
