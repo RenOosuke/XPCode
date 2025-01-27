@@ -102,24 +102,3 @@ const copyFile = (src, dest, callback) => {
     readStream.pipe(writeStream);
 };
 
-// Start in the center of the screen AND with half the size of the screen OR resize and position the app as per CLI arguemnts.
-const initialResize = () => {
-    if(!window.isSubwindow && SHOULD_USE_DEFAULT_SIZE) {
-        let nwWindow = nw.Window.get();
-        let screenWidth = screen.width;
-        let screenHeight = screen.height;
-        nwWindow.width = screenWidth/2;
-        nwWindow.x = screenWidth/4;
-    
-        nwWindow.height = screenHeight/2;
-        nwWindow.y = screenHeight/4;
-    }
-
-    if(!window.isSubwindow && !SHOULD_USE_DEFAULT_SIZE) {
-        nwWindow.width = appDimensions.width;
-        nwWindow.x = appDimensions.x;
-    
-        nwWindow.height = appDimensions.height;
-        nwWindow.y = appDimensions.y;
-    }
-}

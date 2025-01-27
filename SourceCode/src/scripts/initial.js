@@ -25,7 +25,8 @@ let SHOULD_USE_DEFAULT_SIZE = true;
         'width',
         'height',
         'x',
-        'y'
+        'y',
+        'fullscreen'
     ];
 
     let nwWindow = nw.Window.get();
@@ -50,7 +51,7 @@ let SHOULD_USE_DEFAULT_SIZE = true;
         appDimensions[key] = parseFloat(value);
     });
 
-    initialResize()
+    WindowManager.initialResize();
 }
 
 let lastLaunchArgument = appArguments[appArguments.length-1];

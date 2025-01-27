@@ -149,7 +149,7 @@
 
 	@media(max-height: 56.25rem) {
 		:global(.empty_editor_window .logo) {
-			max-width: 30vw;
+			max-width: 30vw !important;
 		}
 	}
 </style>

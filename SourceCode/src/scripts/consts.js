@@ -111,3 +111,8 @@ const KEYS_MAP = {
     "221": "] }",
     "222": "\" '"
 }
+
+const RESTORE = 'restore';
+const MAXIMIZE = 'maximize';
+const RESIZE = 'resize';
+const UNMAXIMIZE = 'unmaximize';

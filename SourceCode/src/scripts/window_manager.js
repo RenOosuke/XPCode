@@ -1,8 +1,7 @@
 
-window.WindowManager = (() => {
-    let windows = {
+const WindowManager = (() => {
 
-    };
+    let isMaximized = false;
 
     const defaultNWWindowFunction = () => {
         alert("This is a function you should not be able to see.");
@@ -41,14 +40,23 @@ window.WindowManager = (() => {
     
         const windowResizeEvents = 
         [                   
-            'restore',
-            'maximize',
-            'resize',
+            RESTORE,
+            MAXIMIZE,
+            RESIZE,
+            UNMAXIMIZE
         ];
         
         windowResizeEvents.forEach((evName) => {
             // IN ORDER FOR THIS TO BREAK, BECAUSE OF A NW BUG, YOU SHOULDN'T REFRESH USING F5, BUT RIGHT CLICK => `Reload App`
             nwWindow.on(evName, () => {
+                if(evName == MAXIMIZE) {
+                    isMaximized = true;
+                } 
+
+                if(evName == UNMAXIMIZE) {
+                    isMaximized = false;
+                }
+
                 let newEv = new Event('nw_custom_resize');
         
                 document.dispatchEvent(newEv);
@@ -56,34 +64,44 @@ window.WindowManager = (() => {
         })
     }
 
+    // Start in the center of the screen AND with half the size of the screen OR resize and position the app as per CLI arguemnts.
+    const initialResize = () => {
+        if(!window.isSubwindow && SHOULD_USE_DEFAULT_SIZE) {
+            let nwWindow = nw.Window.get();
+            let screenWidth = screen.width;
+            let screenHeight = screen.height;
+            nwWindow.width = screenWidth/2;
+            nwWindow.x = screenWidth/4;
+        
+            nwWindow.height = screenHeight/2;
+            nwWindow.y = screenHeight/4;
+        }
+
+        if(!window.isSubwindow && !SHOULD_USE_DEFAULT_SIZE) {
+            nwWindow.x = appDimensions.x;
+            nwWindow.y = appDimensions.y;
+            nwWindow.width = appDimensions.width;
+            nwWindow.height = appDimensions.height;
+
+            if(!!appDimensions.fullscreen) {
+                WindowManager.maximize();
+            }
+        }
+    }
+
     return {
         isFullScreen: () => {
-            return nwWindow.height >= window.screen.availHeight && nwWindow.width >= window.screen.availWidth;
+            return isMaximized;
         },
 
         minimize: () => nwWindow.minimize(),
         maximize: () => {
-            // if(!window.isSubwindow && APP_WINDOW.aero) {
-            //     isMaximizing = true;
-            //     saveLastWindowSettings();
-            //     nwWindow.width = screen.width;  
-            //     nwWindow.height = screen.height;
-            //     nwWindow.y = screen.availTop;
-            //     nwWindow.x = screen.availLeft;
-            // } else {
-            // }
             nwWindow.maximize();
         },
         unmaximize: () => {
-            // if(!window.isSubwindow && APP_WINDOW.aero) {
-            //   nwWindow.width = lastWindowSetting.width;
-            //   nwWindow.height = lastWindowSetting.height;
-            //   nwWindow.y = lastWindowSetting.y;
-            //   nwWindow.x = lastWindowSetting.x;
-            // } else {
-            // }
             nwWindow.unmaximize();
         } ,
         windowPromptQuit,
+        initialResize
     }
 })()

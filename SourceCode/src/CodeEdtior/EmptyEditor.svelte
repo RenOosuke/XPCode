@@ -1,5 +1,6 @@
 <script>
   import { onMount } from "svelte";
+    import { add_resize_listener } from "svelte/internal";
 
     // TEMP_HARDCODE
     const color = '#cccccc';
@@ -14,36 +15,49 @@
     ]
     // console.log(XPCodeDir);
     let vscodeIconPath = path.join(paths.icons, 'default', 'vscode.png');
+    let editorWindowElement;
+    let shouldRestoreLogo = false;
 
     const resizeLogo = () => {
-        let editorWindowEl = jQuery('.empty_editor_window')[0];
-        let logoEl = jQuery('.empty_editor_window .logo')[0]
-        let logoParams = editorWindowEl.getBoundingClientRect();
-        let instructionsEl = jQuery('.instructions')[0];
+        if(!editorWindowElement) {
+            return;
+        }
 
-        if(logoParams.height < 450) {
-            if(logoParams.height < 320) {
-                logoEl.style.maxWidth = undefined;
-                logoEl.style.maxHeight = `${logoParams.height - 16}px`;
-            } else {
-                // logoEl.style.maxWidth = '18rem';
-                logoEl.style.maxHeight = undefined;
+        let rem = ElementUtils.getRemSize();
+        let editorWindowSizes =  editorWindowElement.getBoundingClientRect();
+        let instructionsElement = jQuery(".empty_editor_window .centered .instructions")[0] || {style: {display: ''}}
+        
+        if(editorWindowSizes.height <= 33 * rem) {
+            instructionsElement.style.display = 'none';
+
+            if(editorWindowSizes.height <= 20 * rem) {
+                let safeHeight = Math.max(1*rem, (editorWindowSizes.height - 2*rem));
+                jQuery("img.logo")[0].style.height = `${safeHeight}px`;
+                shouldRestoreLogo = true;
+            } else if(shouldRestoreLogo){
+                jQuery("img.logo")[0].style.height = 'initial';
+                shouldRestoreLogo = false;
             }
 
-            instructionsEl.style.display = 'none';
         } else {
-            instructionsEl.style.display = 'initial';
-            logoEl.style.maxHeight = 'initial';
+            if(shouldRestoreLogo) {
+                jQuery("img.logo")[0].style.height = 'initial';
+                shouldRestoreLogo = false;
+            }
+
+            instructionsElement.style.display = 'initial'
         }
     }
 
     onMount(() => {
-        document.addEventListener('nw_custom_resize', () => {
-            resizeLogo();
-        });
-        
-        resizeLogo();
+        editorWindowElement = jQuery(".empty_editor_window")[0];
+        if(editorWindowElement) {
+            add_resize_listener(editorWindowElement, (ev) => {
+                resizeLogo();
+            })
+        }
     })
+    
 </script>
 
 
@@ -141,6 +155,10 @@
         display: flex;
         flex-direction: column;
     }
+
+    /* @media(max-height: 770px) {
+        
+    } */
 
     
     /* .logo {

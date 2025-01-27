@@ -331,9 +331,21 @@ nw.App.relaunchWithArgs = function (newDirectory, shouldQuit) {
         && _arg.indexOf('--width') < 0
         && _arg.indexOf('--y') < 0
         && _arg.indexOf('--x') < 0
+        && _arg.indexOf('--fullscreen') < 0
     });
 
-    newLaunchArguments.push(...[`--height=${nwWindow.height}`, `--width=${nwWindow.width}`, `--y=${nwWindow.y}`, `--x=${nwWindow.x}`]);
+    let isFullScreen = WindowManager.isFullScreen();
+
+    if(isFullScreen) {
+        /**  
+         * If we're in fullscreen, unmaximize the window to pass it's unmaximized dimensions, 
+         * and just pass the information that it should maximize afterwards, 
+         * so that it knows what to unmaximize to afterwards
+         **/
+        WindowManager.unmaximize();
+    }
+
+    newLaunchArguments.push(...[`--height=${nwWindow.height}`, `--width=${nwWindow.width}`, `--y=${nwWindow.y}`, `--x=${nwWindow.x}`, `--fullscreen=${+isFullScreen}`]);
 
     if(newDirectory) {
         let XPSafeNewDirectory = `"${newDirectory}"`;
