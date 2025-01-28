@@ -36,9 +36,11 @@
     },
   ];
 
-  const menusByTab =() => {
+
+
+  const menusByTab = (all) => {
     const isTesting = true;
-    let recentDirectoryMenuItems = (settings.section.get("temporary.recent.folders").filter(dir => dir != workspaceDirectory || isTesting).map(dir => {
+    let recentDirectoryMenuItems = (settings.get("temporary.recent.folders").filter(dir => dir != workspaceDirectory || isTesting).map(dir => {
             return {
               label: dir,
               name: "reopen_directory",
@@ -56,7 +58,7 @@
       })
     }
 
-    let recentFileMenuItems = (settings.section.get("temporary.recent.files").filter(dir => dir != workspaceDirectory || isTesting).map(dir => {
+    let recentFileMenuItems = (settings.get("temporary.recent.files").filter(dir => dir != workspaceDirectory || isTesting).map(dir => {
             return {
               label: dir,
               name: "reopen_file"
@@ -1068,7 +1070,20 @@
     ]
     };
 
-    return config;
+    
+    if(all) {
+      let menu_options = dragbarContextMenus.map((menuConfig) => {
+        return {
+          options: config[menuConfig.name],
+          label: menuConfig.label,
+          name: menuConfig.name
+        }
+      })
+
+      return menu_options;
+    } else {
+      return config;
+    }
   }  
 
   const handleDragBarMenButtonClick = (
@@ -1089,6 +1104,21 @@
     });
   };
 
+  const handleCakeButtonClick = (ev) => {
+    let buttonClicked = ev.target;
+    let buttonParams = buttonClicked.getBoundingClientRect();
+
+    let clientY = buttonParams.top + buttonParams.height;
+    let clientX = buttonParams.left;
+
+    menu({
+      x: clientX,
+      y: clientY,
+      shouldBlur: true,
+      options: menusByTab(true),
+    })
+  }
+
   let iconsPath = themeUtils.iconsPath();
   let maskSize = `-webkit-mask-size: 1rem !important;`;
 
@@ -1102,7 +1132,7 @@
 
   {#each dragbarContextMenus as contextMenuButton}
     <div
-      class="context_menu_button_placeholder"
+      class="context_menu_button_placeholder var-dragbar-button-hover-bg"
       id="unselectable"
       on:click={(ev) => handleDragBarMenButtonClick(contextMenuButton.name, ev)}
     >
@@ -1110,10 +1140,11 @@
     </div>
   {/each}
 
-  <div
-    class="context_menu_cake_menu var-sidebar-active-icon"
-    style="-webkit-mask: url('{`${iconsPath}/cake.svg`}') no-repeat center; {maskSize}"
-  ></div>
+  <div class="context_menu_cake_menu var-dragbar-button-hover-bg" on:click={handleCakeButtonClick}>
+    <div class="var-sidebar-active-icon var-cake-icon" style="{maskSize}">
+      
+    </div>
+  </div>
 </div>
 
 <style>
@@ -1133,6 +1164,7 @@
     /* margin-top: auto; */
     /* margin-bottom: auto; */
     margin-right: 0.5rem;
+    margin-top: .125rem;
   }
 
   .context_menu_button_placeholder {
@@ -1143,7 +1175,6 @@
   }
 
   .context_menu_button_placeholder:hover {
-    background-color: #313232;
     color: #cccccc;
     cursor: default;
     border-radius: 0.3rem;
@@ -1152,9 +1183,13 @@
   .context_menu_cake_menu {
     width: 1rem;
     height: 1rem;
-    margin-top: auto;
-    margin-bottom: auto;
-    margin-left: 0.5rem;
+    margin-left: 0.2rem;
     display: none;
+    border-radius: 4px;
+    padding: .2rem .6rem;
+  }
+
+  .var-cake-icon {
+    height: 100%;
   }
 </style>

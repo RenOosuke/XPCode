@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
       "target": "ES5",
-      "outDir": ["build", "src"],
+      "outDir": ["src"],
       "allowJs": true
   },
 }

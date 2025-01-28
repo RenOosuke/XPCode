@@ -166,7 +166,7 @@
 
         let tabroute = `explorer_tabs.show.files.${routeTranslation[tabName]}`;
  
-        isDisabled = !settings.section.get(tabroute);
+        isDisabled = !settings.get(tabroute);
 
         document.addEventListener('tabsConfigChanged', (ev) => {
 

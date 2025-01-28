@@ -170,21 +170,21 @@ type _addEventListener = <K extends keyof DocumentEventMap>(element: HTMLElement
 type addEventListener2 = (element: HTMLElement, type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions) => void;
 type addCustomEventListener = _addEventListener | addEventListener2;
 
-declare var ElementUtils: {
-    parseRems(el: HTMLElement, prop: any): number;
-    getCalculatedHeightRems(elSelector: any, include: {top: boolean, bottom: boolean}): any;
-    getCalculatedWidthRems(elSelector: any, include: {left: boolean, right: boolean}): any;
+// declare var ElementUtils: {
+//     parseRems(el: HTMLElement, prop: any): number;
+//     getCalculatedHeightRems(elSelector: any, include: {top: boolean, bottom: boolean}): any;
+//     getCalculatedWidthRems(elSelector: any, include: {left: boolean, right: boolean}): any;
 
-    dotIsInside(parentCoords: elementCorners, dotCoords: [x: number, y: number], {onlyBorder: boolean, offset: number}): boolean;
-    isInsideOf(parentEl: HTMLElement, childEl: HTMLElement, {offset: number, onlyBorder: boolean}): boolean;
-    areOverlapping(parentEl: HTMLElement, childEl: HTMLElement): boolean,
-    mouse: MouseEvent | undefined,
-    eventCleanUpUtil: () => {
-        clean: () => void;
-        customEventListener: addCustomEventListener
-    },
-    generateId: () => string
-}
+//     dotIsInside(parentCoords: elementCorners, dotCoords: [x: number, y: number], {onlyBorder: boolean, offset: number}): boolean;
+//     isInsideOf(parentEl: HTMLElement, childEl: HTMLElement, {offset: number, onlyBorder: boolean}): boolean;
+//     areOverlapping(parentEl: HTMLElement, childEl: HTMLElement): boolean,
+//     mouse: MouseEvent | undefined,
+//     eventCleanUpUtil: () => {
+//         clean: () => void;
+//         customEventListener: addCustomEventListener
+//     },
+//     generateId: () => string
+// }
 
 declare var _addEventListener: addCustomEventListener;
 

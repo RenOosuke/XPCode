@@ -70,7 +70,7 @@
                     outline.getOutline(currentActiveItem).then(_outlineItems => {
                         outlineItems = _outlineItems || [];
                         hasOutline = outlineItems.length > 0;
-                        resortOutlineItems(settings.section.get(SETTINGS_SORT_PATH));
+                        resortOutlineItems(settings.get(SETTINGS_SORT_PATH));
                     });
     
                     fileName = path.basename(currentActiveItem);

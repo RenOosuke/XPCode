@@ -1,12 +1,5 @@
 let testDirectory = path.resolve('../TestDirectory')
 
-function UUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-        return v.toString(16);
-    });
-}
-
 // const uniqueInstanceID = UUID();
 
 // let packageData = fs.readFileSync('package.json', 'utf-8');
@@ -78,28 +71,28 @@ window.directory = path.basename(workspaceDirectory);
 
     if(isDirectory && directoryExists) {
         let changedField = "temporary.recent.folders";
-        let recentDirectories = settings.section.get(changedField);
+        let recentDirectories = settings.get(changedField);
         
         let uniqueRecentDirectories = new Set(recentDirectories);
         uniqueRecentDirectories.add(workspaceDirectory);
         let directoriesArr =  Array.from(uniqueRecentDirectories);
         recentDirectories.splice(0, recentDirectories.length);
         recentDirectories.push(...directoriesArr)
-        settings.update();
+        settings.save();
         signals.write.settingChanged("temporary");
     } 
     
     if(!isDirectory && directoryExists) {
         let changedField = "temporary.recent.files"
         
-        let recentFiles = settings.section.get(changedField);
+        let recentFiles = settings.get(changedField);
         
         let uniqueRecentFiles = new Set(recentFiles);
         uniqueRecentFiles.add(workspaceDirectory);
         let filesArr = Array.from(uniqueRecentFiles);
         recentFiles.splice(0, recentFiles.length);
         recentFiles.push(...filesArr)
-        settings.update();
+        settings.save();
         signals.write.settingChanged("temporary");
     };
 }

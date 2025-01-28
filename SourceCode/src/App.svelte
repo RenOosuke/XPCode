@@ -73,11 +73,11 @@
 		
 		themeUtils.changeTheme('Classic');
 
-		nwWindow.on('blur', () => {
+		WindowManager.subscribe('blur', () => {
 			windowIsBlurred = true;
         })
-
-		nwWindow.on('focus', () => {
+		
+		WindowManager.subscribe('focus', () => {
 			windowIsBlurred = false;
         })
 	})

@@ -77,7 +77,7 @@ import GenericExplorerTab from "./Explorer/GenericExplorerTab.svelte";
                     let x = ev.x;
                     let y = ev.y;
 
-                    let selectedSort = settings.section.get(SETTINGS_SORT_PATH);
+                    let selectedSort = settings.get(SETTINGS_SORT_PATH);
                     let sortByPosition = "sort_outline_by_position";
                     let sortByName = "sort_outline_by_name";
                     let sortByCategory = "sort_outline_by_category";

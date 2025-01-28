@@ -16,7 +16,8 @@
     "simpleHovers": {
         "background": {
             "icon-hover-bg": "#2d2e2e",
-            "file-search-hover-bg": "#2a2d2e"
+            "file-search-hover-bg": "#2a2d2e",
+            "dragbar-button-hover-bg": "#313232"
         },
 
         "color": {

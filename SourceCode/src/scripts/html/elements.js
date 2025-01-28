@@ -1,4 +1,11 @@
 const ElementUtils = {
+    getVHSize: () => {
+        return Math.max(document.documentElement.clientHeight, window.innerHeight || 0)/100;
+    },
+
+    getVWSize: () => {
+        return Math.max(document.documentElement.clientWidth, window.innerWidth || 0)/100;
+    },
     getRemSize: () => {
         return parseFloat(getComputedStyle(document.documentElement).fontSize)
     },

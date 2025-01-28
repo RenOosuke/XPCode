@@ -1,46 +1,3 @@
-const utils = {
-    clone: (obj) => {
-        let objToReturn;
-
-        try {
-            objToReturn = JSON.parse(JSON.stringify(obj));
-        } catch(e) {
-            objToReturn = [];
-            console.log('ERROR at utils.clone', obj);
-        }
-
-        return objToReturn;
-    },
-    UUID() {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-            return v.toString(16);
-        });
-    }
-}
-
-window.fsUtils = {
-    copyToClipboard: (textToCopy) => {
-        const textArea = document.createElement("textarea");
-        textArea.value = textToCopy;
-            
-        // Move textarea out of the viewport so it's not visible
-        textArea.style.position = "absolute";
-        textArea.style.left = "-999999px";
-            
-        document.body.insertBefore(textArea, document.body.firstChild);
-        textArea.select();
-
-        try {
-            document.execCommand('copy');
-        } catch (error) {
-            console.error(error);
-        } finally {
-            textArea.remove();
-        }
-    },
-}
-
 class Subscriber {
     constructor(subscriptionKeys = []) {
 
@@ -48,12 +5,6 @@ class Subscriber {
             acc[key] = {}; // Each key will hold functions mapped by UUID
             return acc;
         }, {});
-
-        this.subscribe = this.subscribe.bind(this);
-        this.unsubscribe = this.unsubscribe.bind(this);
-        this.getSubscriptions = this.getSubscriptions.bind(this);
-        this.trigger = this.trigger.bind(this);
-        this.generateUUID = this.generateUUID.bind(this);
     }
 
     /**
@@ -113,6 +64,12 @@ class Subscriber {
      * @returns {string} - A unique UUID.
      */
     generateUUID() {
-        return utils.UUID;
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            const r = (Math.random() * 16) | 0;
+            const v = c === 'x' ? r : (r & 0x3) | 0x8;
+            return v.toString(16);
+        });
     }
 }
+
+module.exports = Subscriber;

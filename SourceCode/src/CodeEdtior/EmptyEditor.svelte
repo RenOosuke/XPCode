@@ -14,9 +14,11 @@
         {label: 'Toggle Terminal', button: ['Ctrl', '`']},
     ]
     // console.log(XPCodeDir);
-    let vscodeIconPath = path.join(paths.icons, 'default', 'vscode.png');
+    let vscodeIconPath = path.join(paths.icons, 'default', 'vscode.png').split('\\').join('/');
     let editorWindowElement;
     let shouldRestoreLogo = false;
+    let imageLogo;
+    const imageLogoHeight = `20vh`;
 
     const resizeLogo = () => {
         if(!editorWindowElement) {
@@ -24,24 +26,26 @@
         }
 
         let rem = ElementUtils.getRemSize();
+        let vh = ElementUtils.getVHSize();
+
         let editorWindowSizes =  editorWindowElement.getBoundingClientRect();
         let instructionsElement = jQuery(".empty_editor_window .centered .instructions")[0] || {style: {display: ''}}
         
         if(editorWindowSizes.height <= 33 * rem) {
             instructionsElement.style.display = 'none';
 
-            if(editorWindowSizes.height <= 20 * rem) {
+            if(editorWindowSizes.height <= 20 * vh) {
                 let safeHeight = Math.max(1*rem, (editorWindowSizes.height - 2*rem));
-                jQuery("img.logo")[0].style.height = `${safeHeight}px`;
+                jQuery(".logo.divimg")[0].style.height = `${safeHeight}px`;
                 shouldRestoreLogo = true;
             } else if(shouldRestoreLogo){
-                jQuery("img.logo")[0].style.height = 'initial';
+                jQuery(".logo.divimg")[0].style.height = imageLogoHeight;
                 shouldRestoreLogo = false;
             }
 
         } else {
             if(shouldRestoreLogo) {
-                jQuery("img.logo")[0].style.height = 'initial';
+                jQuery(".logo.divimg")[0].style.height = imageLogoHeight;
                 shouldRestoreLogo = false;
             }
 
@@ -66,7 +70,8 @@
         <!-- <div class="logo">
 
         </div> -->
-        <img src='{vscodeIconPath}' href='' class="logo"/>
+        <div style="background-image: url({vscodeIconPath});" class="divimg logo undraggable">
+        </div>
 
         <div class="instructions">
             {#each instructions as instruction}
@@ -109,12 +114,19 @@
         margin-left: auto;
         margin-right: auto;
         max-width: 100%;
+        width: 17rem;
     }
 
     .logo {
        -webkit-filter: grayscale(100%) contrast(0%) brightness(17%) !important;
        max-width: 18rem;
        margin-bottom: 1rem;
+       pointer-events: none;
+       -webkit-user-select: none;
+        background-Repeat: no-repeat;
+        background-Position: center center;
+        background-size: contain;
+        height: 20vh;
     }
 
     .command {

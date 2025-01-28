@@ -217,7 +217,7 @@
         },
 
         combinationFromSettings: (_section) => {
-            let shortcut = settings.section.get(_section);
+            let shortcut = settings.get(_section);
             let userFriendlyShortcut = shortcuts.parseUserFriendly(shortcut);
             return userFriendlyShortcut;
         }
@@ -229,8 +229,8 @@
 
 
     const checkForKeyCombinations = () => {
-        let fileExplorerCombinations = settings.section.get('shortcuts.file_explorer');  
-        let generalCombinations = settings.section.get('shortcuts.general');
+        let fileExplorerCombinations = settings.get('shortcuts.file_explorer');  
+        let generalCombinations = settings.get('shortcuts.general');
 
         let fileExplorerEntries = Object.values(fileExplorerCombinations)
         let generalEntries = Object.values(generalCombinations)

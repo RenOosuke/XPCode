@@ -7,23 +7,26 @@
     const borderColor = '#2b2b2b';
 
     let initialOffset = 0;
-    let initialHeight;
+    let initialHeight = 0;
     let terminalElement;
     let codeEditorRegionElement;
     let logoElement;
+    let firstResizingHasPassed = false;
+    let _calculatedHeight;
 
     const resizeFromOffset = () => {
         let rem = ElementUtils.getRemSize();
 
-        let minSize = rem * .4;
+        let hiddenTerminalHeight = rem * .4;
+        let calculatedHeight = initialOffset + initialHeight;
+        let bottomSnapLimit = 2*rem;
+        let minHeight = 10 * rem;
 
-        let calculatedHeight = Math.max((initialOffset + (rem * 22)), minSize);
-
-        if(calculatedHeight < (10 * rem)) {
-            if(calculatedHeight < (2*rem)) {
-                calculatedHeight = minSize;                
+        if(calculatedHeight < minHeight) {
+            if(calculatedHeight < bottomSnapLimit) {
+                calculatedHeight = hiddenTerminalHeight;                
             } else {
-                calculatedHeight = 10 * rem;
+                calculatedHeight = minHeight;
             }
         };
 
@@ -44,18 +47,32 @@
         }
 
         terminalElement.style.setProperty("height", `${calculatedHeight}px`);
+        _calculatedHeight = calculatedHeight;
     }
 
     const handleResizing = (newDistance) => {
         initialOffset -= newDistance;
- 
         resizeFromOffset();
+    }
+
+    const onDragStart = () => {
+        if(firstResizingHasPassed) {
+            return;
+        } else {
+            firstResizingHasPassed = true;
+        }
+    
+        initialHeight = terminalElement.getBoundingClientRect().height;
+    };
+
+    const onDragEnd = () => {
+        initialOffset = _calculatedHeight - initialHeight;
     }
     
     onMount(() => {
         terminalElement = jQuery(".integrated_terminal")[0];
         codeEditorRegionElement = jQuery(".code_editor_region")[0];
-        logoElement = jQuery("img.logo")[0] || {style: {display: ''}};
+        logoElement = jQuery(".logo.divimg")[0] || {style: {display: ''}};
     })
 </script>
 
@@ -63,7 +80,7 @@
 <div class="integrated_terminal var-primary-dark-bg" style="color: {color}; border-color: {borderColor};">
     <ResizeableBorder borders={{
         top: true
-    }} {handleResizing}></ResizeableBorder>
+    }} {handleResizing} {onDragStart} {onDragEnd}></ResizeableBorder>
 </div>
 
 <style>

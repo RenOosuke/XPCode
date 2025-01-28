@@ -1,5 +1,6 @@
 
 const WindowManager = (() => {
+    let subscriber = new Subscriber(["blur", "focus"]);
 
     let isMaximized = false;
 
@@ -15,6 +16,7 @@ const WindowManager = (() => {
         minimize: defaultNWWindowFunction,
         maximize: defaultNWWindowFunction,
         unmaximize: defaultNWWindowFunction,
+        on: defaultNWWindowFunction
     };
 
     let lastWindowSetting = {};
@@ -34,7 +36,7 @@ const WindowManager = (() => {
             let hasUnsavedFiles = false; // TODO
         
             if(!hasUnsavedFiles) {
-                nw.App.quit();
+                nwWindow.close();
             }
         }
     
@@ -63,6 +65,27 @@ const WindowManager = (() => {
             })
         })
     }
+
+    nwWindow.on('close', function(ev) {
+        for(let i = 0; i<processessCleanQueue.length; i++) {
+            try {
+                let cleanUpFunction = processessCleanQueue[i];
+                cleanUpFunction();
+            } catch(e) {
+
+            }
+        }
+
+        nwWindow.close(true);
+    });
+
+    nwWindow.on('blur', () => {
+        subscriber.trigger('blur');
+    })
+    
+    nwWindow.on('focus', () => {
+        subscriber.trigger('focus');
+    })
 
     // Start in the center of the screen AND with half the size of the screen OR resize and position the app as per CLI arguemnts.
     const initialResize = () => {
@@ -102,6 +125,9 @@ const WindowManager = (() => {
             nwWindow.unmaximize();
         } ,
         windowPromptQuit,
-        initialResize
+        initialResize,
+    
+        subscribe: subscriber.subscribe,
+        unsubscribe: subscriber.unsubscribe
     }
 })()

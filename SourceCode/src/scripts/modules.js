@@ -222,7 +222,8 @@ window.spreader = (...objs) =>  {
                 'refresh',
                 'save-all',
                 'split-horizontal',
-                'close'
+                'close',
+                'cake'
             ];
     
             iconNames.forEach((iconName) => {
@@ -294,20 +295,17 @@ window.spreader = (...objs) =>  {
         },
         setProperty: (_property, value, priority) => {
     
-            let settingKey = themeUtils.settingToPropertyTranslator(_property);
+            // let settingKey = themeUtils.settingToPropertyTranslator(_property);
     
-            if(settingKey && !isInitialLoad) {
-                let valueParser = themeUtils.getValueType(settingKey);
-                let parsedValue = valueParser(value);
-                settings.section.set(settingKey, parsedValue)
-            }
+            // if(settingKey && !isInitialLoad) {
+            //     let valueParser = themeUtils.getValueType(settingKey);
+            //     let parsedValue = valueParser(value);
+            //     settings.section.set(settingKey, parsedValue)
+            // }
     
-            document.documentElement.style.setProperty(_property, value, priority)
+            // document.documentElement.style.setProperty(_property, value, priority)
+            return new Error(`This function is to be removed`);
         },
-        endInitialLoad: () => {
-            isInitialLoad = false;
-            delete themeUtils.endInitialLoad;
-        }
     }
 }
 
@@ -369,7 +367,7 @@ nw.App.relaunchWithArgs = function (newDirectory, shouldQuit) {
 
     setTimeout(() => {
         if(shouldQuit) {
-            nw.App.quit();
+            nwWindow.close();
         }
     }, 30)
 }

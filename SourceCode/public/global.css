@@ -183,3 +183,12 @@ blue {
 .separator_line {
     background: #ceccc3;
 }
+
+.file_explorer.hide_content > div:not(.right-border) {
+	display: none;
+}
+
+.undraggable {
+	-webkit-user-drag: none;
+	touch-action: none;
+}

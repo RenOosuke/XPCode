@@ -1,8 +1,3 @@
-window.addEventListener('beforeunload', () => {
-    processessCleanQueue.forEach(cleanUpFunction => {
-        cleanUpFunction();
-    })
-});
 
 /** @type {<fallbackParameter>(_path: PathLike, secondaryData: {format: BufferEncoding, errorCallback: Function | undefined, safeFallback: fallbackParameter | undefined}) => undefined | fallbackParameter} */
 const readJSON = (_path, secondaryData = {}) => {
@@ -102,3 +97,8 @@ const copyFile = (src, dest, callback) => {
     readStream.pipe(writeStream);
 };
 
+const CancelDragStart = (ev) => {
+    ev.preventDefault();
+    
+    return false
+}

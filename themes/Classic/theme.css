@@ -144,6 +144,10 @@
             background-color: #2a2d2e;
         }
         
+        .var-dragbar-button-hover-bg:hover {
+            background-color: #313232;
+        }
+        
         .resize-border:hover {
             background-color: #0078d4;
         }

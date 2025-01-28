@@ -11,9 +11,9 @@
     const contextMenuForMoreButton = (singleTabObj) => {
 
         let _toggle = (subtabName) => {
-            let oldValue = singleTabObj[subtabName] //settings.section.get(tabroute)
+            let oldValue = singleTabObj[subtabName] //settings.get(tabroute)
             singleTabObj[subtabName] = !oldValue;
-            settings.update()
+            settings.save()
 
             let _customEvent = new CustomEvent("tabsConfigChanged", {
                 detail: {
@@ -483,7 +483,7 @@
       let clientY = buttonParams.top + buttonParams.height;
       let clientX = buttonParams.left;
 
-        let sectionConfig = settings.section.get(`explorer_tabs.show.${activeTab}`)
+        let sectionConfig = settings.get(`explorer_tabs.show.${activeTab}`)
         
         let contextMenuConfig = contextMenuForMoreButton(sectionConfig)[activeTab];
         

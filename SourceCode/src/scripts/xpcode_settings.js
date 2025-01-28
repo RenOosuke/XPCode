@@ -3,13 +3,13 @@ const SETTINGS_SORT_PATH = "explorer_tabs.outline.sort";
 {
     /** modules.js */
     const GENERAL_SHORTCUTS = 'shortcuts.general';
-    const SETTINGS_PATH = `${GENERAL_SHORTCUTS}.settings`;
+    const SETTINGS_CONFIG_PATH = `${GENERAL_SHORTCUTS}.settings`;
     const SHORTCUTS_PATH = `${GENERAL_SHORTCUTS}.shortcuts`;
     const COLOR_THEME_PATH = `${GENERAL_SHORTCUTS}.color_theme`;
      
     let _parentDir = path.resolve('public/data');
-    let pathToSettings = path.resolve('public/data/settings.json');
-    let defaultSettings = {
+    const SETTINGS_PATH = path.resolve('public/data/settings.json');
+    const DEFAULT_SETTINGS = {
         explorer_tabs: {
             show: {
                 files: {
@@ -71,89 +71,81 @@ const SETTINGS_SORT_PATH = "explorer_tabs.outline.sort";
         }
     }
 
-    if(!fs.existsSync(_parentDir)) {
-        fs.mkdirSync(_parentDir);
-    };
+    class SettingsManager {
+        constructor() {
+            this._ensureSettingsFile();
+            this.settings = this._loadSettings();
+            this._watchSettingsFile();
+        }
 
-    if(!fs.existsSync(pathToSettings)) {
-        fs.writeFileSync(pathToSettings, JSON.stringify(defaultSettings), 'utf8');
-    }
-    
-    let _get = () => {
-        return JSON.parse(fs.readFileSync(pathToSettings, 'utf-8'));
-    }
+        /** Ensures the settings file exists */
+        _ensureSettingsFile() {
+            const dir = path.dirname(SETTINGS_PATH);
+            if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+            if (!fs.existsSync(SETTINGS_PATH)) this._saveSettings(DEFAULT_SETTINGS);
+        }
 
-    let _currentSettings = _get();
-
-    let _update = () => {
-        fs.writeFileSync(pathToSettings, JSON.stringify(_currentSettings), 'utf-8');
-    }
-
-    let _set = (newSettings) => {
-        _currentSettings = spreader(newSettings);
-    }
-
-    let safePath = (sectionName) => {
-        let steps = sectionName.split('.');
-
-        steps.reduce((acc, step) => {
-            let propertyExists;
-
-            acc.push(step);
-            
-            // console.log(acc);
-
-            let propertyChain = `_currentSettings.${acc.join('.')}`
-            eval(`propertyExists = ${propertyChain}`);
-
-            if(!propertyExists) {
-                console.log(propertyExists);
-                eval(`${propertyChain} = {}`);
-            };
-
-            return acc;
-        },[]);
-    }
-
-    let _settings = {
-        get: _get,
-        set: _set,
-        section: {
-            get: (sectionName) => {
-                let sectionToReturn;
-
-                if(sectionName.includes('.')) {
-
-                    safePath(sectionName);
-
-                    eval(`sectionToReturn = _currentSettings.${sectionName}`);
-                } else {
-                    console.log(sectionName, _get()[sectionName])
-                   sectionToReturn = _get()[sectionName] || {}
-                };
-
-                return sectionToReturn;
-            },
-            set: (sectionName, sectionData) => {
-                if(sectionName.includes('.')) {
-
-                    safePath(sectionName);
-                    
-                    let stringToEvaluate = `_currentSettings.${sectionName} = ${sectionData}`; 
-                    eval(stringToEvaluate);
-                } else {
-                    _currentSettings = spreader(_currentSettings, {[sectionName]: sectionData})
-                };
-
-                _set(_currentSettings);
+        /** Loads settings from the JSON file */
+        _loadSettings() {
+            try {
+                return JSON.parse(fs.readFileSync(SETTINGS_PATH, 'utf8'));
+            } catch (error) {
+                console.error("Error loading settings:", error);
+                return Object.assign({}, DEFAULT_SETTINGS);
             }
-        },
-        update: _update,
-        contextMenu: {
+        }
+
+        /** Saves settings to file atomically */
+        _saveSettings(newSettings) {
+            this.settings = Object.assign({}, this.settings, newSettings);
+            this.save();
+        }
+
+        /** Get a setting by path (dot notation) */
+        get(section) {
+            return section.split('.').reduce((obj, key) => (obj && obj[key] !== undefined) ? obj[key] : {}, this.settings);
+        }
+
+        /** Set a setting by path (dot notation) */
+        set(section, value, shouldSave) {
+            const keys = section.split('.');
+            let obj = this.settings;
+            while (keys.length > 1) {
+                const key = keys.shift();
+                obj[key] = obj[key] || {};
+                obj = obj[key];
+            }
+            obj[keys[0]] = value;
+
+            if(shouldSave) {
+                this._saveSettings(this.settings);
+            }
+        }
+
+        save() {
+            fs.writeFileSync(SETTINGS_PATH + '.tmp', JSON.stringify(this.settings, null, 4), 'utf8');
+            fs.renameSync(SETTINGS_PATH + '.tmp', SETTINGS_PATH);
+        }
+
+        /** Watches the settings file for external changes */
+        _watchSettingsFile() {
+            fs.watch(SETTINGS_PATH, (eventType) => {
+                if (eventType === 'change') {
+                    const updatedSettings = this._loadSettings();
+                    // let editedBy = updatedSettings.editedBy;
+                    
+                    if (JSON.stringify(updatedSettings) !== JSON.stringify(this.settings)) {
+                        this.settings = updatedSettings;
+                    }
+                }
+            });
+        }
+
+        contextMenu = {
             preferences: () => {
                 return [
                     { label: "Profiles", name: "profiles"},
-                    { label: "Settings", name: "settings", shortcut: shortcuts.combinationFromSettings(SETTINGS_PATH)},
+                    { label: "Settings", name: "settings", shortcut: shortcuts.combinationFromSettings(SETTINGS_CONFIG_PATH)},
                     { label: "Keyboard Shortcuts", name: "keyboard_shortcuts", shortcut: shortcuts.combinationFromSettings(SHORTCUTS_PATH)},
                     { label: "Snippets", name: "snippets"},
 
@@ -175,35 +167,16 @@ const SETTINGS_SORT_PATH = "explorer_tabs.outline.sort";
                     ]}
                 ]
             }
-        },
-        log: () => {
-            console.log(_currentSettings);
+        }
+
+        /** Logs current settings */
+        log() {
+            console.log(this.settings);
         }
     }
 
-    window.settings = _settings;
+    // Attach the class instance to the global `window.settings`
+    window.settings = new SettingsManager();
 
-    processessCleanQueue.push(settings.update)
-
-    let CSSPropertiesToReadOnStart = [
-        'side-tab-offset',
-    ]
-
-    CSSPropertiesToReadOnStart.forEach((propName) => {
-        let parsedPropName = `--${propName}`;
-        let settingsKey = themeUtils.settingToPropertyTranslator(parsedPropName);
-        let value = settings.section.get(settingsKey);
-
-        themeUtils.setProperty(parsedPropName, value);
-    })
-
-    let CSSPropertiesToInitialize = {
-        '--terminal-y-offset': '0px'
-    };
-
-    Object.keys(CSSPropertiesToInitialize).forEach((key) => {
-        themeUtils.setProperty(key, CSSPropertiesToInitialize[key]);
-    })
-
-    themeUtils.endInitialLoad();
+    processessCleanQueue.push(() => settings.save())
 }
