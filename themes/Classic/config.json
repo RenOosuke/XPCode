@@ -10,7 +10,9 @@
         "sidebar-inactive-icon": "rgb(133, 133, 133)",
         "sidebar-active-icon": "white",
         "tree-line": "#313131",
-        "file-search-bg": "#222222"
+        "file-search-bg": "#222222",
+        "splitter": "#454545",
+        "context-menu-bg": "#1f1f1f"
     },
 
     "simpleHovers": {
@@ -33,7 +35,10 @@
         "outline-color": "#0078d4",
         "file-search-marker-color": "#2aaaff",
         "file-hover-unselected": "rgba(60, 66, 68, 0.35)",
-        "tooltip-bg": "#202020"
+        "tooltip-bg": "#202020",
+        "menu-item-hover-bg": "#0078d4",
+        "menu-item-hover-color": "#feffff",
+        "context-menu-color": "#f0f0f0"
     },
     
     "textColors": {

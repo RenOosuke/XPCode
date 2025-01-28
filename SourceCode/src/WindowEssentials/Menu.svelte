@@ -15,8 +15,19 @@
 
       const menuId = ElementUtils.generateId();
       const menuElementSelector = `.${menuId}`;
-      let menuWidth = 0;
 
+      let rem = ElementUtils.getRemSize();
+      const WIDTH_PER_SYMBOL = 0.368 * rem;
+      const WIDTH_PER_ARROW = 3 * rem;
+      const PADDING_OF_MENU = .25 * rem;
+      const PADDING_OF_OPTION_LEFT = 2 * rem;
+      const PADDING_OF_OPTION_RIGHT = .7 * rem;
+      const PADDING_LEFT = PADDING_OF_OPTION_LEFT;
+      const PADDING_RIGHT = PADDING_OF_OPTION_RIGHT;
+      const MARGIN_MIDDLE = 5 * rem;
+      const BORDER_THICKNESS = 1;
+      let menuWidth = 0;
+      let right = undefined;
       let handleMenuOptionClick = (/** @type {MouseEvent}*/ev, option) => {
           ev.stopPropagation();
   
@@ -54,6 +65,28 @@
       let newArrowPositionsByName = {
 
       };
+
+      let longestLabel = options.reduce((acc, _option) => {
+        let currentLabel = _option.label;
+        if(_option.separator) {
+            return acc;
+        }
+
+        if(acc.length < currentLabel.length) {
+            return currentLabel;
+        };
+
+        return acc;
+      }, '');
+
+      let hasArrows = options.reduce((acc, _option) => {
+        return acc || !!_option.options
+      }, false);
+
+
+      const MIN_WIDTH_FROM_LABEL = WIDTH_PER_SYMBOL * longestLabel.length; // this is the estimated width per letter
+      let CALCULATED_WIDTH = PADDING_LEFT + MIN_WIDTH_FROM_LABEL + MARGIN_MIDDLE +  (+hasArrows * WIDTH_PER_ARROW) + PADDING_RIGHT;
+      const OWN_WIDTH = CALCULATED_WIDTH + ( 2 * PADDING_OF_MENU) + (2*BORDER_THICKNESS);
 
       onMount(() => {
           let shadow = jQuery('.shadow')[0];
@@ -108,46 +141,85 @@
               arrowPositionsHaveLoaded = true;
           })
 
-          if(screenHeight < bottomEnd) {
-            y = y - menuElementProperties.height;
+          let isBeyondBottom = screenHeight < bottomEnd;
+
+          if(isBeyondBottom) {
+            if(level > 0) {
+                // Move the entire menu upwards by its height MINUS 1.6rem 
+                // (2 * .3rem padding and 1rem line height)
+                y = `calc(-${menuElementProperties.height}px + 1.6rem)`;
+            } else {
+                y = y - menuElementProperties.height;
+            }
+          } 
+          
+          if(!isBeyondBottom && level > 0){
+            y = `-.5rem`
           };
 
-          if(screenWidth < rightEnd) {
+          let isBeyondRightBorder = screenWidth < rightEnd
+
+          if(isBeyondRightBorder) {
             if(level > 0 ){
-                x = `100% - ${menuElementProperties.width + 100}px`;
+                right = `${parentWidth}px - 1rem`;
+                console.log(`SHOULD GO RIGHT`)
             } else {
                 x = x - menuElementProperties.width;
             }
+          } 
+          
+          if(!isBeyondRightBorder && level > 0){
+            x = `1rem`;
           };
       })
   </script>
 
-    <div class="menu_body var-secondary-border-color {menuId}" style="{level > 0 ? `position: absolute; top: 0; left: calc(100% - ${x}); z-index: ${zIndex};` : ((x ? `left: ${x}px;` : '') + (y ? `top: ${y}px;` : ''))} {hideTopBorder ? 'border-top: none;' : ''}">
+    <div class="menu_body var-context-menu-color var-context-menu-bg var-secondary-border-color {menuId}" 
+    style="width: {CALCULATED_WIDTH}px; 
+    {
+        level > 0 
+        ? (
+            `position: absolute;
+            top: ${y};
+            z-index: ${zIndex};
+            `
+            + (right
+                ?
+                `right: calc(${right});`
+                :
+                `left: calc(${x});`
+              ) 
+          ) 
+        : (
+            (x ? `left: ${x}px;` : '') + 
+            (y ? `top: ${y}px;` : '')
+        )
+    }
+
+    {hideTopBorder ? 'border-top: none;' : ''}">
+
         {#each options as option}
             {#if option.separator}
-                <div class="separator_line"></div>
+                <div class="separator_line var-splitter"></div>
             {:else}
                 <button class="single_menu_option" on:click={(ev) => handleMenuOptionClick(ev, option)}>
-                    {#if option.options && option.options.length > 0 && isLeftSide}
-                        <div class="arrow-placeholder _is_left" _name={option.name}>
-                            <div class="arrow-left">
+                    <span class="content">
+                        {option.label} {!option.options && !option.click ? '(TO DO)' : ''}
+                    </span>
+                        
+                    {#if option.options && option.options.length > 0}
+                        <div class="stretcher">
 
-                            </div>
                         </div>
-                    {/if}
-
-                    {option.label} {!option.options && !option.click ? '(TO DO)' : ''}
-
-                    {#if option.options && option.options.length > 0 && !isLeftSide}
                         <div class="arrow-placeholder _is_right" _name={option.name}>
-                            <div class="arrow-right">
-
-                            </div>
+                            &#60086;
                         </div>
                     {/if}
                     
                     {#if option.options && option.options.length > 0 && arrowPositionsHaveLoaded}
                         <div class="submenu_placeholder_relative">
+                            <!-- <div class="submenu_placeholder_absolute">
+                            </div> -->
                             <svelte:self
                                     x={"0px"}
                                     y={newArrowPositionsByName[option.name].top || 0}
@@ -155,6 +227,7 @@
                                     zIndex={zIndex + 1}
                                     hide={hide}
                                     level={level+1}
+                                    parentWidth={OWN_WIDTH}
                             />
                         </div>
                     <!-- <Menu x={newArrowPositionsByName[option.name].left} y={newArrowPositionsByName[option.name].top} options={option.options} zIndex={zIndex+1} {hide}></Menu> -->
@@ -179,7 +252,6 @@
       }
       
       .menu_body {
-          background-color: white;
           display: table;
           flex-direction: column;
           width: fit-content;
@@ -188,34 +260,45 @@
           /* border: solid 1px gray; */
           padding: .25rem;
           position: relative;
-          border: solid .5px;
+          border: solid 1px;
+            border-radius: 0.25rem;
+          font-size: .8125rem;
       }
   
       .single_menu_option {
           margin: 0;
-          width: 15rem;
+          /* width: 15rem; */
+          width: 100%;
           text-align: -webkit-left;
           padding: 0.3rem 0.7rem 0.3rem 2rem;
           line-height: 1rem;
           border: none;
           position: relative;
           display: flex;
-        
-          white-space: nowrap; /* Prevents text from wrapping */
-            text-overflow: ellipsis; /* Adds '...' if text overflows */
+          background-color: transparent;
+          justify-content: space-between;
+          /* Prevents text from wrapping */
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          /* Adds '...' if text overflows */
           /* color: var(--context_menu_item_color) */
+          flex: 0 0 auto;
       }
-  
-      .single_menu_option:hover{
-        /* background-color: var(--hovered_item_bg); */
+
+      .stretcher {
+        width: -webkit-fill-available;
       }
-  
-      .single_menu_option.disabled {
-          color: gray;
+
+      .single_menu_option .content {
+        /* display: table; */
       }
   
       .single_menu_option:not(.disabled):hover {
-          color: white;
+        cursor: pointer;    
+    }
+  
+      .single_menu_option.disabled {
+          color: gray;
       }
   
       .single_menu_option:not(.disabled):hover .submenu_options{
@@ -231,10 +314,12 @@
       }
   
       .separator_line {
-            width: calc(100% + .25rem);
+            width: calc(100% + .5rem);
             height: 1px;
             margin-top: 0.2rem;
             margin-bottom: 0.4rem;
+            left: -.25rem;
+            position: relative;
       }
   
       .submenu_options {
@@ -269,22 +354,25 @@
       .arrow-right {
           border-left: .4rem solid black;
       }
+      
       .arrow-placeholder {
-          position: absolute;
+          /* position: absolute;
           display: ruby;
           right: 1rem;
         transform: translate(0, -50%);
-        top: 50%;
+        top: 50%; */
+        padding: 0 .5em;
+        font-family: codicon;
       }
+
+      /* .arrow-placeholder::after {
+        content: '\eab6';
+        font-family: codicon;
+      } */
   
       .arrow-placeholder ._is_right {
           right: 1rem;
           margin-right: 1.3rem;
-      }
-  
-      .arrow-placeholder ._is_left {
-          left: 0;
-          margin-left: .6rem;
       }
 
       .single_menu_option:hover > .submenu_placeholder_absolute, .single_menu_option:hover > .submenu_placeholder_relative{
@@ -307,7 +395,6 @@
         opacity: 0;
         /* display: none; */
         position: relative;
-        width: 100%;
         height: 100%;
       }
   </style>

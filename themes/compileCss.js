@@ -139,6 +139,19 @@ const parseAdditionalCustomCSS = (customCSS, borderColors, textColors) => {
         border: solid ${borderColors["secondary-border-color"]} 1px;
         color: ${textColors["base-text-color"]};
     }
+
+    .single_menu_option:not(.disabled):hover {
+        background-color: ${customCSS["menu-item-hover-bg"]} !important;
+        color: ${customCSS["menu-item-hover-color"]} !important;
+    }
+
+    .single_menu_option {
+        color: ${customCSS["context-menu-color"]};
+    }
+
+    .menu_body {
+        border-color: ${borderColors["secondary-border-color"]} !important;
+    }
     `;
 }
 

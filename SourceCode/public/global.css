@@ -5,7 +5,6 @@ html, body {
 }
 
 body {
-	color: #333;
 	margin: 0;
 	padding: 8px;
 	box-sizing: border-box;
@@ -47,22 +46,8 @@ input[type="range"] {
 	height: 0;
 }
 
-button {
-	color: #333;
-	background-color: #f4f4f4;
-	outline: none;
-}
-
-button:disabled {
-	color: #999;
-}
-
 button:not(:disabled):active {
 	background-color: #ddd;
-}
-
-button:focus {
-	border-color: #666;
 }
 
 [data-title-top]:hover:after, [data-title-left]:hover:after, [data-title-right]:hover:after, [data-title-bottom]:hover:after {
@@ -172,16 +157,8 @@ blue {
 } */
 
 /** TEMPORARYYYYYYY */
-.single_menu_option {
-    color: #000000;
-}
-
 .single_menu_option:hover{
     background-color: #316ac5;
-}
-
-.separator_line {
-    background: #ceccc3;
 }
 
 .file_explorer.hide_content > div:not(.right-border) {

@@ -92,6 +92,14 @@
             background-color: #222222;
         }
         
+        .var-splitter {
+            background-color: #454545;
+        }
+        
+        .var-context-menu-bg {
+            background-color: #1f1f1f;
+        }
+        
         .var-base-text-color {
             color: #cccccc;
         }
@@ -207,5 +215,18 @@
         background-color: #202020;
         border: solid #454545 1px;
         color: #cccccc;
+    }
+
+    .single_menu_option:not(.disabled):hover {
+        background-color: #0078d4 !important;
+        color: #feffff !important;
+    }
+
+    .single_menu_option {
+        color: #f0f0f0;
+    }
+
+    .menu_body {
+        border-color: #454545 !important;
     }
     
